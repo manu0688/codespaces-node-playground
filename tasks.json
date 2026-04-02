@@ -1,10 +1,10 @@
 [
   {
     "id": 1775164155240,
-    "text": "gym tomorrow",
-    "category": "health",
-    "priority": "medium",
-    "nextStep": "Schedule a time slot for it.",
+    "text": "finish sql report urgently today",
+    "category": "work",
+    "priority": "high",
+    "nextStep": "Break it into the first concrete work step.",
     "createdAt": "2026-04-02T21:09:15.240Z",
     "done": true
   },
@@ -51,6 +51,15 @@
     "priority": "high",
     "nextStep": "Break it into the first concrete work step.",
     "createdAt": "2026-04-02T21:22:28.751Z",
+    "done": false
+  },
+  {
+    "id": 1775165546343,
+    "text": "review football podcast notes tonight",
+    "category": "football",
+    "priority": "low",
+    "nextStep": "Check fixtures, deadlines, or player news first.",
+    "createdAt": "2026-04-02T21:32:26.343Z",
     "done": false
   }
 ]
