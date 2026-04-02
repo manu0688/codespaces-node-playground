@@ -35,8 +35,6 @@ function getPositionName(elementTypeId, elementTypes) {
   return found ? found.singular_name_short : 'UNK';
 }
 
-// ----- Fixtures helpers -----
-
 function getUpcomingFixturesForTeam(teamId, fixtures, teams, limit = 5) {
   const upcoming = fixtures
     .filter(f => !f.finished && (f.team_h === teamId || f.team_a === teamId))
@@ -60,7 +58,7 @@ function getUpcomingFixturesForTeam(teamId, fixtures, teams, limit = 5) {
 
 async function showFixtures(teamName) {
   if (!teamName) {
-    console.log('Usage: node fpl-agent-v4.js fixtures Arsenal');
+    console.log('Usage: fplbuddy fixtures Arsenal');
     return;
   }
 
@@ -113,12 +111,11 @@ async function showTicker() {
   });
 }
 
-// ----- Status & labels -----
-
 function isAvailable(player) {
-  // FPL uses status codes like: 'a' available, 'd' doubtful, 'i' injured, 's' suspended. [web:573][web:640]
-  return player.status === 'a' && (player.chance_of_playing_next_round === null ||
-    player.chance_of_playing_next_round >= 75);
+  return player.status === 'a' && (
+    player.chance_of_playing_next_round === null ||
+    player.chance_of_playing_next_round >= 75
+  );
 }
 
 function getBuyHoldSellLabel(form, fixtureScore) {
@@ -130,8 +127,6 @@ function getBuyHoldSellLabel(form, fixtureScore) {
   return 'hold';
 }
 
-// ----- Transfer suggestions with budget + injury filtering -----
-
 function parseBudget(raw) {
   if (!raw) return null;
   const n = Number(raw);
@@ -140,11 +135,11 @@ function parseBudget(raw) {
 
 async function suggestTransfers(positionFilter, budgetRaw) {
   if (!positionFilter) {
-    console.log('Usage: node fpl-agent-v4.js suggest MID [maxPrice]');
+    console.log('Usage: fplbuddy suggest MID [maxPrice]');
     return;
   }
 
-  const maxBudget = parseBudget(budgetRaw); // e.g. 8.5
+  const maxBudget = parseBudget(budgetRaw);
   const bootstrap = await fetchBootstrap();
   const fixtures = await fetchFixtures();
 
@@ -181,10 +176,8 @@ async function suggestTransfers(positionFilter, budgetRaw) {
     };
   });
 
-  // injury / availability filter
   players = players.filter(p => isAvailable(p.raw));
 
-  // budget filter if provided
   if (maxBudget !== null) {
     players = players.filter(p => p.numericPrice <= maxBudget);
   }
@@ -196,19 +189,23 @@ async function suggestTransfers(positionFilter, budgetRaw) {
   console.log(`Top transfer suggestions for ${positionFilter.toUpperCase()}${maxBudget ? ` (≤ £${maxBudget.toFixed(1)}m)` : ''}:\n`);
   players.forEach((player, i) => {
     const label = getBuyHoldSellLabel(player.form, player.fixtureScore);
+
+    const chance =
+      player.chanceNext !== null && player.chanceNext !== undefined
+        ? player.chanceNext
+        : 'n/a';
+
     console.log(`#${i + 1} ${player.name} (${player.team})`);
     console.log(`price: £${player.price}m`);
     console.log(`form: ${player.form}`);
     console.log(`total points: ${player.totalPoints}`);
     console.log(`selected by: ${player.selectedBy}%`);
     console.log(`next 3 avg difficulty: ${player.fixtureScore}`);
-    console.log(`status: ${player.status} (chance next: ${player.chanceNext ?? 'n/a'}%)`);
+    console.log(`status: ${player.status} (chance next: ${chance}%)`);
     console.log(`suggestion score: ${player.finalScore}`);
     console.log(`label: ${label}\n`);
   });
 }
-
-// ----- Simple captain suggestions -----
 
 async function captainSuggestions() {
   const bootstrap = await fetchBootstrap();
@@ -254,37 +251,40 @@ async function captainSuggestions() {
 
   console.log('Captain suggestions for next GW (form + fixture + availability):\n');
   top5.forEach((p, i) => {
+    const chance =
+      p.chanceNext !== null && p.chanceNext !== undefined
+        ? p.chanceNext
+        : 'n/a';
+
     console.log(`#${i + 1} ${p.name} (${p.team}) - ${p.position}`);
     console.log(`price: £${p.price}m`);
     console.log(`form: ${p.form}`);
     console.log(`total points: ${p.totalPoints}`);
     console.log(`selected by: ${p.selectedBy}%`);
     console.log(`next fixture difficulty: ${p.fixtureScore}`);
-    console.log(`status: ${p.status} (chance next: ${p.chanceNext ?? 'n/a'}%)`);
+    console.log(`status: ${p.status} (chance next: ${chance}%)`);
     console.log(`captain score: ${p.finalScore}\n`);
   });
 }
-
-// ----- Help & main -----
 
 function showHelp() {
   console.log(`
 FPLBuddy v4 commands:
 
 Fixtures & ticker
-  node fpl-agent-v4.js fixtures Arsenal
-  node fpl-agent-v4.js ticker
+  fplbuddy fixtures Arsenal
+  fplbuddy ticker
 
 Transfer suggestions
-  node fpl-agent-v4.js suggest MID
-  node fpl-agent-v4.js suggest MID 8.5
-  node fpl-agent-v4.js suggest FWD 11.0
+  fplbuddy suggest MID
+  fplbuddy suggest MID 8.5
+  fplbuddy suggest FWD 11.0
 
 Captain picks
-  node fpl-agent-v4.js captain
+  fplbuddy captain
 
 Help
-  node fpl-agent-v4.js help
+  fplbuddy help
 `);
 }
 
