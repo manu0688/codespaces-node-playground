@@ -1,0 +1,8 @@
+{
+  "variable": "A variable is a named container for a value. Example: let age = 25 stores the number 25 in a variable called age.",
+  "function": "A function is a reusable block of code. You define it once and run it whenever needed. Example: a function can add two numbers or format text.",
+  "loop": "A loop repeats code until a condition changes. It is useful when you want to repeat a task or process a list of items.",
+  "array": "An array is an ordered list of values. Example: ['apple', 'banana', 'orange'] is an array of strings.",
+  "error": "An error means the program hit something it could not understand or execute. Start by reading the exact error message and checking the line it points to.",
+  "object": "An object stores related data as key-value pairs. Example: { name: 'Sam', age: 25 }."
+}

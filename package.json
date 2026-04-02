@@ -1,0 +1,24 @@
+{
+  "name": "codespaces-node-playground",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/manu0688/codespaces-node-playground.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/manu0688/codespaces-node-playground/issues"
+  },
+  "homepage": "https://github.com/manu0688/codespaces-node-playground#readme",
+  "dependencies": {
+    "axios": "^1.14.0"
+  }
+}

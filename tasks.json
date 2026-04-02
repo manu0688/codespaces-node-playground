@@ -1,0 +1,56 @@
+[
+  {
+    "id": 1775164155240,
+    "text": "gym tomorrow",
+    "category": "health",
+    "priority": "medium",
+    "nextStep": "Schedule a time slot for it.",
+    "createdAt": "2026-04-02T21:09:15.240Z",
+    "done": true
+  },
+  {
+    "id": 1775164155583,
+    "text": "buy groceries",
+    "category": "shopping",
+    "priority": "low",
+    "nextStep": "Make a short list before buying.",
+    "createdAt": "2026-04-02T21:09:15.582Z",
+    "done": false
+  },
+  {
+    "id": 1775164155584,
+    "text": "finish sql report today",
+    "category": "work",
+    "priority": "high",
+    "nextStep": "Break it into the first concrete work step.",
+    "createdAt": "2026-04-02T21:09:15.582Z",
+    "done": false
+  },
+  {
+    "id": 1775164155585,
+    "text": "call bank",
+    "category": "communication",
+    "priority": "low",
+    "nextStep": "Draft the message or make the call.",
+    "createdAt": "2026-04-02T21:09:15.582Z",
+    "done": false
+  },
+  {
+    "id": 1775164155586,
+    "text": "check fpl team",
+    "category": "football",
+    "priority": "low",
+    "nextStep": "Check fixtures, deadlines, or player news first.",
+    "createdAt": "2026-04-02T21:09:15.582Z",
+    "done": false
+  },
+  {
+    "id": 1775164948751,
+    "text": "finish sql report today",
+    "category": "work",
+    "priority": "high",
+    "nextStep": "Break it into the first concrete work step.",
+    "createdAt": "2026-04-02T21:22:28.751Z",
+    "done": false
+  }
+]
