@@ -5,64 +5,392 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>FPLBuddy</title>
   <style>
-    body { margin: 0; font-family: 'Segoe UI', sans-serif; background: #0d0d0d; color: #e0e0e0; }
-    header { background: #1a1a2e; padding: 20px 32px; display: flex; align-items: center; gap: 12px; border-bottom: 2px solid #00d4aa; }
-    header h1 { margin: 0; font-size: 1.6rem; color: #00d4aa; letter-spacing: 1px; }
-    header span { font-size: 0.85rem; color: #888; }
-    .container { max-width: 960px; margin: 40px auto; padding: 0 20px; }
-    .section-title { font-size: 1rem; text-transform: uppercase; letter-spacing: 2px; color: #00d4aa; margin-bottom: 16px; border-bottom: 1px solid #222; padding-bottom: 8px; }
-    .card-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 16px; margin-bottom: 40px; }
-    .card { background: #1a1a1a; border: 1px solid #2a2a2a; border-radius: 10px; padding: 20px; }
-    .team-name { font-size: 1.1rem; font-weight: 600; margin-bottom: 6px; }
-    .difficulty { font-size: 0.85rem; color: #aaa; margin-bottom: 10px; }
-    .badge { display: inline-block; padding: 2px 10px; border-radius: 999px; font-size: 0.75rem; font-weight: 600; margin-left: 8px; }
-    .easy   { background: #1a3a2a; color: #00d4aa; }
-    .medium { background: #3a2f1a; color: #f0a500; }
-    .hard   { background: #3a1a1a; color: #ff4f4f; }
-    .fixture-run { font-size: 0.78rem; color: #888; margin-top: 10px; line-height: 1.6; }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Segoe UI', sans-serif; background: #0d0d0d; color: #e0e0e0; min-height: 100vh; }
+
+    header {
+      background: #1a1a2e;
+      padding: 20px 32px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 2px solid #00d4aa;
+    }
+    header h1 { font-size: 1.5rem; color: #00d4aa; letter-spacing: 1px; }
+    header span { font-size: 0.8rem; color: #666; }
+
+    .container { max-width: 1000px; margin: 36px auto; padding: 0 20px; }
+
+    .section-title {
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      color: #00d4aa;
+      margin-bottom: 16px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid #1e1e1e;
+    }
+
+    .tabs {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 24px;
+    }
+
+    .tab {
+      padding: 8px 20px;
+      border-radius: 999px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      border: 1px solid #333;
+      background: #141414;
+      color: #666;
+      transition: all 0.2s;
+    }
+
+    .tab:hover {
+      border-color: #00d4aa55;
+      color: #aaa;
+    }
+
+    .tab.active {
+      background: #00d4aa;
+      color: #0d0d0d;
+      border-color: #00d4aa;
+    }
+
+    .card-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 14px;
+      margin-bottom: 48px;
+    }
+
+    .card {
+      background: #141414;
+      border: 1px solid #222;
+      border-radius: 10px;
+      padding: 18px 20px;
+      transition: border-color 0.2s;
+    }
+    .card:hover { border-color: #00d4aa55; }
+
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+
+    .team-name {
+      font-size: 1rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .team-name img {
+      width: 28px;
+      height: 28px;
+      object-fit: contain;
+    }
+
+    .player-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+
+    .player-photo {
+      width: 48px;
+      height: 60px;
+      object-fit: cover;
+      border-radius: 8px;
+      background: #1e1e1e;
+      flex-shrink: 0;
+    }
+
+    .player-info {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .player-name {
+      font-size: 1rem;
+      font-weight: 600;
+      line-height: 1.2;
+    }
+
+    .player-team-row {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.78rem;
+      color: #888;
+    }
+
+    .player-team-row img {
+      width: 16px;
+      height: 16px;
+      object-fit: contain;
+    }
+
+    .badge { padding: 3px 10px; border-radius: 999px; font-size: 0.7rem; font-weight: 700; }
+    .easy   { background: #0a2e20; color: #00d4aa; }
+    .medium { background: #2e2000; color: #f0a500; }
+    .hard   { background: #2e0a0a; color: #ff5555; }
+
+    .pos-badge { padding: 3px 10px; border-radius: 999px; font-size: 0.7rem; font-weight: 700; background: #1a1a2e; color: #00d4aa; }
+
+    .difficulty { font-size: 0.78rem; color: #666; margin-bottom: 10px; }
+
+    .player-stat { font-size: 0.78rem; color: #888; margin-bottom: 4px; }
+    .player-stat span { color: #e0e0e0; font-weight: 600; }
+
+    .fixtures { display: flex; gap: 6px; flex-wrap: wrap; }
+    .fix-chip {
+      padding: 3px 8px;
+      border-radius: 6px;
+      font-size: 0.7rem;
+      font-weight: 600;
+      background: #1e1e1e;
+      color: #aaa;
+    }
+    .fix-1 { background: #0a2e20; color: #00d4aa; }
+    .fix-2 { background: #0a2e20; color: #00d4aa; }
+    .fix-3 { background: #2e2000; color: #f0a500; }
+    .fix-4 { background: #2e1500; color: #ff8c00; }
+    .fix-5 { background: #2e0a0a; color: #ff5555; }
+
+    .loading { text-align: center; padding: 60px; color: #444; font-size: 0.9rem; }
+    .error-msg { text-align: center; padding: 40px; color: #ff5555; font-size: 0.85rem; }
+
+    .gw-badge {
+      background: #1a1a2e;
+      border: 1px solid #00d4aa33;
+      border-radius: 8px;
+      padding: 10px 18px;
+      font-size: 0.8rem;
+      color: #00d4aa;
+      margin-bottom: 24px;
+      display: inline-block;
+    }
   </style>
 </head>
 <body>
 
 <header>
   <h1>⚽ FPLBuddy</h1>
-  <span>Your personal Fantasy Premier League assistant</span>
+  <span id="last-updated">Loading live data...</span>
 </header>
 
 <div class="container">
-  <p class="section-title">Best Fixture Runs — Next 5 GWs</p>
-  <div class="card-grid" id="fixture-cards">
-    <!-- cards will go here -->
+  <div id="gw-info"></div>
+
+  <div class="tabs">
+    <button class="tab active" onclick="switchTab('fixtures', event)">📅 Fixture Runs</button>
+    <button class="tab" onclick="switchTab('players', event)">⚡ Top Players</button>
   </div>
+
+  <p class="section-title" id="section-label">Best Fixture Runs — Next 5 Gameweeks</p>
+
+  <div id="fixtures-section">
+    <div class="card-grid" id="fixture-cards">
+      <div class="loading">Fetching live FPL data...</div>
+    </div>
+  </div>
+
+  <div id="players-section" style="display:none;">
+    <div class="card-grid" id="player-cards">
+      <div class="loading">Loading players...</div>
+    </div>
+  </div>
+
 </div>
 
 <script>
-  const teams = [
-    { name: "Aston Villa", difficulty: 2.60, run: "Nott'm Forest(A)[3], Sunderland(H)[2], Fulham(A)[3], Spurs(H)[3], Burnley(A)[2]" },
-    { name: "Leeds",        difficulty: 2.60, run: "Man Utd(A)[4], Wolves(H)[2], Bournemouth(A)[3], Burnley(H)[1], Spurs(A)[3]" },
-    { name: "Wolves",       difficulty: 2.60, run: "West Ham(A)[2], Leeds(A)[3], Spurs(H)[3], Sunderland(H)[2], Brighton(A)[3]" },
-    { name: "Brighton",     difficulty: 2.80, run: "Burnley(A)[2], Spurs(A)[3], Chelsea(H)[3], Newcastle(A)[4], Wolves(H)[2]" },
-    { name: "Sunderland",   difficulty: 2.80, run: "Spurs(H)[3], Aston Villa(A)[4], Nott'm Forest(H)[2], Wolves(A)[2], Man Utd(H)[3]" },
-    { name: "Arsenal",      difficulty: 3.00, run: "Bournemouth(H)[3], Man City(A)[5], Newcastle(H)[3], Fulham(H)[2], West Ham(A)[2]" },
-    { name: "Crystal Palace",difficulty: 3.00, run: "Newcastle(H)[3], West Ham(H)[2], Liverpool(A)[4], Bournemouth(A)[3], Everton(H)[3]" },
-    { name: "Liverpool",    difficulty: 3.00, run: "Fulham(H)[2], Everton(A)[3], Crystal Palace(H)[3], Man Utd(A)[4], Chelsea(H)[3]" },
-  ];
+  const PROXY = 'https://corsproxy.io/?';
+  const FPL_BOOTSTRAP = PROXY + encodeURIComponent('https://fantasy.premierleague.com/api/bootstrap-static/');
+  const FPL_FIXTURES  = PROXY + encodeURIComponent('https://fantasy.premierleague.com/api/fixtures/');
 
-  function getBadge(d) {
-    if (d <= 2.6) return '<span class="badge easy">Easy run</span>';
-    if (d <= 2.9) return '<span class="badge medium">Moderate</span>';
-    return '<span class="badge hard">Tough run</span>';
+  let fplData = null;
+
+  async function fetchJSON(url) {
+    const res = await fetch(url);
+    if (!res.ok) throw new Error('Failed: ' + url);
+    return res.json();
   }
 
-  const grid = document.getElementById('fixture-cards');
-  teams.forEach(t => {
-    grid.innerHTML += `
-      <div class="card">
-        <div class="team-name">${t.name}</div>
-        <div class="difficulty">Avg difficulty: ${t.difficulty} ${getBadge(t.difficulty)}</div>
-        <div class="fixture-run">${t.run}</div>
-      </div>`;
-  });
+  function diffClass(d) {
+    if (d <= 2) return 'fix-1';
+    if (d === 3) return 'fix-3';
+    if (d === 4) return 'fix-4';
+    return 'fix-5';
+  }
+
+  function badgeClass(avg) {
+    if (avg <= 2.6) return 'easy';
+    if (avg <= 3.2) return 'medium';
+    return 'hard';
+  }
+
+  function badgeLabel(avg) {
+    if (avg <= 2.6) return 'Easy run';
+    if (avg <= 3.2) return 'Moderate';
+    return 'Tough run';
+  }
+
+  function positionName(elementType) {
+    const map = { 1: 'GKP', 2: 'DEF', 3: 'MID', 4: 'FWD' };
+    return map[elementType] || '?';
+  }
+
+  function switchTab(tab, e) {
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    e.target.classList.add('active');
+
+    if (tab === 'fixtures') {
+      document.getElementById('fixtures-section').style.display = 'block';
+      document.getElementById('players-section').style.display = 'none';
+      document.getElementById('section-label').textContent = 'Best Fixture Runs — Next 5 Gameweeks';
+    } else {
+      document.getElementById('fixtures-section').style.display = 'none';
+      document.getElementById('players-section').style.display = 'block';
+      document.getElementById('section-label').textContent = 'Top Players By Form';
+      renderPlayers();
+    }
+  }
+
+  function renderPlayers() {
+    const grid = document.getElementById('player-cards');
+    if (!fplData) {
+      grid.innerHTML = '<div class="loading">Data not loaded yet...</div>';
+      return;
+    }
+
+    const { elements, teams } = fplData;
+
+    const sorted = [...elements]
+      .filter(p => p.minutes > 0)
+      .sort((a, b) => parseFloat(b.form) - parseFloat(a.form))
+      .slice(0, 12);
+
+    grid.innerHTML = '';
+    sorted.forEach(p => {
+      const team = teams.find(t => t.id === p.team);
+      const teamName = team ? team.name : '?';
+      const teamCode = team ? team.code : '';
+      const pos = positionName(p.element_type);
+      const price = '£' + (p.now_cost / 10).toFixed(1) + 'm';
+
+      grid.innerHTML += `
+        <div class="card">
+          <div class="card-header">
+            <div class="player-header">
+              <img
+                class="player-photo"
+                src="https://resources.premierleague.com/premierleague/photos/players/110x140/p${p.code}.png"
+                alt="${p.first_name} ${p.second_name}"
+                onerror="this.src='https://resources.premierleague.com/premierleague/photos/players/110x140/Photo-Missing.png'">
+              <div class="player-info">
+                <div class="player-name">${p.first_name} ${p.second_name}</div>
+                <div class="player-team-row">
+                  <img
+                    src="https://resources.premierleague.com/premierleague/badges/50/t${teamCode}.png"
+                    alt="${teamName}"
+                    onerror="this.style.display='none'">
+                  ${teamName}
+                </div>
+              </div>
+            </div>
+            <span class="pos-badge">${pos}</span>
+          </div>
+          <div class="player-stat">Price: <span>${price}</span></div>
+          <div class="player-stat">Form: <span>${p.form}</span></div>
+          <div class="player-stat">Total pts: <span>${p.total_points}</span></div>
+          <div class="player-stat">Goals: <span>${p.goals_scored}</span></div>
+          <div class="player-stat">Assists: <span>${p.assists}</span></div>
+          <div class="player-stat">Selected by: <span>${p.selected_by_percent}%</span></div>
+        </div>`;
+    });
+  }
+
+  async function init() {
+    const grid = document.getElementById('fixture-cards');
+    try {
+      const [bootstrap, allFixtures] = await Promise.all([
+        fetchJSON(FPL_BOOTSTRAP),
+        fetchJSON(FPL_FIXTURES)
+      ]);
+
+      fplData = bootstrap;
+
+      const teams = bootstrap.teams;
+      const events = bootstrap.events;
+      const currentGW = events.find(e => e.is_current) || events.find(e => e.is_next) || events[0];
+      const gwId = currentGW.id;
+
+      document.getElementById('last-updated').textContent = 'Live data · GW' + gwId;
+      document.getElementById('gw-info').innerHTML =
+        `<div class="gw-badge">📅 Gameweek ${gwId} — ${currentGW.name}</div>`;
+
+      const upcomingGWs = [gwId, gwId+1, gwId+2, gwId+3, gwId+4];
+      const relevantFixtures = allFixtures.filter(f => upcomingGWs.includes(f.event));
+
+      const teamFixtures = {};
+      teams.forEach(t => { teamFixtures[t.id] = []; });
+
+      relevantFixtures.forEach(f => {
+        teamFixtures[f.team_h].push({ opp: f.team_a, difficulty: f.team_h_difficulty, venue: 'H' });
+        teamFixtures[f.team_a].push({ opp: f.team_h, difficulty: f.team_a_difficulty, venue: 'A' });
+      });
+
+      const scored = teams.map(t => {
+        const fixtures = teamFixtures[t.id].slice(0, 5);
+        if (fixtures.length === 0) return null;
+        const avg = fixtures.reduce((s, f) => s + f.difficulty, 0) / fixtures.length;
+        return { team: t, fixtures, avg: Math.round(avg * 100) / 100 };
+      }).filter(Boolean);
+
+      scored.sort((a, b) => a.avg - b.avg);
+      const top = scored.slice(0, 12);
+
+      grid.innerHTML = '';
+      top.forEach(({ team, fixtures, avg }) => {
+        const chips = fixtures.map(f => {
+          const oppTeam = teams.find(t => t.id === f.opp);
+          const oppName = oppTeam ? oppTeam.short_name : '?';
+          return `<span class="fix-chip ${diffClass(f.difficulty)}">${oppName} (${f.venue})</span>`;
+        }).join('');
+
+        grid.innerHTML += `
+          <div class="card">
+            <div class="card-header">
+              <div class="team-name">
+                <img
+                  src="https://resources.premierleague.com/premierleague/badges/50/t${team.code}.png"
+                  alt="${team.name}"
+                  onerror="this.style.display='none'">
+                ${team.name}
+              </div>
+              <span class="badge ${badgeClass(avg)}">${badgeLabel(avg)}</span>
+            </div>
+            <div class="difficulty">Avg difficulty: ${avg}</div>
+            <div class="fixtures">${chips}</div>
+          </div>`;
+      });
+
+    } catch (err) {
+      grid.innerHTML = `<div class="error-msg">Could not load FPL data.<br><small>${err.message}</small></div>`;
+      console.error(err);
+    }
+  }
+
+  init();
 </script>
 
 </body>
