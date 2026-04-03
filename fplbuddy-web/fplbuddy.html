@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FPLBuddy</title>
+  <style>
+    body { margin: 0; font-family: 'Segoe UI', sans-serif; background: #0d0d0d; color: #e0e0e0; }
+    header { background: #1a1a2e; padding: 20px 32px; display: flex; align-items: center; gap: 12px; border-bottom: 2px solid #00d4aa; }
+    header h1 { margin: 0; font-size: 1.6rem; color: #00d4aa; letter-spacing: 1px; }
+    header span { font-size: 0.85rem; color: #888; }
+    .container { max-width: 960px; margin: 40px auto; padding: 0 20px; }
+    .section-title { font-size: 1rem; text-transform: uppercase; letter-spacing: 2px; color: #00d4aa; margin-bottom: 16px; border-bottom: 1px solid #222; padding-bottom: 8px; }
+    .card-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 16px; margin-bottom: 40px; }
+    .card { background: #1a1a1a; border: 1px solid #2a2a2a; border-radius: 10px; padding: 20px; }
+    .team-name { font-size: 1.1rem; font-weight: 600; margin-bottom: 6px; }
+    .difficulty { font-size: 0.85rem; color: #aaa; margin-bottom: 10px; }
+    .badge { display: inline-block; padding: 2px 10px; border-radius: 999px; font-size: 0.75rem; font-weight: 600; margin-left: 8px; }
+    .easy   { background: #1a3a2a; color: #00d4aa; }
+    .medium { background: #3a2f1a; color: #f0a500; }
+    .hard   { background: #3a1a1a; color: #ff4f4f; }
+    .fixture-run { font-size: 0.78rem; color: #888; margin-top: 10px; line-height: 1.6; }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>⚽ FPLBuddy</h1>
+  <span>Your personal Fantasy Premier League assistant</span>
+</header>
+
+<div class="container">
+  <p class="section-title">Best Fixture Runs — Next 5 GWs</p>
+  <div class="card-grid" id="fixture-cards">
+    <!-- cards will go here -->
+  </div>
+</div>
+
+<script>
+  const teams = [
+    { name: "Aston Villa", difficulty: 2.60, run: "Nott'm Forest(A)[3], Sunderland(H)[2], Fulham(A)[3], Spurs(H)[3], Burnley(A)[2]" },
+    { name: "Leeds",        difficulty: 2.60, run: "Man Utd(A)[4], Wolves(H)[2], Bournemouth(A)[3], Burnley(H)[1], Spurs(A)[3]" },
+    { name: "Wolves",       difficulty: 2.60, run: "West Ham(A)[2], Leeds(A)[3], Spurs(H)[3], Sunderland(H)[2], Brighton(A)[3]" },
+    { name: "Brighton",     difficulty: 2.80, run: "Burnley(A)[2], Spurs(A)[3], Chelsea(H)[3], Newcastle(A)[4], Wolves(H)[2]" },
+    { name: "Sunderland",   difficulty: 2.80, run: "Spurs(H)[3], Aston Villa(A)[4], Nott'm Forest(H)[2], Wolves(A)[2], Man Utd(H)[3]" },
+    { name: "Arsenal",      difficulty: 3.00, run: "Bournemouth(H)[3], Man City(A)[5], Newcastle(H)[3], Fulham(H)[2], West Ham(A)[2]" },
+    { name: "Crystal Palace",difficulty: 3.00, run: "Newcastle(H)[3], West Ham(H)[2], Liverpool(A)[4], Bournemouth(A)[3], Everton(H)[3]" },
+    { name: "Liverpool",    difficulty: 3.00, run: "Fulham(H)[2], Everton(A)[3], Crystal Palace(H)[3], Man Utd(A)[4], Chelsea(H)[3]" },
+  ];
+
+  function getBadge(d) {
+    if (d <= 2.6) return '<span class="badge easy">Easy run</span>';
+    if (d <= 2.9) return '<span class="badge medium">Moderate</span>';
+    return '<span class="badge hard">Tough run</span>';
+  }
+
+  const grid = document.getElementById('fixture-cards');
+  teams.forEach(t => {
+    grid.innerHTML += `
+      <div class="card">
+        <div class="team-name">${t.name}</div>
+        <div class="difficulty">Avg difficulty: ${t.difficulty} ${getBadge(t.difficulty)}</div>
+        <div class="fixture-run">${t.run}</div>
+      </div>`;
+  });
+</script>
+
+</body>
+</html>
