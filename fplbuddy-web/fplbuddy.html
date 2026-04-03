@@ -179,6 +179,129 @@
       margin-bottom: 24px;
       display: inline-block;
     }
+
+    /* ---- AI CHAT STYLES ---- */
+    .chat-container { max-width: 720px; }
+
+    .api-key-box {
+      background: #141414;
+      border: 1px solid #222;
+      border-radius: 10px;
+      padding: 18px 20px;
+      margin-bottom: 16px;
+    }
+
+    .api-key-box label {
+      display: block;
+      font-size: 0.8rem;
+      color: #888;
+      margin-bottom: 8px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .api-key-row { display: flex; gap: 10px; }
+
+    .api-key-input {
+      flex: 1;
+      padding: 10px 14px;
+      background: #0d0d0d;
+      color: #e0e0e0;
+      border: 1px solid #333;
+      border-radius: 8px;
+      font-size: 0.85rem;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    .api-key-input:focus { border-color: #00d4aa55; }
+
+    .btn-connect {
+      padding: 10px 20px;
+      background: #00d4aa;
+      color: #0d0d0d;
+      border: none;
+      border-radius: 8px;
+      font-weight: 700;
+      font-size: 0.85rem;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .btn-connect:hover { background: #00b894; }
+
+    #key-status { font-size: 0.75rem; margin-top: 8px; color: #555; }
+
+    .chat-window {
+      background: #141414;
+      border: 1px solid #222;
+      border-radius: 10px;
+      height: 380px;
+      overflow-y: auto;
+      padding: 16px;
+      margin-bottom: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .chat-empty {
+      color: #444;
+      text-align: center;
+      margin: auto;
+      font-size: 0.85rem;
+      line-height: 1.8;
+    }
+
+    .msg-row { display: flex; }
+    .msg-row.user { justify-content: flex-end; }
+    .msg-row.assistant { justify-content: flex-start; }
+
+    .msg-bubble {
+      max-width: 75%;
+      padding: 10px 14px;
+      border-radius: 12px;
+      font-size: 0.85rem;
+      line-height: 1.6;
+    }
+    .msg-row.user .msg-bubble {
+      background: #00d4aa;
+      color: #0d0d0d;
+      border-bottom-right-radius: 4px;
+    }
+    .msg-row.assistant .msg-bubble {
+      background: #1e1e2e;
+      color: #e0e0e0;
+      border-bottom-left-radius: 4px;
+      border: 1px solid #2a2a3e;
+    }
+
+    .chat-input-row { display: flex; gap: 10px; }
+
+    .chat-input {
+      flex: 1;
+      padding: 12px 14px;
+      background: #141414;
+      color: #e0e0e0;
+      border: 1px solid #333;
+      border-radius: 8px;
+      font-size: 0.85rem;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    .chat-input:focus { border-color: #00d4aa55; }
+
+    .btn-send {
+      padding: 12px 20px;
+      background: #00d4aa;
+      color: #0d0d0d;
+      border: none;
+      border-radius: 8px;
+      font-weight: 700;
+      font-size: 0.85rem;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .btn-send:hover { background: #00b894; }
+    .btn-send:disabled { background: #1e1e1e; color: #444; cursor: not-allowed; }
   </style>
 </head>
 <body>
@@ -194,19 +317,58 @@
   <div class="tabs">
     <button class="tab active" onclick="switchTab('fixtures', event)">📅 Fixture Runs</button>
     <button class="tab" onclick="switchTab('players', event)">⚡ Top Players</button>
+    <button class="tab" onclick="switchTab('ai-chat', event)">🤖 AI Chat</button>
   </div>
 
   <p class="section-title" id="section-label">Best Fixture Runs — Next 5 Gameweeks</p>
 
+  <!-- FIXTURES TAB -->
   <div id="fixtures-section">
     <div class="card-grid" id="fixture-cards">
       <div class="loading">Fetching live FPL data...</div>
     </div>
   </div>
 
+  <!-- PLAYERS TAB -->
   <div id="players-section" style="display:none;">
     <div class="card-grid" id="player-cards">
       <div class="loading">Loading players...</div>
+    </div>
+  </div>
+
+  <!-- AI CHAT TAB -->
+  <div id="ai-chat-section" style="display:none;">
+    <div class="chat-container">
+
+      <!-- API Key Box -->
+      <div class="api-key-box">
+        <label>🔑 OpenAI API Key — stays in your browser only, never saved</label>
+        <div class="api-key-row">
+          <input type="password" id="api-key-input" class="api-key-input" placeholder="sk-..." />
+          <button class="btn-connect" onclick="saveKey()">Connect</button>
+        </div>
+        <p id="key-status">Enter your key to enable AI-powered FPL advice.</p>
+      </div>
+
+      <!-- Chat Window -->
+      <div class="chat-window" id="chat-window">
+        <div class="chat-empty" id="chat-empty">
+          🤖 Ask me anything FPL!<br>
+          <span style="color:#333;">e.g. "Who should I captain this week?"<br>"Best budget midfielder right now?"</span>
+        </div>
+      </div>
+
+      <!-- Input Row -->
+      <div class="chat-input-row">
+        <input
+          type="text"
+          id="chat-input"
+          class="chat-input"
+          placeholder="Ask an FPL question..."
+          onkeydown="if(event.key==='Enter') sendMessage()" />
+        <button class="btn-send" id="send-btn" onclick="sendMessage()">Send ➤</button>
+      </div>
+
     </div>
   </div>
 
@@ -218,6 +380,7 @@
   const FPL_FIXTURES  = PROXY + encodeURIComponent('https://fantasy.premierleague.com/api/fixtures/');
 
   let fplData = null;
+  let openaiKey = '';
 
   async function fetchJSON(url) {
     const res = await fetch(url);
@@ -253,15 +416,20 @@
     document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
     e.target.classList.add('active');
 
+    document.getElementById('fixtures-section').style.display = 'none';
+    document.getElementById('players-section').style.display = 'none';
+    document.getElementById('ai-chat-section').style.display = 'none';
+
     if (tab === 'fixtures') {
       document.getElementById('fixtures-section').style.display = 'block';
-      document.getElementById('players-section').style.display = 'none';
       document.getElementById('section-label').textContent = 'Best Fixture Runs — Next 5 Gameweeks';
-    } else {
-      document.getElementById('fixtures-section').style.display = 'none';
+    } else if (tab === 'players') {
       document.getElementById('players-section').style.display = 'block';
       document.getElementById('section-label').textContent = 'Top Players By Form';
       renderPlayers();
+    } else {
+      document.getElementById('ai-chat-section').style.display = 'block';
+      document.getElementById('section-label').textContent = 'AI-Powered FPL Assistant';
     }
   }
 
@@ -317,6 +485,88 @@
           <div class="player-stat">Selected by: <span>${p.selected_by_percent}%</span></div>
         </div>`;
     });
+  }
+
+  // ---- AI CHAT ----
+  function saveKey() {
+    const val = document.getElementById('api-key-input').value.trim();
+    if (!val.startsWith('sk-')) {
+      document.getElementById('key-status').textContent = '❌ Invalid key — should start with sk-';
+      document.getElementById('key-status').style.color = '#ff5555';
+      return;
+    }
+    openaiKey = val;
+    document.getElementById('key-status').textContent = '✅ Connected! Ask me your FPL questions below.';
+    document.getElementById('key-status').style.color = '#00d4aa';
+    document.getElementById('chat-input').focus();
+  }
+
+  function addMessage(role, text) {
+    const empty = document.getElementById('chat-empty');
+    if (empty) empty.remove();
+
+    const win = document.getElementById('chat-window');
+    const row = document.createElement('div');
+    row.className = 'msg-row ' + role;
+    row.innerHTML = `<div class="msg-bubble">${text}</div>`;
+    win.appendChild(row);
+    win.scrollTop = win.scrollHeight;
+    return row;
+  }
+
+  async function sendMessage() {
+    if (!openaiKey) {
+      alert('Please enter and connect your OpenAI API key first!');
+      return;
+    }
+    const input = document.getElementById('chat-input');
+    const sendBtn = document.getElementById('send-btn');
+    const userMsg = input.value.trim();
+    if (!userMsg) return;
+
+    input.value = '';
+    sendBtn.disabled = true;
+    sendBtn.textContent = '...';
+
+    addMessage('user', userMsg);
+    const thinkingRow = addMessage('assistant', '⏳ Thinking...');
+
+    try {
+      const res = await fetch('https://api.openai.com/v1/chat/completions', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${openaiKey}`
+        },
+        body: JSON.stringify({
+          model: 'gpt-4o-mini',
+          messages: [
+            {
+              role: 'system',
+              content: 'You are an expert Fantasy Premier League (FPL) assistant. Give concise, tactical, and data-driven advice on transfers, captaincy picks, team selection, and fixture analysis. Keep responses under 180 words. Use bullet points where helpful.'
+            },
+            { role: 'user', content: userMsg }
+          ],
+          max_tokens: 250
+        })
+      });
+
+      const data = await res.json();
+      thinkingRow.remove();
+
+      if (data.error) {
+        addMessage('assistant', '❌ API Error: ' + data.error.message);
+      } else {
+        addMessage('assistant', data.choices[0].message.content.replace(/\n/g, '<br>'));
+      }
+    } catch (err) {
+      thinkingRow.remove();
+      addMessage('assistant', '❌ Network error. Check your API key and internet connection.');
+    } finally {
+      sendBtn.disabled = false;
+      sendBtn.textContent = 'Send ➤';
+      input.focus();
+    }
   }
 
   async function init() {
