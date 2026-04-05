@@ -4,311 +4,354 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>FPLBuddy</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
   <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    body { font-family: 'Segoe UI', sans-serif; background: #0d0d0d; color: #e0e0e0; min-height: 100vh; }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --green: #00d4aa;
+      --green-dim: rgba(0,212,170,0.15);
+      --green-glow: rgba(0,212,170,0.25);
+      --navy: #0b0f1a;
+      --surface: rgba(255,255,255,0.04);
+      --surface-hover: rgba(255,255,255,0.07);
+      --border: rgba(255,255,255,0.08);
+      --border-hover: rgba(0,212,170,0.4);
+      --text: #e8eaf0;
+      --text-muted: #6b7280;
+      --text-faint: #374151;
+      --radius: 14px;
+      --radius-sm: 8px;
+      --transition: 0.25s cubic-bezier(0.16,1,0.3,1);
+    }
+
+    body {
+      font-family: 'Outfit', sans-serif;
+      background: var(--navy);
+      color: var(--text);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 80% 50% at 10% 0%, rgba(0,212,170,0.07) 0%, transparent 60%),
+        radial-gradient(ellipse 60% 40% at 90% 100%, rgba(0,100,255,0.05) 0%, transparent 60%),
+        radial-gradient(ellipse 40% 30% at 50% 50%, rgba(0,212,170,0.03) 0%, transparent 70%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    body::after {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: repeating-linear-gradient(
+        0deg, transparent, transparent 60px,
+        rgba(255,255,255,0.012) 60px, rgba(255,255,255,0.012) 61px
+      );
+      pointer-events: none;
+      z-index: 0;
+    }
 
     header {
-      background: #1a1a2e;
-      padding: 20px 32px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(11,15,26,0.75);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border);
+      padding: 0 32px;
+      height: 64px;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      border-bottom: 2px solid #00d4aa;
     }
-    header h1 { font-size: 1.5rem; color: #00d4aa; letter-spacing: 1px; }
-    header span { font-size: 0.8rem; color: #666; }
 
-    .container { max-width: 1000px; margin: 36px auto; padding: 0 20px; }
+    .logo { display: flex; align-items: center; gap: 12px; }
 
-    .section-title {
-      font-size: 0.8rem;
-      text-transform: uppercase;
-      letter-spacing: 2px;
-      color: #00d4aa;
-      margin-bottom: 16px;
-      padding-bottom: 8px;
-      border-bottom: 1px solid #1e1e1e;
+    .logo-icon {
+      width: 36px; height: 36px;
+      background: linear-gradient(135deg, var(--green), #00a884);
+      border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.1rem;
+      box-shadow: 0 0 20px var(--green-glow);
     }
+
+    .logo-text {
+      font-size: 1.25rem; font-weight: 800; letter-spacing: -0.5px;
+      background: linear-gradient(135deg, #fff 30%, var(--green));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+    }
+
+    .live-badge {
+      display: flex; align-items: center; gap: 6px;
+      background: var(--green-dim);
+      border: 1px solid rgba(0,212,170,0.25);
+      border-radius: 999px; padding: 5px 12px;
+      font-size: 0.75rem; font-weight: 600; color: var(--green); letter-spacing: 0.5px;
+    }
+
+    .live-dot {
+      width: 6px; height: 6px; background: var(--green); border-radius: 50%;
+      animation: pulse 2s ease-in-out infinite; box-shadow: 0 0 6px var(--green);
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.5; transform: scale(0.8); }
+    }
+
+    .container {
+      position: relative; z-index: 1;
+      max-width: 1040px; margin: 0 auto; padding: 36px 20px 60px;
+    }
+
+    .gw-hero {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px 24px; margin-bottom: 28px;
+      display: flex; align-items: center; justify-content: space-between;
+      backdrop-filter: blur(12px); gap: 16px;
+    }
+
+    .gw-hero-left { display: flex; align-items: center; gap: 14px; }
+
+    .gw-circle {
+      width: 48px; height: 48px; border-radius: 12px;
+      background: linear-gradient(135deg, var(--green), #00a884);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.3rem; box-shadow: 0 4px 20px var(--green-glow); flex-shrink: 0;
+    }
+
+    .gw-label {
+      font-size: 0.72rem; font-weight: 600; text-transform: uppercase;
+      letter-spacing: 1.5px; color: var(--text-muted); margin-bottom: 3px;
+    }
+
+    .gw-name { font-size: 1.1rem; font-weight: 700; color: var(--text); }
+    .gw-deadline { font-size: 0.75rem; color: var(--text-muted); font-weight: 500; }
 
     .tabs {
-      display: flex;
-      gap: 8px;
-      margin-bottom: 24px;
+      display: flex; gap: 6px; margin-bottom: 28px;
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 999px; padding: 5px; width: fit-content; backdrop-filter: blur(12px);
     }
 
     .tab {
-      padding: 8px 20px;
-      border-radius: 999px;
-      font-size: 0.85rem;
-      font-weight: 600;
-      cursor: pointer;
-      border: 1px solid #333;
-      background: #141414;
-      color: #666;
-      transition: all 0.2s;
+      padding: 8px 22px; border-radius: 999px;
+      font-size: 0.83rem; font-weight: 600; cursor: pointer;
+      border: none; background: transparent; color: var(--text-muted);
+      transition: all var(--transition); font-family: 'Outfit', sans-serif; letter-spacing: 0.2px;
     }
+    .tab:hover { color: var(--text); }
+    .tab.active { background: var(--green); color: #0b0f1a; box-shadow: 0 2px 12px var(--green-glow); }
 
-    .tab:hover {
-      border-color: #00d4aa55;
-      color: #aaa;
+    .section-title {
+      font-size: 0.72rem; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 2px; color: var(--text-muted); margin-bottom: 18px;
+      display: flex; align-items: center; gap: 10px;
     }
-
-    .tab.active {
-      background: #00d4aa;
-      color: #0d0d0d;
-      border-color: #00d4aa;
-    }
+    .section-title::after { content: ''; flex: 1; height: 1px; background: var(--border); }
 
     .card-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-      gap: 14px;
-      margin-bottom: 48px;
+      grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
+      gap: 14px; margin-bottom: 48px;
     }
 
     .card {
-      background: #141414;
-      border: 1px solid #222;
-      border-radius: 10px;
-      padding: 18px 20px;
-      transition: border-color 0.2s;
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 18px 20px;
+      backdrop-filter: blur(12px);
+      transition: border-color var(--transition), transform var(--transition), box-shadow var(--transition);
+      position: relative; overflow: hidden;
+      opacity: 0; transform: translateY(16px);
+      animation: cardIn 0.4s cubic-bezier(0.16,1,0.3,1) forwards;
     }
-    .card:hover { border-color: #00d4aa55; }
+
+    @keyframes cardIn { to { opacity: 1; transform: translateY(0); } }
+
+    .card::before {
+      content: ''; position: absolute; inset: 0;
+      background: radial-gradient(ellipse 60% 40% at 50% 0%, rgba(0,212,170,0.06), transparent);
+      opacity: 0; transition: opacity var(--transition); pointer-events: none;
+    }
+
+    .card:hover {
+      border-color: var(--border-hover); transform: translateY(-2px);
+      box-shadow: 0 8px 32px rgba(0,212,170,0.1), 0 2px 8px rgba(0,0,0,0.3);
+    }
+    .card:hover::before { opacity: 1; }
 
     .card-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 12px;
+      display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 14px;
     }
 
     .team-name {
-      font-size: 1rem;
-      font-weight: 600;
-      display: flex;
-      align-items: center;
-      gap: 8px;
+      font-size: 0.95rem; font-weight: 700;
+      display: flex; align-items: center; gap: 10px; color: var(--text);
     }
 
-    .team-name img {
-      width: 28px;
-      height: 28px;
-      object-fit: contain;
+    .team-badge { width: 32px; height: 32px; object-fit: contain; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.4)); }
+
+    .badge { padding: 4px 10px; border-radius: 999px; font-size: 0.68rem; font-weight: 700; letter-spacing: 0.5px; text-transform: uppercase; }
+    .easy   { background: rgba(0,212,170,0.15); color: #00d4aa; border: 1px solid rgba(0,212,170,0.25); }
+    .medium { background: rgba(240,165,0,0.12); color: #f0a500; border: 1px solid rgba(240,165,0,0.25); }
+    .hard   { background: rgba(255,85,85,0.12); color: #ff5555; border: 1px solid rgba(255,85,85,0.25); }
+
+    .pos-badge {
+      padding: 4px 10px; border-radius: 999px; font-size: 0.68rem; font-weight: 700; letter-spacing: 0.5px;
+      background: rgba(0,212,170,0.1); color: var(--green); border: 1px solid rgba(0,212,170,0.2);
     }
 
-    .player-header {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      margin-bottom: 12px;
-    }
+    .difficulty { font-size: 0.75rem; color: var(--text-muted); margin-bottom: 12px; font-weight: 500; }
+
+    .fixtures { display: flex; gap: 5px; flex-wrap: wrap; }
+    .fix-chip { padding: 4px 8px; border-radius: 6px; font-size: 0.68rem; font-weight: 700; letter-spacing: 0.3px; }
+    .fix-1, .fix-2 { background: rgba(0,212,170,0.15); color: #00d4aa; }
+    .fix-3 { background: rgba(240,165,0,0.12); color: #f0a500; }
+    .fix-4 { background: rgba(255,140,0,0.12); color: #ff8c00; }
+    .fix-5 { background: rgba(255,85,85,0.12); color: #ff5555; }
+
+    .player-header { display: flex; align-items: center; gap: 12px; margin-bottom: 14px; }
 
     .player-photo {
-      width: 48px;
-      height: 60px;
-      object-fit: cover;
-      border-radius: 8px;
-      background: #1e1e1e;
-      flex-shrink: 0;
+      width: 52px; height: 65px; object-fit: cover; border-radius: 10px;
+      background: rgba(255,255,255,0.04); display: block; flex-shrink: 0;
     }
 
-    .player-info {
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
+    .player-info { flex: 1; }
+    .player-name { font-size: 0.95rem; font-weight: 700; line-height: 1.2; color: var(--text); margin-bottom: 4px; }
+    .player-team-row { display: flex; align-items: center; gap: 5px; font-size: 0.75rem; color: var(--text-muted); font-weight: 500; }
+    .player-team-row img { width: 14px; height: 14px; object-fit: contain; }
+
+    .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+
+    .stat-item {
+      background: rgba(255,255,255,0.03);
+      border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 7px 10px;
     }
 
-    .player-name {
-      font-size: 1rem;
-      font-weight: 600;
-      line-height: 1.2;
+    .stat-label { font-size: 0.65rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.8px; color: var(--text-muted); margin-bottom: 2px; }
+    .stat-value { font-size: 0.9rem; font-weight: 700; color: var(--text); }
+    .stat-value.highlight { color: var(--green); }
+
+    .loading { text-align: center; padding: 80px 20px; color: var(--text-faint); font-size: 0.85rem; font-weight: 500; }
+
+    .loading-spinner {
+      width: 32px; height: 32px;
+      border: 2px solid var(--border); border-top-color: var(--green);
+      border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto 16px;
     }
 
-    .player-team-row {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      font-size: 0.78rem;
-      color: #888;
-    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .error-msg { text-align: center; padding: 40px; color: #ff5555; font-size: 0.85rem; font-weight: 500; }
 
-    .player-team-row img {
-      width: 16px;
-      height: 16px;
-      object-fit: contain;
-    }
-
-    .badge { padding: 3px 10px; border-radius: 999px; font-size: 0.7rem; font-weight: 700; }
-    .easy   { background: #0a2e20; color: #00d4aa; }
-    .medium { background: #2e2000; color: #f0a500; }
-    .hard   { background: #2e0a0a; color: #ff5555; }
-
-    .pos-badge { padding: 3px 10px; border-radius: 999px; font-size: 0.7rem; font-weight: 700; background: #1a1a2e; color: #00d4aa; }
-
-    .difficulty { font-size: 0.78rem; color: #666; margin-bottom: 10px; }
-
-    .player-stat { font-size: 0.78rem; color: #888; margin-bottom: 4px; }
-    .player-stat span { color: #e0e0e0; font-weight: 600; }
-
-    .fixtures { display: flex; gap: 6px; flex-wrap: wrap; }
-    .fix-chip {
-      padding: 3px 8px;
-      border-radius: 6px;
-      font-size: 0.7rem;
-      font-weight: 600;
-      background: #1e1e1e;
-      color: #aaa;
-    }
-    .fix-1 { background: #0a2e20; color: #00d4aa; }
-    .fix-2 { background: #0a2e20; color: #00d4aa; }
-    .fix-3 { background: #2e2000; color: #f0a500; }
-    .fix-4 { background: #2e1500; color: #ff8c00; }
-    .fix-5 { background: #2e0a0a; color: #ff5555; }
-
-    .loading { text-align: center; padding: 60px; color: #444; font-size: 0.9rem; }
-    .error-msg { text-align: center; padding: 40px; color: #ff5555; font-size: 0.85rem; }
-
-    .gw-badge {
-      background: #1a1a2e;
-      border: 1px solid #00d4aa33;
-      border-radius: 8px;
-      padding: 10px 18px;
-      font-size: 0.8rem;
-      color: #00d4aa;
-      margin-bottom: 24px;
-      display: inline-block;
-    }
-
-    /* ---- AI CHAT STYLES ---- */
-    .chat-container { max-width: 720px; }
+    .chat-container { max-width: 740px; }
 
     .api-key-box {
-      background: #141414;
-      border: 1px solid #222;
-      border-radius: 10px;
-      padding: 18px 20px;
-      margin-bottom: 16px;
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 20px; margin-bottom: 14px; backdrop-filter: blur(12px);
     }
 
-    .api-key-box label {
-      display: block;
-      font-size: 0.8rem;
-      color: #888;
-      margin-bottom: 8px;
-      text-transform: uppercase;
-      letter-spacing: 1px;
+    .api-key-label {
+      font-size: 0.72rem; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 1px; color: var(--text-muted); margin-bottom: 10px;
     }
 
     .api-key-row { display: flex; gap: 10px; }
 
     .api-key-input {
-      flex: 1;
-      padding: 10px 14px;
-      background: #0d0d0d;
-      color: #e0e0e0;
-      border: 1px solid #333;
-      border-radius: 8px;
-      font-size: 0.85rem;
-      outline: none;
-      transition: border-color 0.2s;
+      flex: 1; padding: 10px 14px;
+      background: rgba(255,255,255,0.03); color: var(--text);
+      border: 1px solid var(--border); border-radius: var(--radius-sm);
+      font-size: 0.85rem; font-family: 'Outfit', sans-serif; outline: none;
+      transition: border-color var(--transition);
     }
-    .api-key-input:focus { border-color: #00d4aa55; }
+    .api-key-input:focus { border-color: rgba(0,212,170,0.4); }
+    .api-key-input::placeholder { color: var(--text-faint); }
 
     .btn-connect {
-      padding: 10px 20px;
-      background: #00d4aa;
-      color: #0d0d0d;
-      border: none;
-      border-radius: 8px;
-      font-weight: 700;
-      font-size: 0.85rem;
-      cursor: pointer;
-      transition: background 0.2s;
+      padding: 10px 20px; background: var(--green); color: #0b0f1a;
+      border: none; border-radius: var(--radius-sm); font-weight: 700;
+      font-size: 0.85rem; font-family: 'Outfit', sans-serif; cursor: pointer;
+      transition: all var(--transition); white-space: nowrap;
     }
-    .btn-connect:hover { background: #00b894; }
+    .btn-connect:hover { background: #00b894; box-shadow: 0 0 20px var(--green-glow); }
 
-    #key-status { font-size: 0.75rem; margin-top: 8px; color: #555; }
+    #key-status { font-size: 0.75rem; margin-top: 8px; color: var(--text-muted); font-weight: 500; }
 
     .chat-window {
-      background: #141414;
-      border: 1px solid #222;
-      border-radius: 10px;
-      height: 380px;
-      overflow-y: auto;
-      padding: 16px;
-      margin-bottom: 12px;
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--radius); height: 400px; overflow-y: auto;
+      padding: 18px; margin-bottom: 12px;
+      display: flex; flex-direction: column; gap: 14px;
+      backdrop-filter: blur(12px);
+      scrollbar-width: thin; scrollbar-color: var(--border) transparent;
     }
+    .chat-window::-webkit-scrollbar { width: 4px; }
+    .chat-window::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
 
-    .chat-empty {
-      color: #444;
-      text-align: center;
-      margin: auto;
-      font-size: 0.85rem;
-      line-height: 1.8;
-    }
+    .chat-empty { color: var(--text-faint); text-align: center; margin: auto; font-size: 0.85rem; line-height: 2; font-weight: 500; }
 
     .msg-row { display: flex; }
     .msg-row.user { justify-content: flex-end; }
     .msg-row.assistant { justify-content: flex-start; }
 
-    .msg-bubble {
-      max-width: 75%;
-      padding: 10px 14px;
-      border-radius: 12px;
-      font-size: 0.85rem;
-      line-height: 1.6;
-    }
-    .msg-row.user .msg-bubble {
-      background: #00d4aa;
-      color: #0d0d0d;
-      border-bottom-right-radius: 4px;
-    }
-    .msg-row.assistant .msg-bubble {
-      background: #1e1e2e;
-      color: #e0e0e0;
-      border-bottom-left-radius: 4px;
-      border: 1px solid #2a2a3e;
-    }
+    .msg-bubble { max-width: 78%; padding: 11px 15px; border-radius: 14px; font-size: 0.85rem; line-height: 1.65; }
+    .msg-row.user .msg-bubble { background: var(--green); color: #0b0f1a; font-weight: 500; border-bottom-right-radius: 4px; }
+    .msg-row.assistant .msg-bubble { background: rgba(255,255,255,0.06); color: var(--text); border: 1px solid var(--border); border-bottom-left-radius: 4px; }
 
     .chat-input-row { display: flex; gap: 10px; }
 
     .chat-input {
-      flex: 1;
-      padding: 12px 14px;
-      background: #141414;
-      color: #e0e0e0;
-      border: 1px solid #333;
-      border-radius: 8px;
-      font-size: 0.85rem;
-      outline: none;
-      transition: border-color 0.2s;
+      flex: 1; padding: 12px 16px; background: var(--surface); color: var(--text);
+      border: 1px solid var(--border); border-radius: var(--radius-sm);
+      font-size: 0.85rem; font-family: 'Outfit', sans-serif; outline: none;
+      backdrop-filter: blur(12px); transition: border-color var(--transition);
     }
-    .chat-input:focus { border-color: #00d4aa55; }
+    .chat-input:focus { border-color: rgba(0,212,170,0.4); }
+    .chat-input::placeholder { color: var(--text-faint); }
 
     .btn-send {
-      padding: 12px 20px;
-      background: #00d4aa;
-      color: #0d0d0d;
-      border: none;
-      border-radius: 8px;
-      font-weight: 700;
-      font-size: 0.85rem;
-      cursor: pointer;
-      transition: background 0.2s;
+      padding: 12px 22px; background: var(--green); color: #0b0f1a;
+      border: none; border-radius: var(--radius-sm); font-weight: 700;
+      font-size: 0.85rem; font-family: 'Outfit', sans-serif; cursor: pointer;
+      transition: all var(--transition);
     }
-    .btn-send:hover { background: #00b894; }
-    .btn-send:disabled { background: #1e1e1e; color: #444; cursor: not-allowed; }
+    .btn-send:hover { background: #00b894; box-shadow: 0 0 20px var(--green-glow); }
+    .btn-send:disabled { background: var(--surface); color: var(--text-faint); cursor: not-allowed; box-shadow: none; }
+
+    @media (max-width: 600px) {
+      header { padding: 0 16px; }
+      .container { padding: 24px 14px 48px; }
+      .tabs { width: 100%; }
+      .card-grid { grid-template-columns: 1fr; }
+      .gw-hero { flex-direction: column; align-items: flex-start; }
+      .stats-grid { grid-template-columns: repeat(3, 1fr); }
+    }
   </style>
 </head>
 <body>
 
 <header>
-  <h1>⚽ FPLBuddy</h1>
-  <span id="last-updated">Loading live data...</span>
+  <div class="logo">
+    <div class="logo-icon">⚽</div>
+    <span class="logo-text">FPLBuddy</span>
+  </div>
+  <div class="live-badge">
+    <span class="live-dot"></span>
+    <span id="last-updated">Connecting...</span>
+  </div>
 </header>
 
 <div class="container">
@@ -325,53 +368,48 @@
   <!-- FIXTURES TAB -->
   <div id="fixtures-section">
     <div class="card-grid" id="fixture-cards">
-      <div class="loading">Fetching live FPL data...</div>
+      <div class="loading">
+        <div class="loading-spinner"></div>
+        Fetching live FPL data...
+      </div>
     </div>
   </div>
 
   <!-- PLAYERS TAB -->
   <div id="players-section" style="display:none;">
     <div class="card-grid" id="player-cards">
-      <div class="loading">Loading players...</div>
+      <div class="loading">
+        <div class="loading-spinner"></div>
+        Loading top players...
+      </div>
     </div>
   </div>
 
   <!-- AI CHAT TAB -->
   <div id="ai-chat-section" style="display:none;">
     <div class="chat-container">
-
-      <!-- API Key Box -->
       <div class="api-key-box">
-        <label>🔑 OpenAI API Key — stays in your browser only, never saved</label>
+        <div class="api-key-label">🔑 OpenAI API Key — browser memory only, never saved</div>
         <div class="api-key-row">
           <input type="password" id="api-key-input" class="api-key-input" placeholder="sk-..." />
           <button class="btn-connect" onclick="saveKey()">Connect</button>
         </div>
         <p id="key-status">Enter your key to enable AI-powered FPL advice.</p>
       </div>
-
-      <!-- Chat Window -->
       <div class="chat-window" id="chat-window">
         <div class="chat-empty" id="chat-empty">
-          🤖 Ask me anything FPL!<br>
-          <span style="color:#333;">e.g. "Who should I captain this week?"<br>"Best budget midfielder right now?"</span>
+          🤖 Your AI FPL assistant is ready.<br>
+          <span>Try: "Who should I captain this week?" or "Best cheap midfielder?"</span>
         </div>
       </div>
-
-      <!-- Input Row -->
       <div class="chat-input-row">
-        <input
-          type="text"
-          id="chat-input"
-          class="chat-input"
+        <input type="text" id="chat-input" class="chat-input"
           placeholder="Ask an FPL question..."
           onkeydown="if(event.key==='Enter') sendMessage()" />
         <button class="btn-send" id="send-btn" onclick="sendMessage()">Send ➤</button>
       </div>
-
     </div>
   </div>
-
 </div>
 
 <script>
@@ -402,9 +440,9 @@
   }
 
   function badgeLabel(avg) {
-    if (avg <= 2.6) return 'Easy run';
+    if (avg <= 2.6) return 'Easy Run';
     if (avg <= 3.2) return 'Moderate';
-    return 'Tough run';
+    return 'Tough Run';
   }
 
   function positionName(elementType) {
@@ -415,7 +453,6 @@
   function switchTab(tab, e) {
     document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
     e.target.classList.add('active');
-
     document.getElementById('fixtures-section').style.display = 'none';
     document.getElementById('players-section').style.display = 'none';
     document.getElementById('ai-chat-section').style.display = 'none';
@@ -436,54 +473,53 @@
   function renderPlayers() {
     const grid = document.getElementById('player-cards');
     if (!fplData) {
-      grid.innerHTML = '<div class="loading">Data not loaded yet...</div>';
+      grid.innerHTML = '<div class="loading"><div class="loading-spinner"></div>Data not loaded yet...</div>';
       return;
     }
-
     const { elements, teams } = fplData;
-
     const sorted = [...elements]
       .filter(p => p.minutes > 0)
       .sort((a, b) => parseFloat(b.form) - parseFloat(a.form))
       .slice(0, 12);
 
     grid.innerHTML = '';
-    sorted.forEach(p => {
+    sorted.forEach((p, i) => {
       const team = teams.find(t => t.id === p.team);
       const teamName = team ? team.name : '?';
       const teamCode = team ? team.code : '';
       const pos = positionName(p.element_type);
       const price = '£' + (p.now_cost / 10).toFixed(1) + 'm';
 
-      grid.innerHTML += `
-        <div class="card">
-          <div class="card-header">
-            <div class="player-header">
-              <img
-                class="player-photo"
-                src="https://resources.premierleague.com/premierleague/photos/players/110x140/p${p.code}.png"
-                alt="${p.first_name} ${p.second_name}"
-                onerror="this.src='https://resources.premierleague.com/premierleague/photos/players/110x140/Photo-Missing.png'">
-              <div class="player-info">
-                <div class="player-name">${p.first_name} ${p.second_name}</div>
-                <div class="player-team-row">
-                  <img
-                    src="https://resources.premierleague.com/premierleague/badges/50/t${teamCode}.png"
-                    alt="${teamName}"
-                    onerror="this.style.display='none'">
-                  ${teamName}
-                </div>
+      const card = document.createElement('div');
+      card.className = 'card';
+      card.style.animationDelay = (i * 0.05) + 's';
+      card.innerHTML = `
+        <div class="card-header">
+          <div class="player-header" style="margin-bottom:0;">
+            <img class="player-photo"
+              src="https://resources.premierleague.com/premierleague/photos/players/110x140/p${p.code}.png"
+              alt="${p.web_name}"
+              onerror="this.src='https://resources.premierleague.com/premierleague/photos/players/110x140/Photo-Missing.png'">
+            <div class="player-info">
+              <div class="player-name">${p.web_name}</div>
+              <div class="player-team-row">
+                <img src="https://resources.premierleague.com/premierleague/badges/50/t${teamCode}.png"
+                  alt="${teamName}" onerror="this.style.display='none'">
+                ${teamName}
               </div>
             </div>
-            <span class="pos-badge">${pos}</span>
           </div>
-          <div class="player-stat">Price: <span>${price}</span></div>
-          <div class="player-stat">Form: <span>${p.form}</span></div>
-          <div class="player-stat">Total pts: <span>${p.total_points}</span></div>
-          <div class="player-stat">Goals: <span>${p.goals_scored}</span></div>
-          <div class="player-stat">Assists: <span>${p.assists}</span></div>
-          <div class="player-stat">Selected by: <span>${p.selected_by_percent}%</span></div>
+          <span class="pos-badge">${pos}</span>
+        </div>
+        <div class="stats-grid">
+          <div class="stat-item"><div class="stat-label">Price</div><div class="stat-value">${price}</div></div>
+          <div class="stat-item"><div class="stat-label">Form</div><div class="stat-value highlight">${p.form}</div></div>
+          <div class="stat-item"><div class="stat-label">Points</div><div class="stat-value">${p.total_points}</div></div>
+          <div class="stat-item"><div class="stat-label">Goals</div><div class="stat-value">${p.goals_scored}</div></div>
+          <div class="stat-item"><div class="stat-label">Assists</div><div class="stat-value">${p.assists}</div></div>
+          <div class="stat-item"><div class="stat-label">Selected</div><div class="stat-value">${p.selected_by_percent}%</div></div>
         </div>`;
+      grid.appendChild(card);
     });
   }
 
@@ -504,7 +540,6 @@
   function addMessage(role, text) {
     const empty = document.getElementById('chat-empty');
     if (empty) empty.remove();
-
     const win = document.getElementById('chat-window');
     const row = document.createElement('div');
     row.className = 'msg-row ' + role;
@@ -515,22 +550,16 @@
   }
 
   async function sendMessage() {
-    if (!openaiKey) {
-      alert('Please enter and connect your OpenAI API key first!');
-      return;
-    }
+    if (!openaiKey) { alert('Please connect your OpenAI API key first!'); return; }
     const input = document.getElementById('chat-input');
     const sendBtn = document.getElementById('send-btn');
     const userMsg = input.value.trim();
     if (!userMsg) return;
-
     input.value = '';
     sendBtn.disabled = true;
     sendBtn.textContent = '...';
-
     addMessage('user', userMsg);
     const thinkingRow = addMessage('assistant', '⏳ Thinking...');
-
     try {
       const res = await fetch('https://api.openai.com/v1/chat/completions', {
         method: 'POST',
@@ -543,17 +572,15 @@
           messages: [
             {
               role: 'system',
-              content: 'You are an expert Fantasy Premier League (FPL) assistant. Give concise, tactical, and data-driven advice on transfers, captaincy picks, team selection, and fixture analysis. Keep responses under 180 words. Use bullet points where helpful.'
+              content: 'You are an expert Fantasy Premier League (FPL) assistant. Give concise, tactical, data-driven advice on transfers, captaincy, team selection and fixture analysis. Keep responses under 180 words. Use bullet points where helpful.'
             },
             { role: 'user', content: userMsg }
           ],
           max_tokens: 250
         })
       });
-
       const data = await res.json();
       thinkingRow.remove();
-
       if (data.error) {
         addMessage('assistant', '❌ API Error: ' + data.error.message);
       } else {
@@ -561,7 +588,7 @@
       }
     } catch (err) {
       thinkingRow.remove();
-      addMessage('assistant', '❌ Network error. Check your API key and internet connection.');
+      addMessage('assistant', '❌ Network error. Check your API key and connection.');
     } finally {
       sendBtn.disabled = false;
       sendBtn.textContent = 'Send ➤';
@@ -569,6 +596,7 @@
     }
   }
 
+  // ---- INIT ----
   async function init() {
     const grid = document.getElementById('fixture-cards');
     try {
@@ -576,7 +604,6 @@
         fetchJSON(FPL_BOOTSTRAP),
         fetchJSON(FPL_FIXTURES)
       ]);
-
       fplData = bootstrap;
 
       const teams = bootstrap.teams;
@@ -584,16 +611,25 @@
       const currentGW = events.find(e => e.is_current) || events.find(e => e.is_next) || events[0];
       const gwId = currentGW.id;
 
-      document.getElementById('last-updated').textContent = 'Live data · GW' + gwId;
-      document.getElementById('gw-info').innerHTML =
-        `<div class="gw-badge">📅 Gameweek ${gwId} — ${currentGW.name}</div>`;
+      document.getElementById('last-updated').textContent = 'Live · GW' + gwId;
+      document.getElementById('gw-info').innerHTML = `
+        <div class="gw-hero">
+          <div class="gw-hero-left">
+            <div class="gw-circle">📅</div>
+            <div>
+              <div class="gw-label">Current Gameweek</div>
+              <div class="gw-name">${currentGW.name}</div>
+            </div>
+          </div>
+          <div class="gw-deadline">⏰ Deadline: ${currentGW.deadline_time
+            ? new Date(currentGW.deadline_time).toLocaleDateString('en-GB', {weekday:'short',day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'})
+            : 'See FPL app'}</div>
+        </div>`;
 
       const upcomingGWs = [gwId, gwId+1, gwId+2, gwId+3, gwId+4];
       const relevantFixtures = allFixtures.filter(f => upcomingGWs.includes(f.event));
-
       const teamFixtures = {};
       teams.forEach(t => { teamFixtures[t.id] = []; });
-
       relevantFixtures.forEach(f => {
         teamFixtures[f.team_h].push({ opp: f.team_a, difficulty: f.team_h_difficulty, venue: 'H' });
         teamFixtures[f.team_a].push({ opp: f.team_h, difficulty: f.team_a_difficulty, venue: 'A' });
@@ -601,37 +637,34 @@
 
       const scored = teams.map(t => {
         const fixtures = teamFixtures[t.id].slice(0, 5);
-        if (fixtures.length === 0) return null;
+        if (!fixtures.length) return null;
         const avg = fixtures.reduce((s, f) => s + f.difficulty, 0) / fixtures.length;
         return { team: t, fixtures, avg: Math.round(avg * 100) / 100 };
-      }).filter(Boolean);
-
-      scored.sort((a, b) => a.avg - b.avg);
-      const top = scored.slice(0, 12);
+      }).filter(Boolean).sort((a, b) => a.avg - b.avg).slice(0, 12);
 
       grid.innerHTML = '';
-      top.forEach(({ team, fixtures, avg }) => {
+      scored.forEach(({ team, fixtures, avg }, i) => {
         const chips = fixtures.map(f => {
-          const oppTeam = teams.find(t => t.id === f.opp);
-          const oppName = oppTeam ? oppTeam.short_name : '?';
-          return `<span class="fix-chip ${diffClass(f.difficulty)}">${oppName} (${f.venue})</span>`;
+          const opp = teams.find(t => t.id === f.opp);
+          return `<span class="fix-chip ${diffClass(f.difficulty)}">${opp ? opp.short_name : '?'} (${f.venue})</span>`;
         }).join('');
 
-        grid.innerHTML += `
-          <div class="card">
-            <div class="card-header">
-              <div class="team-name">
-                <img
-                  src="https://resources.premierleague.com/premierleague/badges/50/t${team.code}.png"
-                  alt="${team.name}"
-                  onerror="this.style.display='none'">
-                ${team.name}
-              </div>
-              <span class="badge ${badgeClass(avg)}">${badgeLabel(avg)}</span>
+        const card = document.createElement('div');
+        card.className = 'card';
+        card.style.animationDelay = (i * 0.06) + 's';
+        card.innerHTML = `
+          <div class="card-header">
+            <div class="team-name">
+              <img class="team-badge"
+                src="https://resources.premierleague.com/premierleague/badges/50/t${team.code}.png"
+                alt="${team.name}" onerror="this.style.display='none'">
+              ${team.name}
             </div>
-            <div class="difficulty">Avg difficulty: ${avg}</div>
-            <div class="fixtures">${chips}</div>
-          </div>`;
+            <span class="badge ${badgeClass(avg)}">${badgeLabel(avg)}</span>
+          </div>
+          <div class="difficulty">Avg difficulty: <strong style="color:var(--text)">${avg}</strong></div>
+          <div class="fixtures">${chips}</div>`;
+        grid.appendChild(card);
       });
 
     } catch (err) {
@@ -642,6 +675,5 @@
 
   init();
 </script>
-
 </body>
 </html>
