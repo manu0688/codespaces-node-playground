@@ -30,7 +30,6 @@
     @keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(.8)}}
     .container { position:relative; z-index:1; max-width:1040px; margin:0 auto; padding:36px 20px 60px; }
     .gw-hero { background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:20px 24px; margin-bottom:28px; display:flex; align-items:center; justify-content:space-between; backdrop-filter:blur(12px); gap:16px; }
-    .gw-hero-left { display:flex; align-items:center; gap:14px; }
     .gw-circle { width:48px; height:48px; border-radius:12px; background:linear-gradient(135deg,var(--green),#00a884); display:flex; align-items:center; justify-content:center; font-size:1.3rem; box-shadow:0 4px 20px var(--green-glow); flex-shrink:0; }
     .gw-label { font-size:0.72rem; font-weight:600; text-transform:uppercase; letter-spacing:1.5px; color:var(--text-muted); margin-bottom:3px; }
     .gw-name { font-size:1.1rem; font-weight:700; }
@@ -90,15 +89,12 @@
     .news-50{background:rgba(255,140,0,0.12);color:#ff8c00;border:1px solid rgba(255,140,0,0.2)}
     .news-25{background:rgba(255,85,85,0.12);color:#ff5555;border:1px solid rgba(255,85,85,0.2)}
     .news-0{background:rgba(255,85,85,0.18);color:#ff5555;border:1px solid rgba(255,85,85,0.3)}
-    .news-out{background:rgba(255,85,85,0.22);color:#ff5555;border:1px solid rgba(255,85,85,0.35)}
     .value-tag{display:inline-block;padding:3px 9px;border-radius:6px;font-size:0.68rem;font-weight:700;margin-top:6px;background:rgba(79,142,247,0.12);color:var(--blue);border:1px solid rgba(79,142,247,0.2)}
     .xg-alert{display:inline-flex;align-items:center;gap:5px;padding:4px 10px;border-radius:6px;font-size:0.72rem;font-weight:700;margin-bottom:10px}
     .xg-due{background:rgba(167,139,250,0.15);color:var(--purple);border:1px solid rgba(167,139,250,0.25)}
     .xg-lucky{background:rgba(255,85,85,0.12);color:#ff5555;border:1px solid rgba(255,85,85,0.2)}
     .xg-match{background:rgba(0,212,170,0.12);color:var(--green);border:1px solid rgba(0,212,170,0.2)}
-    .xg-mini-bar-wrap{margin-top:4px}
-    .xg-mini-labels{display:flex;justify-content:space-between;font-size:0.62rem;color:var(--text-muted);margin-bottom:3px;font-weight:600;letter-spacing:0.5px}
-    .xg-bars{display:flex;flex-direction:column;gap:4px}
+    .xg-bars{display:flex;flex-direction:column;gap:4px;margin-top:8px}
     .xg-bar-row{display:flex;align-items:center;gap:8px}
     .xg-bar-label{font-size:0.65rem;color:var(--text-muted);font-weight:600;width:24px;text-align:right}
     .xg-bar-track{flex:1;height:6px;background:rgba(255,255,255,0.06);border-radius:999px;overflow:hidden}
@@ -108,7 +104,6 @@
     .xg-bar-fill.g-color{background:linear-gradient(90deg,var(--green),#00a884)}
     .xg-bar-fill.a-color{background:linear-gradient(90deg,var(--orange),#e09000)}
     .xg-bar-val{font-size:0.72rem;font-weight:700;width:30px}
-    /* LIVE GW */
     .live-gw-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px;margin-bottom:48px}
     .live-player-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:16px 18px;backdrop-filter:blur(12px);transition:border-color var(--transition),transform var(--transition);opacity:0;transform:translateY(16px);animation:cardIn 0.4s cubic-bezier(0.16,1,0.3,1) forwards}
     .live-player-card:hover{border-color:var(--border-hover);transform:translateY(-2px)}
@@ -128,7 +123,6 @@
     .gw-summary-lbl{font-size:0.65rem;font-weight:600;text-transform:uppercase;letter-spacing:1px;color:var(--text-muted);margin-top:3px}
     .refresh-btn{display:inline-flex;align-items:center;gap:8px;padding:8px 18px;background:var(--green-dim);border:1px solid rgba(0,212,170,0.25);border-radius:999px;color:var(--green);font-size:0.8rem;font-weight:600;cursor:pointer;font-family:'Outfit',sans-serif;transition:all var(--transition);margin-bottom:20px}
     .refresh-btn:hover{background:rgba(0,212,170,0.25)}
-    /* SCOUT */
     .scout-wrap{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:24px;backdrop-filter:blur(12px);margin-bottom:28px}
     .scout-title{font-size:0.85rem;font-weight:700;color:var(--text);margin-bottom:4px}
     .scout-sub{font-size:0.75rem;color:var(--text-muted);margin-bottom:20px}
@@ -139,7 +133,6 @@
     .scout-legend{display:flex;gap:16px;flex-wrap:wrap;margin-top:12px}
     .scout-legend-item{display:flex;align-items:center;gap:6px;font-size:0.75rem;color:var(--text-muted);font-weight:500}
     .scout-legend-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
-    /* MY TEAM */
     .myteam-input-wrap{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:24px;margin-bottom:24px;backdrop-filter:blur(12px)}
     .myteam-input-label{font-size:0.72rem;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--text-muted);margin-bottom:10px}
     .myteam-input-row{display:flex;gap:10px;flex-wrap:wrap}
@@ -152,7 +145,7 @@
     .myteam-hint{font-size:0.72rem;color:var(--text-muted);margin-top:8px}
     .myteam-hint a{color:var(--green);text-decoration:none}
     .pitch-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(155px,1fr));gap:10px;margin-bottom:28px}
-    .pitch-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);padding:12px 14px;backdrop-filter:blur(12px);position:relative;transition:border-color var(--transition),transform var(--transition);cursor:default}
+    .pitch-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);padding:12px 14px;backdrop-filter:blur(12px);position:relative;transition:border-color var(--transition),transform var(--transition)}
     .pitch-card:hover{border-color:var(--border-hover);transform:translateY(-1px)}
     .pitch-card.captain-card{border-color:rgba(240,165,0,0.5);background:rgba(240,165,0,0.05)}
     .pitch-card.vice-card{border-color:rgba(167,139,250,0.4);background:rgba(167,139,250,0.04)}
@@ -162,11 +155,9 @@
     .pitch-pts{font-size:1.1rem;font-weight:800;color:var(--green);margin-top:6px}
     .pitch-price{font-size:0.68rem;color:var(--text-muted);font-weight:500}
     .captain-crown{position:absolute;top:8px;right:8px;font-size:0.9rem}
-    .vice-crown{position:absolute;top:8px;right:8px;font-size:0.9rem}
     .rec-badge{display:inline-block;padding:3px 8px;border-radius:6px;font-size:0.65rem;font-weight:700;margin-top:5px}
     .rec-sell{background:rgba(255,85,85,0.12);color:#ff5555;border:1px solid rgba(255,85,85,0.2)}
     .rec-hold{background:rgba(0,212,170,0.1);color:var(--green);border:1px solid rgba(0,212,170,0.2)}
-    .rec-captain{background:rgba(240,165,0,0.15);color:#f0a500;border:1px solid rgba(240,165,0,0.25)}
     .captain-section{background:linear-gradient(135deg,rgba(240,165,0,0.08),rgba(240,165,0,0.03));border:1px solid rgba(240,165,0,0.2);border-radius:var(--radius);padding:20px 22px;margin-bottom:20px;backdrop-filter:blur(12px)}
     .captain-section-title{font-size:0.72rem;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:var(--orange);margin-bottom:14px}
     .captain-picks{display:flex;gap:10px;flex-wrap:wrap}
@@ -177,19 +168,12 @@
     .captain-pick-why{font-size:0.7rem;color:var(--text-muted);margin-top:2px;line-height:1.4}
     .captain-pick-pts{font-size:0.9rem;font-weight:800;color:var(--orange)}
     .team-stats-bar{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:20px}
-    /* DIFFERENTIALS */
-    .diff-own-bar{margin-top:8px}.diff-own-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:4px}.diff-own-label{font-size:0.65rem;font-weight:700;text-transform:uppercase;letter-spacing:0.8px;color:var(--text-muted)}.diff-own-val{font-size:0.78rem;font-weight:800;color:var(--purple)}.diff-bar-bg{height:5px;background:rgba(255,255,255,0.06);border-radius:999px;overflow:hidden}.diff-bar-fill{height:100%;border-radius:999px;background:linear-gradient(90deg,var(--purple),#7c3aed)}.diff-badge{display:inline-block;padding:3px 10px;border-radius:999px;font-size:0.68rem;font-weight:700;background:rgba(167,139,250,0.12);color:var(--purple);border:1px solid rgba(167,139,250,0.25);margin-bottom:8px}
-    /* MINI LEAGUE */
-    .league-table{width:100%;border-collapse:collapse;font-size:0.82rem}.league-table thead tr{border-bottom:1px solid var(--border)}.league-table th{padding:10px 12px;text-align:left;font-size:0.68rem;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--text-muted)}.league-table td{padding:10px 12px;border-bottom:1px solid rgba(255,255,255,0.04)}.league-table tr:hover td{background:rgba(255,255,255,0.02)}.league-table tr.my-row td{background:rgba(0,212,170,0.05)}.league-rank{font-weight:800;font-size:0.9rem}.league-rank.top3{color:var(--green)}.league-name{font-weight:600}.league-pts{font-weight:700;color:var(--green)}.league-gw{color:var(--text-muted)}.league-mv{font-size:0.72rem}.league-mv.up{color:var(--green)}.league-mv.down{color:var(--red)}.league-mv.same{color:var(--text-muted)}.league-wrap{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;backdrop-filter:blur(12px)}.league-header{padding:16px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px}.league-title{font-size:1rem;font-weight:700}.league-meta{font-size:0.75rem;color:var(--text-muted)}
-    /* HISTORY STAT PILLS */
-    .hist-stat{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);padding:6px 12px;text-align:center}.hist-stat-val{font-size:0.95rem;font-weight:800;color:var(--green)}.hist-stat-lbl{font-size:0.62rem;font-weight:600;text-transform:uppercase;letter-spacing:0.8px;color:var(--text-muted);margin-top:1px}
-    /* LOADING/ERR */
     .loading{text-align:center;padding:80px 20px;color:var(--text-faint);font-size:0.85rem;font-weight:500}
     .loading-spinner{width:32px;height:32px;border:2px solid var(--border);border-top-color:var(--green);border-radius:50%;animation:spin 0.8s linear infinite;margin:0 auto 16px}
     @keyframes spin{to{transform:rotate(360deg)}}
-    .error-msg{text-align:center;padding:40px;color:#ff5555;font-size:0.85rem}
+    .error-msg{text-align:center;padding:40px;color:#ff5555;font-size:0.85rem;line-height:1.8}
     .info-msg{text-align:center;padding:40px;color:var(--text-muted);font-size:0.85rem;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius)}
-    /* AI CHAT */
+    .proxy-status{font-size:0.72rem;color:var(--text-muted);text-align:center;margin-bottom:12px;padding:8px;background:var(--surface);border-radius:var(--radius-sm);border:1px solid var(--border)}
     .chat-container{max-width:740px}
     .api-key-box{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:20px;margin-bottom:14px;backdrop-filter:blur(12px)}
     .api-key-label{font-size:0.72rem;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--text-muted);margin-bottom:10px}
@@ -197,7 +181,7 @@
     .api-key-input{flex:1;padding:10px 14px;background:rgba(255,255,255,0.03);color:var(--text);border:1px solid var(--border);border-radius:var(--radius-sm);font-size:0.85rem;font-family:'Outfit',sans-serif;outline:none;transition:border-color var(--transition)}
     .api-key-input:focus{border-color:rgba(0,212,170,0.4)}
     .api-key-input::placeholder{color:var(--text-faint)}
-    .btn-connect{padding:10px 20px;background:var(--green);color:#0b0f1a;border:none;border-radius:var(--radius-sm);font-weight:700;font-size:0.85rem;font-family:'Outfit',sans-serif;cursor:pointer;transition:all var(--transition);white-space:nowrap}
+    .btn-connect{padding:10px 20px;background:var(--green);color:#0b0f1a;border:none;border-radius:var(--radius-sm);font-weight:700;font-size:0.85rem;font-family:'Outfit',sans-serif;cursor:pointer;transition:all var(--transition)}
     .btn-connect:hover{background:#00b894;box-shadow:0 0 20px var(--green-glow)}
     #key-status{font-size:0.75rem;margin-top:8px;color:var(--text-muted);font-weight:500}
     .chat-window{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);height:400px;overflow-y:auto;padding:18px;margin-bottom:12px;display:flex;flex-direction:column;gap:14px;backdrop-filter:blur(12px);scrollbar-width:thin;scrollbar-color:var(--border) transparent}
@@ -221,6 +205,41 @@
       .card-grid{grid-template-columns:1fr} .gw-hero{flex-direction:column;align-items:flex-start}
       .gw-summary-bar{grid-template-columns:repeat(2,1fr)} .team-stats-bar{grid-template-columns:repeat(2,1fr)}
     }
+
+    /* ══ PHASE 5 CSS ══════════════════════════════════════════ */
+    .diff-tag{display:inline-block;padding:3px 10px;border-radius:6px;font-size:0.7rem;font-weight:700;margin-top:6px;letter-spacing:0.3px}
+    .diff-tag.gem{background:rgba(0,212,170,0.15);color:#00d4aa;border:1px solid rgba(0,212,170,0.25)}
+    .diff-tag.diff{background:rgba(240,165,0,0.12);color:#f0a500;border:1px solid rgba(240,165,0,0.25)}
+    .history-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:20px;margin-bottom:16px;backdrop-filter:blur(12px);transition:border-color var(--transition);animation:cardIn 0.4s cubic-bezier(0.16,1,0.3,1) forwards;opacity:0}
+    .history-card:hover{border-color:var(--border-hover)}
+    .history-chart-wrap{position:relative;height:200px;margin:14px 0}
+    .history-table{width:100%;border-collapse:collapse;font-size:0.8rem;margin-top:4px}
+    .history-table th{padding:7px 10px;text-align:left;color:var(--text-muted);font-size:0.68rem;text-transform:uppercase;letter-spacing:0.5px;border-bottom:1px solid var(--border);font-weight:600}
+    .history-table td{padding:7px 10px;border-bottom:1px solid rgba(255,255,255,0.04)}
+    .history-table tr:hover td{background:rgba(255,255,255,0.03)}
+    .league-header-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:18px 22px;margin-bottom:20px;backdrop-filter:blur(12px);animation:cardIn 0.4s ease forwards;opacity:0}
+    .league-title{font-size:1.2rem;font-weight:800;color:var(--green)}
+    .podium-row{display:flex;gap:12px;margin-bottom:20px;flex-wrap:wrap}
+    .podium-card{flex:1;min-width:150px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:16px;text-align:center;backdrop-filter:blur(12px);animation:cardIn 0.4s ease forwards;opacity:0}
+    .podium-card.gold{border-color:rgba(255,215,0,0.4);background:rgba(255,215,0,0.06)}
+    .podium-card.silver{border-color:rgba(192,192,192,0.3);background:rgba(192,192,192,0.04)}
+    .podium-card.bronze{border-color:rgba(205,127,50,0.35);background:rgba(205,127,50,0.05)}
+    .podium-medal{font-size:2rem;margin-bottom:5px}
+    .podium-manager{font-size:0.88rem;font-weight:700;margin-bottom:2px}
+    .podium-team{font-size:0.75rem;color:var(--text-muted);margin-bottom:8px}
+    .podium-total{font-size:1.15rem;font-weight:800;color:var(--green)}
+    .podium-gw{font-size:0.75rem;color:var(--text-muted);margin-top:3px}
+    .league-table{width:100%;border-collapse:collapse;font-size:0.85rem}
+    .league-table th{padding:9px 12px;text-align:left;color:var(--text-muted);font-size:0.7rem;text-transform:uppercase;letter-spacing:0.5px;border-bottom:1px solid var(--border);font-weight:600}
+    .league-table td{padding:9px 12px;border-bottom:1px solid rgba(255,255,255,0.04)}
+    .league-table tr:hover td{background:rgba(255,255,255,0.03)}
+    .move-up{color:#00d4aa;font-weight:700;font-size:0.82rem}
+    .move-down{color:#ff5555;font-weight:700;font-size:0.82rem}
+    .move-same{color:var(--text-muted);font-size:0.82rem}
+    .suggest-item{padding:9px 14px;cursor:pointer;font-size:0.85rem;display:flex;align-items:center;gap:8px;border-bottom:1px solid var(--border);transition:background 0.15s}
+    .suggest-item:hover{background:rgba(255,255,255,0.05)}
+    .suggest-item:last-child{border-bottom:none}
+    /* ══ END PHASE 5 CSS ══════════════════════════════════════ */
   </style>
 </head>
 <body>
@@ -242,27 +261,25 @@
     <button class="tab" onclick="switchTab('livegw',event)">🔴 Live GW</button>
     <button class="tab" onclick="switchTab('scout',event)">🎯 Scout</button>
     <button class="tab" onclick="switchTab('myteam',event)">👤 My Team</button>
+    <button class="tab" onclick="switchTab('ai-chat',event)">🤖 AI Chat</button>
     <button class="tab" onclick="switchTab('differentials',event)">🔍 Differentials</button>
     <button class="tab" onclick="switchTab('history',event)">📈 GW History</button>
     <button class="tab" onclick="switchTab('minileague',event)">🏆 Mini League</button>
-    <button class="tab" onclick="switchTab('ai-chat',event)">🤖 AI Chat</button>
   </div>
   <p class="section-title" id="section-label">Best Fixture Runs — Next 5 Gameweeks</p>
 
-  <div id="fixtures-section"><div class="card-grid" id="fixture-cards"><div class="loading"><div class="loading-spinner"></div>Fetching live FPL data...</div></div></div>
-  <div id="players-section" style="display:none"><div class="card-grid" id="player-cards"><div class="loading"><div class="loading-spinner"></div>Loading top players...</div></div></div>
-  <div id="power-section" style="display:none"><div class="card-grid" id="power-cards"><div class="loading"><div class="loading-spinner"></div>Calculating power scores...</div></div></div>
-  <div id="value-section" style="display:none"><div class="card-grid" id="value-cards"><div class="loading"><div class="loading-spinner"></div>Finding best value picks...</div></div></div>
-  <div id="transfers-section" style="display:none"><div class="card-grid" id="transfer-cards"><div class="loading"><div class="loading-spinner"></div>Loading transfer data...</div></div></div>
-  <div id="injuries-section" style="display:none"><div class="card-grid" id="injury-cards"><div class="loading"><div class="loading-spinner"></div>Loading injury tracker...</div></div></div>
+  <div id="fixtures-section"><div id="proxy-status-bar"></div><div class="card-grid" id="fixture-cards"><div class="loading"><div class="loading-spinner"></div>Fetching live FPL data...</div></div></div>
+  <div id="players-section" style="display:none"><div class="card-grid" id="player-cards"></div></div>
+  <div id="power-section" style="display:none"><div class="card-grid" id="power-cards"></div></div>
+  <div id="value-section" style="display:none"><div class="card-grid" id="value-cards"></div></div>
+  <div id="transfers-section" style="display:none"><div class="card-grid" id="transfer-cards"></div></div>
+  <div id="injuries-section" style="display:none"><div class="card-grid" id="injury-cards"></div></div>
   <div id="xg-section" style="display:none">
     <div id="xg-status" class="info-msg" style="margin-bottom:20px;display:none"></div>
-    <div class="card-grid" id="xg-cards"><div class="loading"><div class="loading-spinner"></div>Fetching xG data from Understat...</div></div>
+    <div class="card-grid" id="xg-cards"></div>
   </div>
-  <div id="livegw-section" style="display:none"><div id="livegw-content"><div class="loading"><div class="loading-spinner"></div>Loading live GW data...</div></div></div>
-  <div id="scout-section" style="display:none"><div id="scout-content"><div class="loading"><div class="loading-spinner"></div>Building scout chart...</div></div></div>
-
-  <!-- MY TEAM TAB -->
+  <div id="livegw-section" style="display:none"><div id="livegw-content"><div class="loading"><div class="loading-spinner"></div>Loading...</div></div></div>
+  <div id="scout-section" style="display:none"><div id="scout-content"></div></div>
   <div id="myteam-section" style="display:none">
     <div class="myteam-input-wrap">
       <div class="myteam-input-label">🔍 Enter your FPL Team ID</div>
@@ -270,54 +287,10 @@
         <input type="number" id="team-id-input" class="myteam-input" placeholder="e.g. 1234567" min="1" />
         <button class="btn-analyse" id="analyse-btn" onclick="analyseTeam()">Analyse My Team</button>
       </div>
-      <p class="myteam-hint">Find your Team ID at <a href="https://fantasy.premierleague.com" target="_blank" rel="noopener">fantasy.premierleague.com</a> → Points → check the URL: /entry/<strong>XXXXXXX</strong>/event/</p>
+      <p class="myteam-hint">Find at <a href="https://fantasy.premierleague.com" target="_blank" rel="noopener">fantasy.premierleague.com</a> → Points → URL shows /entry/<strong>XXXXXXX</strong>/event/</p>
     </div>
     <div id="myteam-content"></div>
   </div>
-
-  <!-- DIFFERENTIALS -->
-  <div id="differentials-section" style="display:none">
-    <div style="margin-bottom:16px;font-size:0.82rem;color:var(--text-muted);background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:14px 18px;backdrop-filter:blur(12px)">
-      🔍 Hidden gems owned by <strong style="color:var(--green)">&lt;10%</strong> of FPL managers — high power score, low ownership. Classic differential targets.
-    </div>
-    <div class="card-grid" id="diff-cards"><div class="loading"><div class="loading-spinner"></div>Finding differentials...</div></div>
-  </div>
-
-  <!-- GW HISTORY -->
-  <div id="history-section" style="display:none">
-    <div class="myteam-input-wrap" style="margin-bottom:20px">
-      <div class="myteam-input-label">🔎 Search Player</div>
-      <div class="myteam-input-row">
-        <input type="text" id="history-search" class="myteam-input" placeholder="e.g. Salah, Haaland, Palmer..." oninput="historySearch()" />
-      </div>
-      <div id="history-suggestions" style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px"></div>
-    </div>
-    <div id="history-chart-wrap" style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:24px;backdrop-filter:blur(12px);display:none">
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;flex-wrap:wrap;gap:8px">
-        <div>
-          <div id="history-player-name" style="font-size:1rem;font-weight:700"></div>
-          <div id="history-player-meta" style="font-size:0.75rem;color:var(--text-muted);margin-top:2px"></div>
-        </div>
-        <div id="history-player-stats" style="display:flex;gap:10px;flex-wrap:wrap"></div>
-      </div>
-      <div style="position:relative;height:320px;margin-top:16px"><canvas id="history-canvas"></canvas></div>
-    </div>
-    <div id="history-empty" class="info-msg" style="margin-top:16px">Search for a player above to see their GW-by-GW points history.</div>
-  </div>
-
-  <!-- MINI LEAGUE -->
-  <div id="minileague-section" style="display:none">
-    <div class="myteam-input-wrap">
-      <div class="myteam-input-label">🏆 Enter Mini League ID</div>
-      <div class="myteam-input-row">
-        <input type="number" id="league-id-input" class="myteam-input" placeholder="e.g. 314 (or your private league ID)" min="1" />
-        <button class="btn-analyse" id="league-btn" onclick="loadMiniLeague()">Load League</button>
-      </div>
-      <p class="myteam-hint">Find your League ID at <a href="https://fantasy.premierleague.com" target="_blank" rel="noopener">fantasy.premierleague.com</a> → Leagues → click your mini league → check the URL for the ID number.</p>
-    </div>
-    <div id="minileague-content"></div>
-  </div>
-
   <div id="ai-chat-section" style="display:none">
     <div class="chat-container">
       <div class="api-key-box">
@@ -329,7 +302,7 @@
         <p id="key-status">Enter your key to enable AI-powered FPL advice.</p>
       </div>
       <div class="chat-window" id="chat-window">
-        <div class="chat-empty" id="chat-empty">🤖 Your AI FPL assistant is ready.<br><span>Try: "Who should I captain this week?" or "Best cheap midfielder?"</span></div>
+        <div class="chat-empty" id="chat-empty">🤖 Your AI FPL assistant is ready.<br><span>Try: "Who should I captain?" or "Best cheap midfielder?"</span></div>
       </div>
       <div class="chat-input-row">
         <input type="text" id="chat-input" class="chat-input" placeholder="Ask an FPL question..." onkeydown="if(event.key==='Enter') sendMessage()" />
@@ -337,20 +310,80 @@
       </div>
     </div>
   </div>
+
+  <div id="differentials-section" style="display:none">
+    <div id="differentials-content">
+      <div class="loading"><div class="loading-spinner"></div>Loading differentials...</div>
+    </div>
+  </div>
+
+  <div id="history-section" style="display:none">
+    <div class="myteam-input-wrap">
+      <div class="myteam-input-label">🔍 Search a player name</div>
+      <div class="myteam-input-row" style="position:relative">
+        <input type="text" id="history-search-input" class="myteam-input" placeholder="e.g. Salah, Haaland..." style="width:260px" />
+        <button class="btn-analyse" onclick="searchPlayerHistory()">Search</button>
+        <button class="btn-analyse" onclick="clearHistoryResults()" style="background:var(--surface);color:var(--text);border:1px solid var(--border);box-shadow:none">Clear</button>
+      </div>
+      <div id="history-suggestions" style="display:none;position:absolute;z-index:200;background:rgba(11,15,26,0.98);border:1px solid var(--border);border-radius:10px;max-height:240px;overflow-y:auto;width:260px;margin-top:2px;backdrop-filter:blur(14px)"></div>
+    </div>
+    <div id="history-results"></div>
+  </div>
+
+  <div id="minileague-section" style="display:none">
+    <div class="myteam-input-wrap">
+      <div class="myteam-input-label">🏆 Enter your Classic League ID</div>
+      <div class="myteam-input-row">
+        <input type="number" id="league-id-input" class="myteam-input" placeholder="e.g. 314" />
+        <button class="btn-analyse" onclick="loadMiniLeague()">Load League</button>
+      </div>
+      <p class="myteam-hint">Find your League ID at <a href="https://fantasy.premierleague.com" target="_blank" rel="noopener noreferrer">fantasy.premierleague.com</a> → Leagues → click your league → the URL shows /leagues/<strong>XXXXXX</strong>/standings/</p>
+    </div>
+    <div id="minileague-content"></div>
+  </div>
+
 </div>
 
 <script>
-const PROXY='https://corsproxy.io/?';
-const FPL_BOOTSTRAP=PROXY+encodeURIComponent('https://fantasy.premierleague.com/api/bootstrap-static/');
-const FPL_FIXTURES=PROXY+encodeURIComponent('https://fantasy.premierleague.com/api/fixtures/');
-const UNDERSTAT_URL=PROXY+encodeURIComponent('https://understat.com/league/EPL');
+// ── PROXY WITH AUTO-FALLBACK ──────────────────────────────────────────────
+const PROXIES = [
+  url => `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`,
+  url => `https://corsproxy.io/?${encodeURIComponent(url)}`,
+  url => `https://thingproxy.freeboard.io/fetch/${url}`,
+  url => `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(url)}`,
+  url => `https://corsproxy.io/?url=${encodeURIComponent(url)}`
+];
+let activeProxy = 0;
 
-let fplData=null,fixtureData=null,gwId=0,understatPlayers=null,openaiKey='';
-let renderedTabs=new Set(['fixtures']);
-let scoutChart=null,scoutPos='ALL';
+async function fetchWithFallback(url, asText = false) {
+  let lastErr;
+  for (let i = 0; i < PROXIES.length; i++) {
+    const idx = (activeProxy + i) % PROXIES.length;
+    try {
+      const proxied = PROXIES[idx](url);
+      const r = await fetch(proxied, { signal: AbortSignal.timeout(12000), cache: 'no-cache' });
+      if (!r.ok) throw new Error('HTTP ' + r.status);
+      activeProxy = idx; // remember the working one
+      const proxyNames = ['corsproxy.io','allorigins.win','cors-anywhere','cors.sh'];
+      const bar = document.getElementById('proxy-status-bar');
+      if (bar) bar.innerHTML = i > 0 ? `<div class="proxy-status">✅ Connected via ${proxyNames[idx]}</div>` : '';
+      if (asText) return r.text();
+      const text = await r.text();
+      try { return JSON.parse(text); }
+      catch(pe) { throw new Error('JSON parse error: ' + text.slice(0,80)); }
+    } catch (e) { lastErr = e; }
+  }
+  throw new Error('All proxies failed. Try refreshing. ' + lastErr?.message);
+}
 
-async function fetchJSON(url){const r=await fetch(url);if(!r.ok)throw new Error('Failed: '+url);return r.json();}
-async function fetchText(url){const r=await fetch(url);if(!r.ok)throw new Error('Failed: '+url);return r.text();}
+const FPL_BOOTSTRAP = 'https://fantasy.premierleague.com/api/bootstrap-static/';
+const FPL_FIXTURES  = 'https://fantasy.premierleague.com/api/fixtures/';
+
+let fplData=null, fixtureData=null, gwId=0, understatPlayers=null, openaiKey='';
+let renderedTabs = new Set(['fixtures']);
+let scoutChart=null, scoutPos='ALL';
+
+// ── HELPERS ───────────────────────────────────────────────────────────────
 function diffClass(d){return d<=2?'fix-1':d===3?'fix-3':d===4?'fix-4':'fix-5';}
 function badgeClass(avg){return avg<=2.6?'easy':avg<=3.2?'medium':'hard';}
 function badgeLabel(avg){return avg<=2.6?'Easy Run':avg<=3.2?'Moderate':'Tough Run';}
@@ -360,16 +393,17 @@ function teamOf(p){return fplData.teams.find(t=>t.id===p.team);}
 function makeCard(i){const c=document.createElement('div');c.className='card';c.style.animationDelay=(i*0.05)+'s';return c;}
 function rankBadge(i){const cls=i===0?'rank-1':i===1?'rank-2':i===2?'rank-3':'rank-other';const lbl=i===0?'🥇':i===1?'🥈':i===2?'🥉':'#'+(i+1);return `<div class="rank-badge ${cls}">${lbl}</div>`;}
 
-function switchTab(tab,e){
+// ── TAB SWITCH ────────────────────────────────────────────────────────────
+function switchTab(tab, e) {
   document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
   e.target.classList.add('active');
-  ['fixtures','players','power','value','transfers','injuries','xg','livegw','scout','myteam','ai-chat'].forEach(id=>{
+  ['fixtures','players','power','value','transfers','injuries','xg','livegw','scout','myteam','ai-chat','differentials','history','minileague'].forEach(id=>{
     const el=document.getElementById(id+'-section');if(el)el.style.display='none';
   });
-  const labels={fixtures:'Best Fixture Runs — Next 5 Gameweeks',players:'Top Players By Form',power:'Power Rankings — Composite FPL Score',value:'Value Picks — Best Points Per Million',transfers:'Transfer Trends — This Gameweek',injuries:'Injury Tracker — Availability & News',xg:'Underlying Stats — xG & xA from Understat',livegw:'Live Gameweek — Real-Time Points Tracker',scout:'Scout — Form vs Fixture Bubble Chart',myteam:'My Team — Analyser & Captain Picker',differentials:'Differentials — Low Ownership Hidden Gems',history:'GW History — Player Points Per Gameweek',minileague:'Mini League — Live Standings','ai-chat':'AI-Powered FPL Assistant'};
-  document.getElementById('section-label').textContent=labels[tab]||tab;
-  const sec=document.getElementById(tab+'-section');if(sec)sec.style.display='block';
-  if(fplData&&!renderedTabs.has(tab)){
+  const labels={fixtures:'Best Fixture Runs — Next 5 Gameweeks',players:'Top Players By Form',power:'Power Rankings — Composite FPL Score',value:'Value Picks — Best Points Per Million',transfers:'Transfer Trends — This Gameweek',injuries:'Injury Tracker — Availability & News',xg:'Underlying Stats — xG & xA',livegw:'Live Gameweek — Real-Time Points',scout:'Scout — Form vs Fixture Bubble Chart',myteam:'My Team — Analyser & Captain Picker','ai-chat':'AI-Powered FPL Assistant','differentials':'Differentials — Hidden Gems Under 10% Ownership','history':'Player History — GW Points Chart & Stats','minileague':'Mini-League — Standings & Leaderboard'};
+  document.getElementById('section-label').textContent = labels[tab]||tab;
+  const sec = document.getElementById(tab+'-section');if(sec)sec.style.display='block';
+  if(fplData && !renderedTabs.has(tab)){
     renderedTabs.add(tab);
     if(tab==='players')renderPlayers();
     else if(tab==='power')renderPower();
@@ -380,11 +414,10 @@ function switchTab(tab,e){
     else if(tab==='livegw')renderLiveGW();
     else if(tab==='scout')renderScout();
     else if(tab==='differentials')renderDifferentials();
-    else if(tab==='history')initHistory();
-    else if(tab==='minileague')initMiniLeague();
   }
 }
 
+// ── SCORING ───────────────────────────────────────────────────────────────
 function fixtureScore(teamId){
   if(!fixtureData)return 3;
   const upcoming=fixtureData.filter(f=>f.event>=gwId&&f.event<=gwId+2&&(f.team_h===teamId||f.team_a===teamId)).slice(0,3);
@@ -393,7 +426,7 @@ function fixtureScore(teamId){
   return diffs.reduce((a,b)=>a+b,0)/diffs.length;
 }
 function calcPower(p){
-  const form=parseFloat(p.form)||0,ppg=parseFloat(p.points_per_game)||0;
+  const form=parseFloat(p.form)||0, ppg=parseFloat(p.points_per_game)||0;
   const minPct=Math.min(p.minutes/(38*90)*100,100)/100;
   const ptsCost=p.now_cost>0?p.total_points/(p.now_cost/10):0;
   const netTrn=((p.transfers_in_event||0)-(p.transfers_out_event||0))/500000;
@@ -401,7 +434,7 @@ function calcPower(p){
   return Math.round((Math.min(form,10)*0.28+Math.min(ppg,10)*0.22+Math.min(ptsCost,15)/15*10*0.18+fixScore*10*0.18+minPct*10*0.09+(Math.min(Math.max(netTrn,-1),1)+1)/2*10*0.05)*10)/10;
 }
 
-// ---- FIXTURE RUNS ----
+// ── FIXTURE RUNS ──────────────────────────────────────────────────────────
 function renderFixtures(allFixtures){
   const grid=document.getElementById('fixture-cards');
   const teams=fplData.teams;
@@ -419,7 +452,7 @@ function renderFixtures(allFixtures){
   });
 }
 
-// ---- TOP PLAYERS ----
+// ── TOP PLAYERS ───────────────────────────────────────────────────────────
 function renderPlayers(){
   const grid=document.getElementById('player-cards');
   const sorted=[...fplData.elements].filter(p=>p.minutes>0).sort((a,b)=>parseFloat(b.form)-parseFloat(a.form)).slice(0,12);
@@ -431,7 +464,7 @@ function renderPlayers(){
   });
 }
 
-// ---- POWER RANKINGS ----
+// ── POWER RANKINGS ────────────────────────────────────────────────────────
 function renderPower(){
   const grid=document.getElementById('power-cards');
   const scored=fplData.elements.filter(p=>p.minutes>450).map(p=>({...p,power:calcPower(p)})).sort((a,b)=>b.power-a.power).slice(0,12);
@@ -447,7 +480,7 @@ function renderPower(){
   });
 }
 
-// ---- VALUE PICKS ----
+// ── VALUE PICKS ───────────────────────────────────────────────────────────
 function renderValue(){
   const grid=document.getElementById('value-cards');
   const picks=fplData.elements.filter(p=>p.minutes>450&&p.now_cost>0).map(p=>({...p,ptsCost:p.total_points/(p.now_cost/10),epNext:parseFloat(p.ep_next)||0})).sort((a,b)=>b.ptsCost-a.ptsCost).slice(0,12);
@@ -461,14 +494,14 @@ function renderValue(){
   });
 }
 
-// ---- TRANSFER TRENDS ----
+// ── TRANSFERS ─────────────────────────────────────────────────────────────
 function renderTransfers(){
   const grid=document.getElementById('transfer-cards');
   const byIn=[...fplData.elements].sort((a,b)=>b.transfers_in_event-a.transfers_in_event).slice(0,6);
   const byOut=[...fplData.elements].sort((a,b)=>b.transfers_out_event-a.transfers_out_event).slice(0,6);
   const combined=[];const seen=new Set();
-  byIn.forEach(p=>{if(!seen.has(p.id)){seen.add(p.id);combined.push({...p,highlight:'in'});}});
-  byOut.forEach(p=>{if(!seen.has(p.id)){seen.add(p.id);combined.push({...p,highlight:'out'});}});
+  byIn.forEach(p=>{if(!seen.has(p.id)){seen.add(p.id);combined.push({...p});}});
+  byOut.forEach(p=>{if(!seen.has(p.id)){seen.add(p.id);combined.push({...p});}});
   grid.innerHTML='';
   combined.slice(0,12).forEach((p,i)=>{
     const team=teamOf(p);const c=makeCard(i);
@@ -480,7 +513,7 @@ function renderTransfers(){
   });
 }
 
-// ---- INJURY TRACKER ----
+// ── INJURIES ──────────────────────────────────────────────────────────────
 function renderInjuries(){
   const grid=document.getElementById('injury-cards');
   const injured=fplData.elements.filter(p=>p.news&&p.news.trim()!=='').sort((a,b)=>(a.chance_of_playing_next_round||100)-(b.chance_of_playing_next_round||100));
@@ -490,37 +523,17 @@ function renderInjuries(){
     const team=teamOf(p);const c=makeCard(i);
     const ch=p.chance_of_playing_next_round;
     let nc='news-75',cl='75%';
-    if(ch===null||ch===undefined){nc='news-out';cl='Unknown';}else if(ch===0){nc='news-0';cl='0% — Out';}else if(ch<=25){nc='news-25';cl='25%';}else if(ch<=50){nc='news-50';cl='50%';}
+    if(ch===null||ch===undefined){nc='news-0';cl='Unknown';}else if(ch===0){nc='news-0';cl='0% — Out';}else if(ch<=25){nc='news-25';cl='25%';}else if(ch<=50){nc='news-50';cl='50%';}
     c.innerHTML=`<div class="card-header"><div class="player-header" style="margin-bottom:0"><img class="player-photo" src="https://resources.premierleague.com/premierleague/photos/players/110x140/p${p.code}.png" alt="${p.web_name}" onerror="this.src='https://resources.premierleague.com/premierleague/photos/players/110x140/Photo-Missing.png'"><div class="player-info"><div class="player-name">${p.web_name}</div><div class="player-team-row"><img src="https://resources.premierleague.com/premierleague/badges/50/t${team?team.code:''}.png" onerror="this.style.display='none'">${team?team.name:'?'}</div><div class="news-chip ${nc}">⚠️ ${cl} chance of playing</div></div></div><span class="pos-badge">${posName(p.element_type)}</span></div><div class="stat-item" style="margin-bottom:8px"><div class="stat-label">📰 News</div><div style="font-size:0.78rem;color:var(--text);margin-top:4px;line-height:1.5">${p.news}</div></div><div class="stats-grid"><div class="stat-item"><div class="stat-label">Price</div><div class="stat-value">${price(p)}</div></div><div class="stat-item"><div class="stat-label">Selected</div><div class="stat-value">${p.selected_by_percent}%</div></div></div>`;
     grid.appendChild(c);
   });
 }
 
-// ---- xG STATS ----
-function parseUnderstat(html){try{const m=html.match(/playersData\s*=\s*JSON\.parse\('(.*?)'\)/);if(!m)return null;const raw=m[1].replace(/\\'/g,"'").replace(/\\\\/g,"\\");return JSON.parse(raw);}catch(e){return null;}}
-function matchUnderstat(fplPlayer,uPlayers){if(!uPlayers)return null;const fplLast=(fplPlayer.second_name||''). toLowerCase().replace(/[^a-z]/g,'');let best=null,bestScore=0;for(const u of uPlayers){const uName=(u.player_name||''). toLowerCase().replace(/[^a-z ]/g,'');const parts=uName.split(' ');const uLast=parts[parts.length-1]||'';;let score=0;if(uName===fplPlayer.web_name.toLowerCase())score=10;else if(uLast===fplLast&&fplLast.length>3)score=7;else if(uName.includes(fplLast)&&fplLast.length>3)score=5;if(score>bestScore){bestScore=score;best=u;}}return bestScore>=5?best:null;}
-function xgAlertLabel(goals,xg){if(goals===0&&xg===0)return null;const diff=goals-xg;if(diff<-1.5)return{cls:'xg-due',txt:'🟣 Due a goal (high xG, low returns)'};if(diff>2.0)return{cls:'xg-lucky',txt:'🔴 Overperforming xG — may regress'};return{cls:'xg-match',txt:'✅ Performing in line with xG'};}
+// ── xG STATS ──────────────────────────────────────────────────────────────
 async function renderXG(){
-  const grid=document.getElementById('xg-cards');const sb=document.getElementById('xg-status');
-  if(understatPlayers){buildXGCards(grid);return;}
-  grid.innerHTML='<div class="loading"><div class="loading-spinner"></div>Fetching xG data from Understat...</div>';
-  try{const html=await fetchText(UNDERSTAT_URL);const parsed=parseUnderstat(html);if(!parsed||!parsed.length)throw new Error('Parse failed');understatPlayers=parsed;sb.style.display='none';buildXGCards(grid);}
-  catch(err){sb.style.display='block';sb.innerHTML='⚠️ Understat live fetch blocked by CORS — showing FPL goal data. Deploy to server for live xG.';buildXGCardsFallback(grid);}
-}
-function buildXGCards(grid){
-  const candidates=fplData.elements.filter(p=>p.minutes>360&&(p.element_type===3||p.element_type===4||p.element_type===2)).sort((a,b)=>parseFloat(b.form)-parseFloat(a.form)).slice(0,20);
-  const enriched=candidates.map(p=>{const u=matchUnderstat(p,understatPlayers);return{...p,xG:u?parseFloat(u.xG||0):null,xA:u?parseFloat(u.xA||0):null,xG90:u&&p.minutes>0?(parseFloat(u.xG||0)/(p.minutes/90)):null,xA90:u&&p.minutes>0?(parseFloat(u.xA||0)/(p.minutes/90)):null,shots:u?parseInt(u.shots||0):null,keyPasses:u?parseInt(u.key_passes||0):null};}).sort((a,b)=>(b.xG90||0)-(a.xG90||0));
-  grid.innerHTML='';
-  enriched.slice(0,12).forEach((p,i)=>{
-    const team=teamOf(p);const c=makeCard(i);
-    const xg=p.xG!=null?p.xG.toFixed(2):'–';const xa=p.xA!=null?p.xA.toFixed(2):'–';
-    const xg90=p.xG90!=null?p.xG90.toFixed(2):'–';const xa90=p.xA90!=null?p.xA90.toFixed(2):'–';
-    const alert=p.xG!=null?xgAlertLabel(p.goals_scored,p.xG):null;
-    const xgW=p.xG!=null?Math.min(p.xG/20*100,100):0;const xaW=p.xA!=null?Math.min(p.xA/15*100,100):0;
-    const gW=Math.min(p.goals_scored/15*100,100);const aW=Math.min(p.assists/12*100,100);
-    c.innerHTML=`<div class="player-header"><img class="player-photo" src="https://resources.premierleague.com/premierleague/photos/players/110x140/p${p.code}.png" alt="${p.web_name}" onerror="this.src='https://resources.premierleague.com/premierleague/photos/players/110x140/Photo-Missing.png'"><div class="player-info"><div class="player-name">${p.web_name}</div><div class="player-team-row"><img src="https://resources.premierleague.com/premierleague/badges/50/t${team?team.code:''}.png" onerror="this.style.display='none'">${team?team.name:'?'} · <span class="pos-badge" style="padding:2px 7px;font-size:0.62rem">${posName(p.element_type)}</span></div>${alert?`<div class="xg-alert ${alert.cls}">${alert.txt}</div>`:''}</div></div><div class="stats-grid-3" style="margin-bottom:10px"><div class="stat-item"><div class="stat-label">xG</div><div class="stat-value purple">${xg}</div></div><div class="stat-item"><div class="stat-label">xA</div><div class="stat-value blue">${xa}</div></div><div class="stat-item"><div class="stat-label">Shots</div><div class="stat-value">${p.shots!=null?p.shots:'–'}</div></div><div class="stat-item"><div class="stat-label">xG/90</div><div class="stat-value purple">${xg90}</div></div><div class="stat-item"><div class="stat-label">xA/90</div><div class="stat-value blue">${xa90}</div></div><div class="stat-item"><div class="stat-label">Key Passes</div><div class="stat-value">${p.keyPasses!=null?p.keyPasses:'–'}</div></div></div><div class="xg-mini-bar-wrap"><div class="xg-mini-labels"><span>Expected vs Actual</span><span>Season total</span></div><div class="xg-bars"><div class="xg-bar-row"><span class="xg-bar-label" style="color:var(--purple);font-size:0.6rem">xG</span><div class="xg-bar-track"><div class="xg-bar-fill xg-color" style="width:${xgW}%"></div></div><span class="xg-bar-val" style="color:var(--purple)">${xg}</span></div><div class="xg-bar-row"><span class="xg-bar-label" style="color:var(--green);font-size:0.6rem">G</span><div class="xg-bar-track"><div class="xg-bar-fill g-color" style="width:${gW}%"></div></div><span class="xg-bar-val" style="color:var(--green)">${p.goals_scored}</span></div><div class="xg-bar-row"><span class="xg-bar-label" style="color:var(--blue);font-size:0.6rem">xA</span><div class="xg-bar-track"><div class="xg-bar-fill xa-color" style="width:${xaW}%"></div></div><span class="xg-bar-val" style="color:var(--blue)">${xa}</span></div><div class="xg-bar-row"><span class="xg-bar-label" style="color:var(--orange);font-size:0.6rem">A</span><div class="xg-bar-track"><div class="xg-bar-fill a-color" style="width:${aW}%"></div></div><span class="xg-bar-val" style="color:var(--orange)">${p.assists}</span></div></div></div>`;
-    grid.appendChild(c);
-  });
+  const grid=document.getElementById('xg-cards');
+  grid.innerHTML='<div class="loading"><div class="loading-spinner"></div>Loading stats...</div>';
+  buildXGCardsFallback(grid);
 }
 function buildXGCardsFallback(grid){
   const candidates=fplData.elements.filter(p=>p.minutes>360&&(p.element_type===3||p.element_type===4)).sort((a,b)=>(b.goals_scored+b.assists)-(a.goals_scored+a.assists)).slice(0,12);
@@ -528,19 +541,21 @@ function buildXGCardsFallback(grid){
   candidates.forEach((p,i)=>{
     const team=teamOf(p);const c=makeCard(i);
     const gW=Math.min(p.goals_scored/15*100,100);const aW=Math.min(p.assists/12*100,100);
-    const g90=(p.minutes>0?(p.goals_scored/(p.minutes/90)).toFixed(2)):'–';const a90=(p.minutes>0?(p.assists/(p.minutes/90)).toFixed(2)):'–';
-    c.innerHTML=`<div class="player-header"><img class="player-photo" src="https://resources.premierleague.com/premierleague/photos/players/110x140/p${p.code}.png" alt="${p.web_name}" onerror="this.src='https://resources.premierleague.com/premierleague/photos/players/110x140/Photo-Missing.png'"><div class="player-info"><div class="player-name">${p.web_name}</div><div class="player-team-row"><img src="https://resources.premierleague.com/premierleague/badges/50/t${team?team.code:''}.png" onerror="this.style.display='none'">${team?team.name:'?'} · <span class="pos-badge" style="padding:2px 7px;font-size:0.62rem">${posName(p.element_type)}</span></div></div></div><div class="stats-grid-3" style="margin-bottom:10px"><div class="stat-item"><div class="stat-label">Goals</div><div class="stat-value green">${p.goals_scored}</div></div><div class="stat-item"><div class="stat-label">Assists</div><div class="stat-value blue">${p.assists}</div></div><div class="stat-item"><div class="stat-label">G+A</div><div class="stat-value">${p.goals_scored+p.assists}</div></div><div class="stat-item"><div class="stat-label">Goals/90</div><div class="stat-value green">${g90}</div></div><div class="stat-item"><div class="stat-label">Assists/90</div><div class="stat-value blue">${a90}</div></div><div class="stat-item"><div class="stat-label">Mins</div><div class="stat-value">${p.minutes}</div></div></div><div class="xg-bars"><div class="xg-bar-row"><span class="xg-bar-label" style="color:var(--green);font-size:0.6rem">G</span><div class="xg-bar-track"><div class="xg-bar-fill g-color" style="width:${gW}%"></div></div><span class="xg-bar-val" style="color:var(--green)">${p.goals_scored}</span></div><div class="xg-bar-row"><span class="xg-bar-label" style="color:var(--orange);font-size:0.6rem">A</span><div class="xg-bar-track"><div class="xg-bar-fill a-color" style="width:${aW}%"></div></div><span class="xg-bar-val" style="color:var(--orange)">${p.assists}</span></div></div>`;
+    const g90=p.minutes>0?(p.goals_scored/(p.minutes/90)).toFixed(2):'–';
+    const a90=p.minutes>0?(p.assists/(p.minutes/90)).toFixed(2):'–';
+    const npg=p.goals_scored-(p.penalties_scored||0);
+    c.innerHTML=`<div class="player-header"><img class="player-photo" src="https://resources.premierleague.com/premierleague/photos/players/110x140/p${p.code}.png" alt="${p.web_name}" onerror="this.src='https://resources.premierleague.com/premierleague/photos/players/110x140/Photo-Missing.png'"><div class="player-info"><div class="player-name">${p.web_name}</div><div class="player-team-row"><img src="https://resources.premierleague.com/premierleague/badges/50/t${team?team.code:''}.png" onerror="this.style.display='none'">${team?team.name:'?'} · <span class="pos-badge" style="padding:2px 7px;font-size:0.62rem">${posName(p.element_type)}</span></div></div></div><div class="stats-grid-3" style="margin-bottom:10px"><div class="stat-item"><div class="stat-label">Goals</div><div class="stat-value green">${p.goals_scored}</div></div><div class="stat-item"><div class="stat-label">Assists</div><div class="stat-value blue">${p.assists}</div></div><div class="stat-item"><div class="stat-label">G+A</div><div class="stat-value">${p.goals_scored+p.assists}</div></div><div class="stat-item"><div class="stat-label">Goals/90</div><div class="stat-value green">${g90}</div></div><div class="stat-item"><div class="stat-label">Assists/90</div><div class="stat-value blue">${a90}</div></div><div class="stat-item"><div class="stat-label">Non-Pen G</div><div class="stat-value">${npg}</div></div></div><div class="xg-bars"><div class="xg-bar-row"><span class="xg-bar-label" style="color:var(--green);font-size:0.6rem">G</span><div class="xg-bar-track"><div class="xg-bar-fill g-color" style="width:${gW}%"></div></div><span class="xg-bar-val" style="color:var(--green)">${p.goals_scored}</span></div><div class="xg-bar-row"><span class="xg-bar-label" style="color:var(--orange);font-size:0.6rem">A</span><div class="xg-bar-track"><div class="xg-bar-fill a-color" style="width:${aW}%"></div></div><span class="xg-bar-val" style="color:var(--orange)">${p.assists}</span></div></div>`;
     grid.appendChild(c);
   });
 }
 
-// ---- LIVE GW ----
+// ── LIVE GW ───────────────────────────────────────────────────────────────
 async function renderLiveGW(){await loadLiveGW(document.getElementById('livegw-content'));}
 async function loadLiveGW(content){
   content.innerHTML='<div class="loading"><div class="loading-spinner"></div>Fetching live GW data...</div>';
   try{
-    const url=PROXY+encodeURIComponent('https://fantasy.premierleague.com/api/event/'+gwId+'/live/');
-    const data=await fetchJSON(url);const elements=data.elements||[];
+    const data=await fetchWithFallback(`https://fantasy.premierleague.com/api/event/${gwId}/live/`);
+    const elements=data.elements||[];
     const liveMap={};
     elements.forEach(el=>{liveMap[el.id]={points:el.stats?.total_points||0,minutes:el.stats?.minutes||0,goals:el.stats?.goals_scored||0,assists:el.stats?.assists||0,cs:el.stats?.clean_sheets||0,bonus:el.stats?.bonus||0,yellow:el.stats?.yellow_cards||0,red:el.stats?.red_cards||0,saves:el.stats?.saves||0,og:el.stats?.own_goals||0,pen_miss:el.stats?.penalties_missed||0};});
     const topPlayers=fplData.elements.map(p=>({...p,live:liveMap[p.id]||{points:0}})).filter(p=>p.live.points>0).sort((a,b)=>b.live.points-a.live.points).slice(0,15);
@@ -548,18 +563,18 @@ async function loadLiveGW(content){
     const totalAssists=Object.values(liveMap).reduce((s,p)=>s+p.assists,0);
     const topScore=topPlayers[0]?.live.points||0;
     const activePlayers=Object.values(liveMap).filter(p=>p.minutes>0).length;
-    function makeEvents(live){const chips=[];if(live.goals)chips.push(`<span class="live-event-chip ev-goal">⚽ ${live.goals>1?live.goals+'× ':''} Goal${live.goals>1?'s':''}</span>`);if(live.assists)chips.push(`<span class="live-event-chip ev-assist">🅰️ ${live.assists>1?live.assists+'× ':''} Assist${live.assists>1?'s':''}</span>`);if(live.cs)chips.push(`<span class="live-event-chip ev-cs">🧱 Clean Sheet</span>`);if(live.saves>=3)chips.push(`<span class="live-event-chip ev-assist">🧤 ${live.saves} Saves</span>`);if(live.bonus)chips.push(`<span class="live-event-chip ev-bonus">⭐ ${live.bonus} Bonus</span>`);if(live.yellow)chips.push(`<span class="live-event-chip ev-yellow">🟨 Yellow</span>`);if(live.red)chips.push(`<span class="live-event-chip ev-red">🟥 Red</span>`);if(live.og)chips.push(`<span class="live-event-chip ev-red">😬 OG</span>`);if(live.pen_miss)chips.push(`<span class="live-event-chip ev-red">❌ Pen Miss</span>`);return chips.join('');}
+    function makeEvents(live){const chips=[];if(live.goals)chips.push(`<span class="live-event-chip ev-goal">⚽ ${live.goals>1?live.goals+'× ':''}Goal</span>`);if(live.assists)chips.push(`<span class="live-event-chip ev-assist">🅰️ Assist</span>`);if(live.cs)chips.push(`<span class="live-event-chip ev-cs">🧱 CS</span>`);if(live.saves>=3)chips.push(`<span class="live-event-chip ev-assist">🧤 ${live.saves} Saves</span>`);if(live.bonus)chips.push(`<span class="live-event-chip ev-bonus">⭐ ${live.bonus} Bonus</span>`);if(live.yellow)chips.push(`<span class="live-event-chip ev-yellow">🟨</span>`);if(live.red)chips.push(`<span class="live-event-chip ev-red">🟥</span>`);if(live.og)chips.push(`<span class="live-event-chip ev-red">😬 OG</span>`);return chips.join('');}
     let html=`<button class="refresh-btn" onclick="loadLiveGW(document.getElementById('livegw-content'))">🔄 Refresh</button><div class="gw-summary-bar"><div class="gw-summary-card"><div class="gw-summary-val">${topScore}</div><div class="gw-summary-lbl">Top Score</div></div><div class="gw-summary-card"><div class="gw-summary-val">${totalGoals}</div><div class="gw-summary-lbl">Goals</div></div><div class="gw-summary-card"><div class="gw-summary-val">${totalAssists}</div><div class="gw-summary-lbl">Assists</div></div><div class="gw-summary-card"><div class="gw-summary-val">${activePlayers}</div><div class="gw-summary-lbl">Active</div></div></div><div class="live-gw-grid">`;
-    topPlayers.forEach((p,i)=>{const team=teamOf(p);const events=makeEvents(p.live);html+=`<div class="live-player-card" style="animation-delay:${i*0.05}s"><div style="display:flex;align-items:center;gap:12px;margin-bottom:12px"><img class="player-photo" src="https://resources.premierleague.com/premierleague/photos/players/110x140/p${p.code}.png" alt="${p.web_name}" onerror="this.src='https://resources.premierleague.com/premierleague/photos/players/110x140/Photo-Missing.png'" style="width:44px;height:55px"><div style="flex:1"><div style="font-size:0.9rem;font-weight:700;margin-bottom:3px">${p.web_name}</div><div style="display:flex;align-items:center;gap:4px;font-size:0.72rem;color:var(--text-muted)"><img src="https://resources.premierleague.com/premierleague/badges/50/t${team?team.code:''}.png" style="width:12px;height:12px;object-fit:contain" onerror="this.style.display='none'">${team?team.name:'?'} · ${posName(p.element_type)} · ${p.live.minutes}'</div></div><div style="text-align:right"><div class="live-pts">${p.live.points}</div><div class="live-pts-label">pts</div></div></div><div class="live-events">${events||'<span style="font-size:0.72rem;color:var(--text-faint)">Playing / No returns yet</span>'}</div></div>`;});
-    if(!topPlayers.length)html+=`<div class="info-msg" style="grid-column:1/-1">No live data yet — games may not have started for GW${gwId}.</div>`;
+    topPlayers.forEach((p,i)=>{const team=teamOf(p);const events=makeEvents(p.live);html+=`<div class="live-player-card" style="animation-delay:${i*0.05}s"><div style="display:flex;align-items:center;gap:12px;margin-bottom:12px"><img class="player-photo" src="https://resources.premierleague.com/premierleague/photos/players/110x140/p${p.code}.png" onerror="this.src='https://resources.premierleague.com/premierleague/photos/players/110x140/Photo-Missing.png'" style="width:44px;height:55px"><div style="flex:1"><div style="font-size:0.9rem;font-weight:700">${p.web_name}</div><div style="font-size:0.72rem;color:var(--text-muted)">${team?team.short_name:'?'} · ${posName(p.element_type)} · ${p.live.minutes}'</div></div><div style="text-align:right"><div class="live-pts">${p.live.points}</div><div class="live-pts-label">pts</div></div></div><div class="live-events">${events||'<span style="font-size:0.72rem;color:var(--text-faint)">No returns yet</span>'}</div></div>`;});
+    if(!topPlayers.length)html+=`<div class="info-msg" style="grid-column:1/-1">No live data yet for GW${gwId}.</div>`;
     html+='</div>';content.innerHTML=html;
-  }catch(err){content.innerHTML=`<div class="error-msg">Could not load live GW data.<br><small>${err.message}</small></div>`;}
+  }catch(err){content.innerHTML=`<div class="error-msg">❌ Could not load live GW data.<br><small>${err.message}</small><br><br><button class="refresh-btn" onclick="loadLiveGW(document.getElementById('livegw-content'))">🔄 Try Again</button></div>`;}
 }
 
-// ---- SCOUT CHART ----
+// ── SCOUT CHART ───────────────────────────────────────────────────────────
 function renderScout(){buildScoutUI(document.getElementById('scout-content'));}
 function buildScoutUI(content){
-  content.innerHTML=`<div class="scout-wrap"><div class="scout-title">🎯 Form vs Fixture Scout</div><div class="scout-sub">Bubble size = ownership %. Top-right = in form with easy fixtures = ideal transfer targets. Hover for details.</div><div class="scout-filters"><button class="scout-filter active" onclick="setScoutPos('ALL',this)">All</button><button class="scout-filter" onclick="setScoutPos('GKP',this)">GKP</button><button class="scout-filter" onclick="setScoutPos('DEF',this)">DEF</button><button class="scout-filter" onclick="setScoutPos('MID',this)">MID</button><button class="scout-filter" onclick="setScoutPos('FWD',this)">FWD</button></div><div class="scout-canvas-wrap"><canvas id="scout-canvas"></canvas></div><div class="scout-legend"><div class="scout-legend-item"><div class="scout-legend-dot" style="background:#00d4aa"></div>GKP</div><div class="scout-legend-item"><div class="scout-legend-dot" style="background:#4f8ef7"></div>DEF</div><div class="scout-legend-item"><div class="scout-legend-dot" style="background:#f0a500"></div>MID</div><div class="scout-legend-item"><div class="scout-legend-dot" style="background:#ff5555"></div>FWD</div><div class="scout-legend-item" style="margin-left:auto;font-style:italic">Bubble size = % owned</div></div></div>`;
+  content.innerHTML=`<div class="scout-wrap"><div class="scout-title">🎯 Form vs Fixture Scout</div><div class="scout-sub">Bubble size = ownership %. Top-right = in form with easy fixtures = ideal transfer targets.</div><div class="scout-filters"><button class="scout-filter active" onclick="setScoutPos('ALL',this)">All</button><button class="scout-filter" onclick="setScoutPos('GKP',this)">GKP</button><button class="scout-filter" onclick="setScoutPos('DEF',this)">DEF</button><button class="scout-filter" onclick="setScoutPos('MID',this)">MID</button><button class="scout-filter" onclick="setScoutPos('FWD',this)">FWD</button></div><div class="scout-canvas-wrap"><canvas id="scout-canvas"></canvas></div><div class="scout-legend"><div class="scout-legend-item"><div class="scout-legend-dot" style="background:#00d4aa"></div>GKP</div><div class="scout-legend-item"><div class="scout-legend-dot" style="background:#4f8ef7"></div>DEF</div><div class="scout-legend-item"><div class="scout-legend-dot" style="background:#f0a500"></div>MID</div><div class="scout-legend-item"><div class="scout-legend-dot" style="background:#ff5555"></div>FWD</div><div class="scout-legend-item" style="margin-left:auto;font-style:italic">Bubble = % owned</div></div></div>`;
   drawScoutChart();
 }
 function setScoutPos(pos,btn){scoutPos=pos;document.querySelectorAll('.scout-filter').forEach(b=>b.classList.remove('active'));btn.classList.add('active');drawScoutChart();}
@@ -567,15 +582,11 @@ function drawScoutChart(){
   if(scoutChart){scoutChart.destroy();scoutChart=null;}
   const canvas=document.getElementById('scout-canvas');if(!canvas||!fplData)return;
   const players=fplData.elements.filter(p=>{if(p.minutes<180)return false;if(scoutPos==='ALL')return true;return posName(p.element_type)===scoutPos;});
-  const datasets=[{label:'GKP',pos:1,color:'rgba(0,212,170,0.75)',border:'rgba(0,212,170,1)'},{label:'DEF',pos:2,color:'rgba(79,142,247,0.75)',border:'rgba(79,142,247,1)'},{label:'MID',pos:3,color:'rgba(240,165,0,0.75)',border:'rgba(240,165,0,1)'},{label:'FWD',pos:4,color:'rgba(255,85,85,0.75)',border:'rgba(255,85,85,1)'}].map(d=>({
-    label:d.label,
-    data:players.filter(p=>p.element_type===d.pos).map(p=>({x:parseFloat(((6-fixtureScore(p.team))/4*10).toFixed(2)),y:parseFloat(p.form)||0,r:Math.max(4,Math.min(parseFloat(p.selected_by_percent||1)*0.7,28)),label:p.web_name,team:teamOf(p)?.short_name||'?',price:price(p),pos:posName(p.element_type),ownership:p.selected_by_percent})),
-    backgroundColor:d.color,borderColor:d.border,borderWidth:1.5
-  }));
-  scoutChart=new Chart(canvas,{type:'bubble',data:{datasets},options:{responsive:true,maintainAspectRatio:false,animation:{duration:600},plugins:{legend:{display:false},tooltip:{backgroundColor:'rgba(11,15,26,0.95)',borderColor:'rgba(0,212,170,0.3)',borderWidth:1,titleColor:'#e8eaf0',bodyColor:'#6b7280',padding:12,callbacks:{title:i=>i[0]?.raw?.label||'',label:i=>{const d=i.raw;return[`${d.team} · ${d.pos} · ${d.price}`,`Form: ${d.y}  |  Fixture ease: ${d.x.toFixed(1)}/10`,`Owned by ${d.ownership}%`];}}}},scales:{x:{title:{display:true,text:'Fixture Ease (Next 3 GWs) →',color:'#6b7280',font:{size:12,weight:'600'}},min:0,max:10,grid:{color:'rgba(255,255,255,0.05)'},ticks:{color:'#6b7280',font:{size:11}}},y:{title:{display:true,text:'Form (Last 4 GWs) →',color:'#6b7280',font:{size:12,weight:'600'}},min:0,grid:{color:'rgba(255,255,255,0.05)'},ticks:{color:'#6b7280',font:{size:11}}}}}});
+  const datasets=[{label:'GKP',pos:1,color:'rgba(0,212,170,0.75)',border:'rgba(0,212,170,1)'},{label:'DEF',pos:2,color:'rgba(79,142,247,0.75)',border:'rgba(79,142,247,1)'},{label:'MID',pos:3,color:'rgba(240,165,0,0.75)',border:'rgba(240,165,0,1)'},{label:'FWD',pos:4,color:'rgba(255,85,85,0.75)',border:'rgba(255,85,85,1)'}].map(d=>({label:d.label,data:players.filter(p=>p.element_type===d.pos).map(p=>({x:parseFloat(((6-fixtureScore(p.team))/4*10).toFixed(2)),y:parseFloat(p.form)||0,r:Math.max(4,Math.min(parseFloat(p.selected_by_percent||1)*0.7,28)),label:p.web_name,team:teamOf(p)?.short_name||'?',price:price(p),pos:posName(p.element_type),ownership:p.selected_by_percent})),backgroundColor:d.color,borderColor:d.border,borderWidth:1.5}));
+  scoutChart=new Chart(canvas,{type:'bubble',data:{datasets},options:{responsive:true,maintainAspectRatio:false,animation:{duration:600},plugins:{legend:{display:false},tooltip:{backgroundColor:'rgba(11,15,26,0.95)',borderColor:'rgba(0,212,170,0.3)',borderWidth:1,titleColor:'#e8eaf0',bodyColor:'#6b7280',padding:12,callbacks:{title:i=>i[0]?.raw?.label||'',label:i=>{const d=i.raw;return[`${d.team} · ${d.pos} · ${d.price}`,`Form: ${d.y}  |  Ease: ${d.x.toFixed(1)}/10`,`Owned: ${d.ownership}%`];}}}},scales:{x:{title:{display:true,text:'Fixture Ease →',color:'#6b7280',font:{size:12,weight:'600'}},min:0,max:10,grid:{color:'rgba(255,255,255,0.05)'},ticks:{color:'#6b7280'}},y:{title:{display:true,text:'Form →',color:'#6b7280',font:{size:12,weight:'600'}},min:0,grid:{color:'rgba(255,255,255,0.05)'},ticks:{color:'#6b7280'}}}}});
 }
 
-// ---- MY TEAM ANALYSER ----
+// ── MY TEAM ───────────────────────────────────────────────────────────────
 async function analyseTeam(){
   const idInput=document.getElementById('team-id-input');
   const btn=document.getElementById('analyse-btn');
@@ -586,214 +597,420 @@ async function analyseTeam(){
   btn.disabled=true;btn.textContent='Analysing...';
   content.innerHTML='<div class="loading"><div class="loading-spinner"></div>Fetching your team...</div>';
   try{
-    const picksURL=PROXY+encodeURIComponent(`https://fantasy.premierleague.com/api/entry/${teamId}/event/${gwId}/picks/`);
-    const entryURL=PROXY+encodeURIComponent(`https://fantasy.premierleague.com/api/entry/${teamId}/`);
-    const [picksData,entryData]=await Promise.all([fetchJSON(picksURL),fetchJSON(entryURL)]);
+    const [picksData,entryData]=await Promise.all([
+      fetchWithFallback(`https://fantasy.premierleague.com/api/entry/${teamId}/event/${gwId}/picks/`),
+      fetchWithFallback(`https://fantasy.premierleague.com/api/entry/${teamId}/`)
+    ]);
     const picks=picksData.picks||[];
     const activeChip=picksData.active_chip;
-    // Enrich with FPL element data
     const enriched=picks.map(pick=>{
       const p=fplData.elements.find(e=>e.id===pick.element);
       if(!p)return null;
       const team=teamOf(p);
-      const power=calcPower(p);
-      const fixAvg=Math.round(fixtureScore(p.team)*10)/10;
-      const epNext=parseFloat(p.ep_next)||0;
-      return{...p,...pick,team_obj:team,power,fixAvg,epNext};
+      return{...p,...pick,team_obj:team,power:calcPower(p),fixAvg:Math.round(fixtureScore(p.team)*10)/10,epNext:parseFloat(p.ep_next)||0};
     }).filter(Boolean);
-
-    // Captain recommendation: highest power score among starting 11 attackers/mids
     const starters=enriched.filter(p=>p.multiplier>0);
-    const captainCandidates=starters
-      .filter(p=>p.element_type===3||p.element_type===4)
-      .sort((a,b)=>b.power-a.power)
-      .slice(0,3);
-
+    const captainCandidates=starters.filter(p=>p.element_type===3||p.element_type===4).sort((a,b)=>b.power-a.power).slice(0,3);
     const totalValue=(enriched.reduce((s,p)=>s+p.now_cost,0)/10).toFixed(1);
-    const totalPts=enriched.filter(p=>p.multiplier>0).reduce((s,p)=>s+(p.total_points*(p.multiplier||1)),0);
+    const totalPts=starters.reduce((s,p)=>s+(p.total_points*(p.multiplier||1)),0);
     const teamName=entryData.name||'Your Team';
     const managerName=`${entryData.player_first_name||''} ${entryData.player_last_name||''}`.trim();
     const overallRank=entryData.summary_overall_rank?entryData.summary_overall_rank.toLocaleString():'–';
-
-    // Build position groups
-    const gkps=starters.filter(p=>p.element_type===1);
-    const defs=starters.filter(p=>p.element_type===2);
-    const mids=starters.filter(p=>p.element_type===3);
-    const fwds=starters.filter(p=>p.element_type===4);
-    const bench=enriched.filter(p=>p.multiplier===0);
-
     function playerCard(p){
-      const isCaptain=p.is_captain;const isVice=p.is_vice_captain;
-      const recCls=p.power>=6?'rec-hold':(p.power<=3?'rec-sell':'');
+      const isCaptain=p.is_captain,isVice=p.is_vice_captain;
+      const recCls=p.power>=6?'rec-hold':p.power<=3?'rec-sell':'';
       const recLbl=p.power>=6?'Hold':p.power<=3?'Consider Selling':'';
-      const captainMark=isCaptain?'<span class="captain-crown">©️</span>':isVice?'<span class="vice-crown">Ⓥ</span>':'';
-      const cardCls=isCaptain?'pitch-card captain-card':isVice?'pitch-card vice-card':'pitch-card';
-      return `<div class="${cardCls}">
-        ${captainMark}
-        <div class="pitch-pos">${posName(p.element_type)}</div>
-        <div class="pitch-name">${p.web_name}</div>
-        <div class="pitch-team">${p.team_obj?p.team_obj.short_name:'?'}</div>
-        <div class="pitch-pts">${p.total_points} pts</div>
-        <div class="pitch-price">${price(p)} · Fix: ${p.fixAvg} · ep: ${p.epNext}</div>
-        ${recLbl?`<div class="rec-badge ${recCls}">${recLbl}</div>`:''}
-      </div>`;
+      const mark=isCaptain?'<span class="captain-crown">©️</span>':isVice?'<span class="captain-crown" style="color:var(--purple)">Ⓥ</span>':'';
+      const cls=isCaptain?'pitch-card captain-card':isVice?'pitch-card vice-card':'pitch-card';
+      return `<div class="${cls}">${mark}<div class="pitch-pos">${posName(p.element_type)}</div><div class="pitch-name">${p.web_name}</div><div class="pitch-team">${p.team_obj?p.team_obj.short_name:'?'}</div><div class="pitch-pts">${p.total_points} pts</div><div class="pitch-price">${price(p)} · Fix: ${p.fixAvg} · ep: ${p.epNext}</div>${recLbl?`<div class="rec-badge ${recCls}">${recLbl}</div>`:''}</div>`;
     }
-
-    let html=`
-      <div style="margin-bottom:20px">
-        <div style="font-size:1.3rem;font-weight:800;color:var(--text)">${teamName}</div>
-        <div style="font-size:0.8rem;color:var(--text-muted);margin-top:2px">${managerName} · Overall Rank: ${overallRank}${activeChip?` · 🃏 Chip: ${activeChip}`:''}</div>
-      </div>
-      <div class="team-stats-bar">
-        <div class="gw-summary-card"><div class="gw-summary-val">£${totalValue}m</div><div class="gw-summary-lbl">Team Value</div></div>
-        <div class="gw-summary-card"><div class="gw-summary-val">${totalPts}</div><div class="gw-summary-lbl">Season Pts</div></div>
-        <div class="gw-summary-card"><div class="gw-summary-val">${overallRank}</div><div class="gw-summary-lbl">Overall Rank</div></div>
-        <div class="gw-summary-card"><div class="gw-summary-val">${activeChip||'–'}</div><div class="gw-summary-lbl">Active Chip</div></div>
-      </div>`;
-
+    let html=`<div style="margin-bottom:20px"><div style="font-size:1.3rem;font-weight:800">${teamName}</div><div style="font-size:0.8rem;color:var(--text-muted);margin-top:2px">${managerName} · Rank: ${overallRank}${activeChip?` · 🃏 ${activeChip}`:''}</div></div><div class="team-stats-bar"><div class="gw-summary-card"><div class="gw-summary-val">£${totalValue}m</div><div class="gw-summary-lbl">Team Value</div></div><div class="gw-summary-card"><div class="gw-summary-val">${totalPts}</div><div class="gw-summary-lbl">Season Pts</div></div><div class="gw-summary-card"><div class="gw-summary-val">${overallRank}</div><div class="gw-summary-lbl">Overall Rank</div></div><div class="gw-summary-card"><div class="gw-summary-val">${activeChip||'–'}</div><div class="gw-summary-lbl">Chip</div></div></div>`;
     if(captainCandidates.length){
       html+=`<div class="captain-section"><div class="captain-section-title">🏆 Captain Recommendations</div><div class="captain-picks">`;
-      const medals=['🥇','🥈','🥉'];
-      captainCandidates.forEach((p,i)=>{
-        html+=`<div class="captain-pick"><span class="captain-pick-rank">${medals[i]||''}</span><div class="captain-pick-info"><div class="captain-pick-name">${p.web_name}</div><div class="captain-pick-why">${p.team_obj?p.team_obj.short_name:'?'} · Fix ease: ${((6-p.fixAvg)/4*10).toFixed(1)}/10 · Form: ${p.form}</div></div><div class="captain-pick-pts">⚡ ${p.power}</div></div>`;
-      });
+      ['🥇','🥈','🥉'].forEach((medal,i)=>{if(!captainCandidates[i])return;const p=captainCandidates[i];html+=`<div class="captain-pick"><span class="captain-pick-rank">${medal}</span><div class="captain-pick-info"><div class="captain-pick-name">${p.web_name}</div><div class="captain-pick-why">${p.team_obj?p.team_obj.short_name:'?'} · Ease: ${((6-p.fixAvg)/4*10).toFixed(1)}/10 · Form: ${p.form}</div></div><div class="captain-pick-pts">⚡ ${p.power}</div></div>`;});
       html+=`</div></div>`;
     }
-
     const posLabels={1:'⬛ Goalkeeper',2:'🔵 Defenders',3:'🟡 Midfielders',4:'🔴 Forwards'};
-    [gkps,defs,mids,fwds].forEach((group,idx)=>{
+    [[starters.filter(p=>p.element_type===1),1],[starters.filter(p=>p.element_type===2),2],[starters.filter(p=>p.element_type===3),3],[starters.filter(p=>p.element_type===4),4]].forEach(([group,posType],idx)=>{
       if(!group.length)return;
-      const posType=[1,2,3,4][idx];
-      html+=`<div style="font-size:0.72rem;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:var(--text-muted);margin-bottom:10px;margin-top:${idx>0?'20px':'0'}">${posLabels[posType]}</div>`;
-      html+=`<div class="pitch-grid">`;
-      group.forEach(p=>{html+=playerCard(p);});
-      html+=`</div>`;
+      html+=`<div style="font-size:0.72rem;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:var(--text-muted);margin-bottom:10px;margin-top:${idx>0?'20px':'0'}">${posLabels[posType]}</div><div class="pitch-grid">`;
+      group.forEach(p=>{html+=playerCard(p);});html+=`</div>`;
     });
-
-    if(bench.length){
-      html+=`<div style="font-size:0.72rem;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:var(--text-muted);margin-bottom:10px;margin-top:20px">🪑 Bench</div><div class="pitch-grid">`;
-      bench.forEach(p=>{html+=playerCard(p);});
-      html+=`</div>`;
-    }
-
+    const bench=enriched.filter(p=>p.multiplier===0);
+    if(bench.length){html+=`<div style="font-size:0.72rem;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:var(--text-muted);margin-bottom:10px;margin-top:20px">🪑 Bench</div><div class="pitch-grid">`;bench.forEach(p=>{html+=playerCard(p);});html+=`</div>`;}
     content.innerHTML=html;
   }catch(err){
-    content.innerHTML=`<div class="error-msg">Could not load team data.<br><small>Check your Team ID is correct. ${err.message}</small></div>`;
+    content.innerHTML=`<div class="error-msg">❌ Could not load team.<br><small>Check your Team ID is correct.<br>${err.message}</small></div>`;
   }finally{btn.disabled=false;btn.textContent='Analyse My Team';}
 }
 
-// ---- AI CHAT ----
-function saveKey(){const val=document.getElementById('api-key-input').value.trim();if(!val.startsWith('sk-')){document.getElementById('key-status').textContent='❌ Invalid key';document.getElementById('key-status').style.color='#ff5555';return;}openaiKey=val;document.getElementById('key-status').textContent='✅ Connected!';document.getElementById('key-status').style.color='#00d4aa';document.getElementById('chat-input').focus();}
+// ── AI CHAT ───────────────────────────────────────────────────────────────
+function saveKey(){const val=document.getElementById('api-key-input').value.trim();if(!val.startsWith('sk-')){document.getElementById('key-status').textContent='❌ Invalid key';document.getElementById('key-status').style.color='#ff5555';return;}openaiKey=val;document.getElementById('key-status').textContent='✅ Connected!';document.getElementById('key-status').style.color='#00d4aa';}
 function addMessage(role,text){const empty=document.getElementById('chat-empty');if(empty)empty.remove();const win=document.getElementById('chat-window');const row=document.createElement('div');row.className='msg-row '+role;row.innerHTML=`<div class="msg-bubble">${text}</div>`;win.appendChild(row);win.scrollTop=win.scrollHeight;return row;}
-async function sendMessage(){if(!openaiKey){alert('Please connect your OpenAI API key first!');return;}const input=document.getElementById('chat-input');const sendBtn=document.getElementById('send-btn');const userMsg=input.value.trim();if(!userMsg)return;input.value='';sendBtn.disabled=true;sendBtn.textContent='...';addMessage('user',userMsg);const thinkingRow=addMessage('assistant','⏳ Thinking...');try{const res=await fetch('https://api.openai.com/v1/chat/completions',{method:'POST',headers:{'Content-Type':'application/json','Authorization':`Bearer ${openaiKey}`},body:JSON.stringify({model:'gpt-4o-mini',messages:[{role:'system',content:'You are an expert Fantasy Premier League (FPL) assistant. Give concise, tactical, data-driven advice on transfers, captaincy, team selection and fixture analysis. Keep responses under 180 words. Use bullet points where helpful.'},{role:'user',content:userMsg}],max_tokens:250})});const data=await res.json();thinkingRow.remove();if(data.error)addMessage('assistant','❌ API Error: '+data.error.message);else addMessage('assistant',data.choices[0].message.content.replace(/\n/g,'<br>'));}catch(err){thinkingRow.remove();addMessage('assistant','❌ Network error.');}finally{sendBtn.disabled=false;sendBtn.textContent='Send ➤';input.focus();}}
+async function sendMessage(){if(!openaiKey){alert('Please connect your OpenAI API key first!');return;}const input=document.getElementById('chat-input');const sendBtn=document.getElementById('send-btn');const userMsg=input.value.trim();if(!userMsg)return;input.value='';sendBtn.disabled=true;sendBtn.textContent='...';addMessage('user',userMsg);const thinkingRow=addMessage('assistant','⏳ Thinking...');try{const res=await fetch('https://api.openai.com/v1/chat/completions',{method:'POST',headers:{'Content-Type':'application/json','Authorization':`Bearer ${openaiKey}`},body:JSON.stringify({model:'gpt-4o-mini',messages:[{role:'system',content:'You are an expert Fantasy Premier League (FPL) assistant. Give concise, tactical, data-driven advice on transfers, captaincy, team selection and fixture analysis. Keep responses under 180 words. Use bullet points where helpful.'},{role:'user',content:userMsg}],max_tokens:250})});const data=await res.json();thinkingRow.remove();if(data.error)addMessage('assistant','❌ '+data.error.message);else addMessage('assistant',data.choices[0].message.content.replace(/\n/g,'<br>'));}catch(err){thinkingRow.remove();addMessage('assistant','❌ Network error.');}finally{sendBtn.disabled=false;sendBtn.textContent='Send ➤';}}
 
-// ---- DIFFERENTIALS ----
-function renderDifferentials(){
-  const grid=document.getElementById('diff-cards');
-  const picks=fplData.elements.filter(p=>p.minutes>360&&parseFloat(p.selected_by_percent||100)<10).map(p=>({...p,power:calcPower(p)})).sort((a,b)=>b.power-a.power).slice(0,12);
-  if(!picks.length){grid.innerHTML='<div class="info-msg">No differentials found — try again after GW data refreshes.</div>';return;}
-  grid.innerHTML='';
-  picks.forEach((p,i)=>{
-    const team=teamOf(p);const c=makeCard(i);
-    const ownW=Math.min(parseFloat(p.selected_by_percent||0)*10,100);
-    const fixAvg=Math.round(fixtureScore(p.team)*10)/10;
-    const fixCls=fixAvg<=2.5?'green':fixAvg<=3.2?'orange':'red';
-    const ptsCost=p.now_cost>0?(p.total_points/(p.now_cost/10)).toFixed(1):'?';
-    const bw=Math.round((p.power/10)*100);
-    c.innerHTML=`<div class="player-header"><img class="player-photo" src="https://resources.premierleague.com/premierleague/photos/players/110x140/p${p.code}.png" alt="${p.web_name}" onerror="this.src='https://resources.premierleague.com/premierleague/photos/players/110x140/Photo-Missing.png'"><div class="player-info"><div class="player-name">${p.web_name}</div><div class="player-team-row"><img src="https://resources.premierleague.com/premierleague/badges/50/t${team?team.code:''}.png" onerror="this.style.display='none'">${team?team.name:'?'}</div><span class="diff-badge">👻 ${p.selected_by_percent}% owned</span></div><span class="pos-badge">${posName(p.element_type)}</span></div><div class="power-score-wrap"><div class="power-score-header"><span class="power-score-label">⚡ Power Score</span><span class="power-score-value">${p.power}</span></div><div class="power-bar-bg"><div class="power-bar-fill" style="width:${bw}%"></div></div></div><div class="diff-own-bar"><div class="diff-own-header"><span class="diff-own-label">👥 FPL Ownership</span><span class="diff-own-val">${p.selected_by_percent}%</span></div><div class="diff-bar-bg"><div class="diff-bar-fill" style="width:${ownW}%"></div></div></div><div class="stats-grid" style="margin-top:10px"><div class="stat-item"><div class="stat-label">Form</div><div class="stat-value green">${p.form}</div></div><div class="stat-item"><div class="stat-label">Price</div><div class="stat-value">${price(p)}</div></div><div class="stat-item"><div class="stat-label">Pts/£m</div><div class="stat-value blue">${ptsCost}</div></div><div class="stat-item"><div class="stat-label">Fix Avg</div><div class="stat-value ${fixCls}">${fixAvg}</div></div></div>`;
-    grid.appendChild(c);
-  });
-}
-
-// ---- GW HISTORY ----
-let historyChart=null;let selectedHistoryPlayer=null;
-function initHistory(){if(!fplData)return;}
-function historySearch(){
-  const q=document.getElementById('history-search').value.toLowerCase().trim();
-  const suggBox=document.getElementById('history-suggestions');
-  if(q.length<2){suggBox.innerHTML='';return;}
-  const matches=fplData.elements.filter(p=>p.web_name.toLowerCase().includes(q)||(p.first_name+' '+p.second_name).toLowerCase().includes(q)).slice(0,8);
-  suggBox.innerHTML=matches.map(p=>`<button onclick="loadPlayerHistory(${p.id})" style="padding:6px 14px;background:var(--surface);border:1px solid var(--border);border-radius:999px;color:var(--text);font-size:0.8rem;font-weight:600;cursor:pointer;font-family:'Outfit',sans-serif;transition:all var(--transition)" onmouseover="this.style.borderColor='rgba(0,212,170,0.5)'" onmouseout="this.style.borderColor='rgba(255,255,255,0.08)'">${p.web_name} <span style="color:var(--text-muted);font-weight:400">${teamOf(p)?teamOf(p).short_name:'?'} · ${posName(p.element_type)}</span></button>`).join('');
-}
-async function loadPlayerHistory(playerId){
-  const p=fplData.elements.find(e=>e.id===playerId);if(!p)return;
-  selectedHistoryPlayer=p;
-  document.getElementById('history-suggestions').innerHTML='';
-  document.getElementById('history-search').value=p.web_name;
-  document.getElementById('history-empty').style.display='none';
-  const wrap=document.getElementById('history-chart-wrap');wrap.style.display='block';
-  document.getElementById('history-player-name').textContent=p.web_name;
-  const team=teamOf(p);
-  document.getElementById('history-player-meta').textContent=`${team?team.name:'?'} · ${posName(p.element_type)} · ${price(p)} · Selected ${p.selected_by_percent}%`;
-  try{
-    const url=PROXY+encodeURIComponent('https://fantasy.premierleague.com/api/element-summary/'+playerId+'/');
-    const data=await fetchJSON(url);
-    const hist=data.history||[];
-    if(!hist.length){wrap.innerHTML='<div class="info-msg">No GW history found for this player.</div>';return;}
-    const labels=hist.map(h=>'GW'+h.round);
-    const pts=hist.map(h=>h.total_points);
-    const mins=hist.map(h=>h.minutes);
-    const goals=hist.map(h=>h.goals_scored);
-    const assists=hist.map(h=>h.assists);
-    const totalGames=hist.length;
-    const totalPts=pts.reduce((a,b)=>a+b,0);
-    const avgPts=(totalPts/totalGames).toFixed(1);
-    const bestGW=Math.max(...pts);
-    const totalGoals=goals.reduce((a,b)=>a+b,0);
-    const totalAssists=assists.reduce((a,b)=>a+b,0);
-    document.getElementById('history-player-stats').innerHTML=`<div class="hist-stat"><div class="hist-stat-val">${totalPts}</div><div class="hist-stat-lbl">Total Pts</div></div><div class="hist-stat"><div class="hist-stat-val">${avgPts}</div><div class="hist-stat-lbl">Avg/GW</div></div><div class="hist-stat"><div class="hist-stat-val">${bestGW}</div><div class="hist-stat-lbl">Best GW</div></div><div class="hist-stat"><div class="hist-stat-val">${totalGoals}</div><div class="hist-stat-lbl">Goals</div></div><div class="hist-stat"><div class="hist-stat-val">${totalAssists}</div><div class="hist-stat-lbl">Assists</div></div>`;
-    if(historyChart){historyChart.destroy();historyChart=null;}
-    const ctx=document.getElementById('history-canvas').getContext('2d');
-    historyChart=new Chart(ctx,{type:'bar',data:{labels,datasets:[{label:'GW Points',data:pts,backgroundColor:pts.map(v=>v>=12?'rgba(0,212,170,0.85)':v>=8?'rgba(0,212,170,0.55)':v===2?'rgba(255,85,85,0.4)':v===1?'rgba(255,85,85,0.3)':'rgba(79,142,247,0.45)'),borderColor:pts.map(v=>v>=12?'rgba(0,212,170,1)':v>=8?'rgba(0,212,170,0.7)':'rgba(79,142,247,0.6)'),borderWidth:1.5,borderRadius:5,type:'bar'},{label:'Minutes (scaled)',data:mins.map(m=>m/90*6),borderColor:'rgba(167,139,250,0.6)',backgroundColor:'transparent',type:'line',tension:0.4,pointRadius:0,borderWidth:1.5,borderDash:[4,4]}]},options:{responsive:true,maintainAspectRatio:false,animation:{duration:500},plugins:{legend:{labels:{color:'#6b7280',font:{size:11,family:"'Outfit',sans-serif"},boxWidth:12,padding:16}},tooltip:{backgroundColor:'rgba(11,15,26,0.95)',borderColor:'rgba(0,212,170,0.3)',borderWidth:1,titleColor:'#e8eaf0',bodyColor:'#6b7280',padding:10,callbacks:{label:(ctx)=>{if(ctx.datasetIndex===0)return ' GW Points: '+pts[ctx.dataIndex]+(goals[ctx.dataIndex]?' | ⚽'+goals[ctx.dataIndex]:'')+(assists[ctx.dataIndex]?' | 🅰️'+assists[ctx.dataIndex]:'');return ' Minutes: '+mins[ctx.dataIndex];}}}},scales:{x:{grid:{color:'rgba(255,255,255,0.04)'},ticks:{color:'#6b7280',font:{size:10,family:"'Outfit',sans-serif"},maxRotation:45}},y:{grid:{color:'rgba(255,255,255,0.05)'},ticks:{color:'#6b7280',font:{size:11,family:"'Outfit',sans-serif"}},min:0}}}});
-  }catch(err){wrap.innerHTML=`<div class="error-msg">Could not load history.<br><small>${err.message}</small></div>`;}
-}
-
-// ---- MINI LEAGUE ----
-function initMiniLeague(){}
-async function loadMiniLeague(){
-  const leagueId=document.getElementById('league-id-input').value.trim();
-  const btn=document.getElementById('league-btn');
-  const content=document.getElementById('minileague-content');
-  if(!leagueId){document.getElementById('league-id-input').style.borderColor='#ff5555';return;}
-  document.getElementById('league-id-input').style.borderColor='';
-  btn.disabled=true;btn.textContent='Loading...';
-  content.innerHTML='<div class="loading"><div class="loading-spinner"></div>Fetching league standings...</div>';
-  try{
-    const url=PROXY+encodeURIComponent(`https://fantasy.premierleague.com/api/leagues-classic/${leagueId}/standings/`);
-    const data=await fetchJSON(url);
-    const league=data.league;const standings=data.standings?.results||[];
-    if(!standings.length){content.innerHTML='<div class="info-msg">No standings found. Check the League ID.</div>';btn.disabled=false;btn.textContent='Load League';return;}
-    const topPts=standings[0]?.total||0;
-    let rows=standings.slice(0,50).map((entry,i)=>{
-      const mv=entry.last_rank-entry.rank;
-      const mvHtml=mv>0?`<span class="league-mv up">▲${mv}</span>`:mv<0?`<span class="league-mv down">▼${Math.abs(mv)}</span>`:`<span class="league-mv same">–</span>`;
-      const rankCls=i<3?'league-rank top3':'league-rank';
-      const pctBehind=topPts>0?Math.round((entry.total/topPts)*100):0;
-      const gapTxt=i===0?'<span style="color:var(--green);font-size:0.72rem">👑 Leader</span>':`<span style="font-size:0.72rem;color:var(--text-muted)">-${topPts-entry.total} pts</span>`;
-      return `<tr><td><span class="${rankCls}">${entry.rank}</span></td><td>${mvHtml}</td><td class="league-name">${entry.entry_name}</td><td style="font-size:0.75rem;color:var(--text-muted)">${entry.player_name}</td><td class="league-pts">${entry.total}</td><td class="league-gw">${entry.event_total}</td><td>${gapTxt}</td></tr>`;
-    }).join('');
-    content.innerHTML=`<div class="league-wrap"><div class="league-header"><div><div class="league-title">🏆 ${league.name}</div><div class="league-meta">${standings.length} managers · Last updated GW${gwId}</div></div><div style="display:flex;gap:10px;flex-wrap:wrap"><div class="hist-stat"><div class="hist-stat-val">${standings.length}</div><div class="hist-stat-lbl">Managers</div></div><div class="hist-stat"><div class="hist-stat-val">${topPts}</div><div class="hist-stat-lbl">Top Score</div></div><div class="hist-stat"><div class="hist-stat-val">${Math.round(standings.reduce((s,e)=>s+e.total,0)/standings.length)}</div><div class="hist-stat-lbl">Avg Score</div></div></div></div><div style="overflow-x:auto"><table class="league-table"><thead><tr><th>#</th><th>Move</th><th>Team</th><th>Manager</th><th>Total</th><th>GW${gwId}</th><th>Gap</th></tr></thead><tbody>${rows}</tbody></table></div></div>`;
-  }catch(err){content.innerHTML=`<div class="error-msg">Could not load league data.<br><small>Make sure the league is public and the ID is correct. ${err.message}</small></div>`;}
-  finally{btn.disabled=false;btn.textContent='Load League';}
-}
-
-// ---- INIT ----
+// ── INIT ──────────────────────────────────────────────────────────────────
 async function init(){
   const grid=document.getElementById('fixture-cards');
   try{
-    const [bootstrap,allFixtures]=await Promise.all([fetchJSON(FPL_BOOTSTRAP),fetchJSON(FPL_FIXTURES)]);
+    const [bootstrap,allFixtures]=await Promise.all([
+      fetchWithFallback(FPL_BOOTSTRAP),
+      fetchWithFallback(FPL_FIXTURES)
+    ]);
     fplData=bootstrap;fixtureData=allFixtures;
     const events=bootstrap.events;
     const currentGW=events.find(e=>e.is_current)||events.find(e=>e.is_next)||events[0];
     gwId=currentGW.id;
     document.getElementById('last-updated').textContent='Live · GW'+gwId;
-    document.getElementById('gw-info').innerHTML=`<div class="gw-hero"><div class="gw-hero-left"><div class="gw-circle">📅</div><div><div class="gw-label">Current Gameweek</div><div class="gw-name">${currentGW.name}</div></div></div><div class="gw-deadline">⏰ Deadline: ${currentGW.deadline_time?new Date(currentGW.deadline_time).toLocaleDateString('en-GB',{weekday:'short',day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'}):'See FPL app'}</div></div>`;
+    document.getElementById('gw-info').innerHTML=`<div class="gw-hero"><div style="display:flex;align-items:center;gap:14px"><div class="gw-circle">📅</div><div><div class="gw-label">Current Gameweek</div><div class="gw-name">${currentGW.name}</div></div></div><div class="gw-deadline">⏰ Deadline: ${currentGW.deadline_time?new Date(currentGW.deadline_time).toLocaleDateString('en-GB',{weekday:'short',day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'}):'See FPL app'}</div></div>`;
     renderFixtures(allFixtures);
   }catch(err){
-    grid.innerHTML=`<div class="error-msg">Could not load FPL data.<br><small>${err.message}</small></div>`;
+    grid.innerHTML=`<div class="error-msg">❌ Could not load FPL data.<br><small>${err.message}</small><br><br><button class="refresh-btn" style="margin:0 auto" onclick="location.reload()">🔄 Reload Page</button></div>`;
+    document.getElementById('last-updated').textContent='Error — tap reload';
   }
 }
 init();
+
+
+// ══════════════════════════════════════════════════════════════
+// PHASE 5 ── DIFFERENTIALS
+// ══════════════════════════════════════════════════════════════
+async function renderDifferentials(){
+  const content=document.getElementById('differentials-content');
+  content.innerHTML='<div class="loading"><div class="loading-spinner"></div>Scanning for differentials...</div>';
+  if(!fplData){content.innerHTML='<div class="error-msg">❌ Data not loaded. Please refresh.</div>';return;}
+  const diffs=fplData.elements
+    .filter(p=>{
+      const o=parseFloat(p.selected_by_percent||0);
+      return o>0&&o<10&&p.minutes>180;
+    })
+    .map(p=>{
+      const o=parseFloat(p.selected_by_percent||0.1);
+      const form=parseFloat(p.form)||0;
+      const ps=calcPower(p);
+      return{...p,ownership:o,diffScore:(form*ps)/o};
+    })
+    .sort((a,b)=>b.diffScore-a.diffScore)
+    .slice(0,12);
+  if(!diffs.length){
+    content.innerHTML='<div class="loading" style="color:var(--green)">✅ No differentials found right now.</div>';
+    return;
+  }
+  const grid=document.createElement('div');
+  grid.className='card-grid';
+  diffs.forEach((p,i)=>{
+    const team=teamOf(p);
+    const c=makeCard(i);
+    const isGem=p.ownership<5;
+    const fixAvg=Math.round(fixtureScore(p.team)*10)/10;
+    const fixCls=fixAvg<=2.5?'green':fixAvg<=3.2?'orange':'red';
+    const ptsCost=p.now_cost>0?(p.total_points/(p.now_cost/10)).toFixed(1):'?';
+    const epNext=parseFloat(p.ep_next)||0;
+    c.innerHTML=`
+      <div class="player-header">
+        <img class="player-photo"
+          src="https://resources.premierleague.com/premierleague/photos/players/110x140/p${p.code}.png"
+          onerror="this.src='https://resources.premierleague.com/premierleague/photos/players/110x140/Photo-Missing.png'"
+          alt="${p.web_name}">
+        <div class="player-info">
+          <div class="player-name">${p.web_name}</div>
+          <div class="player-team-row">
+            <img src="https://resources.premierleague.com/premierleague/badges/50/t${team?team.code:''}.png" onerror="this.style.display='none'">
+            ${team?team.name:'?'} &middot;
+            <span class="pos-badge" style="padding:2px 7px;font-size:0.62rem">${posName(p.element_type)}</span>
+          </div>
+          <div class="diff-tag ${isGem?'gem':'diff'}">${isGem?'🟢 Hidden Gem':'🟡 Differential'}</div>
+        </div>
+      </div>
+      <div class="stats-grid">
+        <div class="stat-item"><div class="stat-label">Owned By</div><div class="stat-value purple">${p.ownership}%</div></div>
+        <div class="stat-item"><div class="stat-label">Form</div><div class="stat-value green">${p.form}</div></div>
+        <div class="stat-item"><div class="stat-label">Price</div><div class="stat-value">${price(p)}</div></div>
+        <div class="stat-item"><div class="stat-label">Fix Avg</div><div class="stat-value ${fixCls}">${fixAvg}</div></div>
+        <div class="stat-item"><div class="stat-label">Pts/£m</div><div class="stat-value blue">${ptsCost}</div></div>
+        <div class="stat-item"><div class="stat-label">EP Next</div><div class="stat-value orange">${epNext}</div></div>
+      </div>
+      <div style="margin-top:10px;display:flex;align-items:center;justify-content:space-between">
+        <span style="font-size:0.68rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px">Diff Score</span>
+        <span style="font-size:1rem;font-weight:800;color:var(--green)">${p.diffScore.toFixed(1)}</span>
+      </div>`;
+    grid.appendChild(c);
+  });
+  content.innerHTML='';
+  content.appendChild(grid);
+}
+
+// ══════════════════════════════════════════════════════════════
+// PHASE 5 ── PLAYER HISTORY
+// ══════════════════════════════════════════════════════════════
+let historyCharts={};
+let historyShown=new Set();
+let historySuggestions=[];
+let historyDebounce=null;
+
+document.addEventListener('DOMContentLoaded',()=>{
+  const inp=document.getElementById('history-search-input');
+  if(!inp)return;
+  inp.addEventListener('input',e=>{
+    clearTimeout(historyDebounce);
+    const q=e.target.value.trim().toLowerCase();
+    const sug=document.getElementById('history-suggestions');
+    if(!q||q.length<2){sug.style.display='none';return;}
+    if(!fplData){sug.style.display='none';return;}
+    historyDebounce=setTimeout(()=>{
+      historySuggestions=fplData.elements
+        .filter(p=>
+          p.web_name.toLowerCase().includes(q)||
+          p.second_name.toLowerCase().includes(q)||
+          p.first_name.toLowerCase().includes(q)
+        ).slice(0,7);
+      if(!historySuggestions.length){sug.style.display='none';return;}
+      sug.style.display='block';
+      sug.innerHTML=historySuggestions.map((p,i)=>{
+        const t=teamOf(p);
+        return `<div class="suggest-item" data-i="${i}">
+          <img src="https://resources.premierleague.com/premierleague/photos/players/110x140/p${p.code}.png"
+            style="width:26px;height:33px;object-fit:cover;border-radius:5px" onerror="this.style.display='none'">
+          <span style="font-weight:600">${p.web_name}</span>
+          <span style="color:var(--text-muted);font-size:0.75rem">${t?t.short_name:''}</span>
+          <span class="pos-badge" style="margin-left:auto;padding:2px 7px;font-size:0.62rem">${posName(p.element_type)}</span>
+        </div>`;
+      }).join('');
+      sug.querySelectorAll('.suggest-item').forEach(el=>{
+        el.addEventListener('click',()=>{
+          const p=historySuggestions[parseInt(el.dataset.i)];
+          sug.style.display='none';
+          inp.value=p.web_name;
+          loadPlayerHistory(p);
+        });
+      });
+    },220);
+  });
+  inp.addEventListener('keydown',e=>{if(e.key==='Enter')searchPlayerHistory();});
+  document.addEventListener('click',e=>{
+    if(!e.target.closest('#history-suggestions')&&!e.target.closest('#history-search-input'))
+      document.getElementById('history-suggestions').style.display='none';
+  });
+});
+
+function searchPlayerHistory(){
+  const q=document.getElementById('history-search-input').value.trim().toLowerCase();
+  if(!q)return;
+  if(!fplData){
+    document.getElementById('history-results').insertAdjacentHTML('afterbegin','<div class="error-msg" style="margin-bottom:12px">❌ FPL data not loaded yet. Please wait and retry.</div>');
+    return;
+  }
+  const match=fplData.elements.find(p=>
+    p.web_name.toLowerCase()===q||
+    p.web_name.toLowerCase().includes(q)||
+    p.second_name.toLowerCase().includes(q)||
+    p.first_name.toLowerCase().includes(q)
+  );
+  if(!match){
+    document.getElementById('history-results').insertAdjacentHTML('afterbegin','<div class="error-msg" style="margin-bottom:12px">❌ Player not found. Try another name or use the dropdown.</div>');
+    return;
+  }
+  loadPlayerHistory(match);
+}
+
+function clearHistoryResults(){
+  document.getElementById('history-results').innerHTML='';
+  document.getElementById('history-search-input').value='';
+  document.getElementById('history-suggestions').style.display='none';
+  historyShown.clear();
+  Object.values(historyCharts).forEach(c=>{try{c.destroy();}catch(e){}});
+  historyCharts={};
+}
+
+async function loadPlayerHistory(player){
+  if(historyShown.has(player.id))return;
+  historyShown.add(player.id);
+  const container=document.getElementById('history-results');
+  const card=document.createElement('div');
+  card.className='history-card';
+  card.id='hcard-'+player.id;
+  card.innerHTML='<div class="loading"><div class="loading-spinner"></div>Loading match history...</div>';
+  container.prepend(card);
+  try{
+    const data=await fetchWithFallback(`https://fantasy.premierleague.com/api/element-summary/${player.id}/`);
+    const history=data.history||[];
+    const team=teamOf(player);
+    if(!history.length){
+      card.innerHTML=`
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:10px">
+          <img class="player-photo"
+            src="https://resources.premierleague.com/premierleague/photos/players/110x140/p${player.code}.png"
+            onerror="this.src='https://resources.premierleague.com/premierleague/photos/players/110x140/Photo-Missing.png'">
+          <div>
+            <div style="font-size:1rem;font-weight:800">${player.web_name}</div>
+            <div style="font-size:0.75rem;color:var(--text-muted)">${team?team.name:'?'} &middot; ${posName(player.element_type)}</div>
+          </div>
+          <button onclick="removeHistory(${player.id})" style="margin-left:auto;background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:1.2rem;padding:4px 8px">✕</button>
+        </div>
+        <div style="color:var(--text-muted);font-size:0.85rem;padding:8px 0">No GW history available yet for this season.</div>`;
+      return;
+    }
+    const total=history.reduce((s,h)=>s+h.total_points,0);
+    const avg=(total/history.length).toFixed(1);
+    const best=Math.max(...history.map(h=>h.total_points));
+    const chartId='hchart-'+player.id;
+    const rows=history.map(h=>{
+      const oppTeam=fplData.teams.find(t=>t.id===h.opponent_team);
+      const ptCol=h.total_points>=8?'var(--green)':h.total_points>=4?'var(--orange)':'var(--text)';
+      return `<tr>
+        <td style="color:var(--text-muted)">GW${h.round}</td>
+        <td>${oppTeam?oppTeam.short_name:'?'} ${h.was_home?'<span style="color:var(--green);font-size:0.7rem">(H)</span>':'<span style="color:var(--text-muted);font-size:0.7rem">(A)</span>'}</td>
+        <td style="font-weight:700;color:${ptCol}">${h.total_points}</td>
+        <td>${h.goals_scored||0}</td>
+        <td>${h.assists||0}</td>
+        <td style="color:var(--text-muted)">${h.minutes||0}'</td>
+        <td style="color:var(--orange)">${h.bonus||0}</td>
+      </tr>`;
+    }).join('');
+    card.innerHTML=`
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px;flex-wrap:wrap">
+        <img class="player-photo"
+          src="https://resources.premierleague.com/premierleague/photos/players/110x140/p${player.code}.png"
+          onerror="this.src='https://resources.premierleague.com/premierleague/photos/players/110x140/Photo-Missing.png'"
+          alt="${player.web_name}">
+        <div style="flex:1;min-width:180px">
+          <div style="font-size:1.05rem;font-weight:800">${player.web_name}</div>
+          <div style="font-size:0.75rem;color:var(--text-muted)">${team?team.name:'?'} &middot; ${posName(player.element_type)} &middot; ${price(player)}</div>
+          <div style="display:flex;gap:14px;margin-top:6px;flex-wrap:wrap">
+            <span style="font-size:0.78rem">Total: <strong style="color:var(--green)">${total} pts</strong></span>
+            <span style="font-size:0.78rem">Avg: <strong style="color:var(--orange)">${avg}/GW</strong></span>
+            <span style="font-size:0.78rem">Best: <strong style="color:var(--blue)">${best} pts</strong></span>
+          </div>
+        </div>
+        <button onclick="removeHistory(${player.id})" style="background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:1.2rem;padding:4px 8px;flex-shrink:0">✕</button>
+      </div>
+      <div class="history-chart-wrap"><canvas id="${chartId}"></canvas></div>
+      <div style="overflow-x:auto">
+        <table class="history-table">
+          <thead><tr><th>GW</th><th>vs</th><th>Pts</th><th>G</th><th>A</th><th>Mins</th><th>Bonus</th></tr></thead>
+          <tbody>${rows}</tbody>
+        </table>
+      </div>`;
+    setTimeout(()=>{
+      const ctx=document.getElementById(chartId);
+      if(!ctx)return;
+      if(historyCharts[player.id]){try{historyCharts[player.id].destroy();}catch(e){}}
+      historyCharts[player.id]=new Chart(ctx,{
+        type:'line',
+        data:{
+          labels:history.map(h=>`GW${h.round}`),
+          datasets:[{
+            label:'Points',
+            data:history.map(h=>h.total_points),
+            borderColor:'#00d4aa',
+            backgroundColor:'rgba(0,212,170,0.07)',
+            pointBackgroundColor:history.map(h=>h.total_points>=8?'#00d4aa':h.total_points>=4?'#f0a500':'#4f8ef7'),
+            pointBorderColor:'transparent',
+            pointRadius:5,pointHoverRadius:7,
+            fill:true,tension:0.35,borderWidth:2
+          }]
+        },
+        options:{
+          responsive:true,maintainAspectRatio:false,
+          plugins:{
+            legend:{display:false},
+            tooltip:{
+              backgroundColor:'rgba(11,15,26,0.95)',borderColor:'rgba(0,212,170,0.3)',
+              borderWidth:1,titleColor:'#e8eaf0',bodyColor:'#6b7280',padding:10,
+              callbacks:{
+                title:items=>{
+                  const h=history[items[0].dataIndex];
+                  const opp=fplData.teams.find(t=>t.id===h.opponent_team);
+                  return `GW${h.round} vs ${opp?opp.short_name:'?'} ${h.was_home?'(H)':'(A)'}`;
+                },
+                label:i=>`${i.raw} pts`
+              }
+            }
+          },
+          scales:{
+            x:{ticks:{color:'#6b7280',font:{size:10}},grid:{color:'rgba(255,255,255,0.04)'}},
+            y:{beginAtZero:true,ticks:{color:'#6b7280',font:{size:10}},grid:{color:'rgba(255,255,255,0.04)'}}
+          }
+        }
+      });
+    },80);
+  }catch(e){
+    card.innerHTML=`<div class="error-msg">❌ Failed to load history for ${player.web_name}.<br><small>${e.message}</small></div>`;
+    historyShown.delete(player.id);
+  }
+}
+
+function removeHistory(id){
+  historyShown.delete(id);
+  if(historyCharts[id]){try{historyCharts[id].destroy();}catch(e){} delete historyCharts[id];}
+  document.getElementById('hcard-'+id)?.remove();
+}
+
+// ══════════════════════════════════════════════════════════════
+// PHASE 5 ── MINI-LEAGUE
+// ══════════════════════════════════════════════════════════════
+async function loadMiniLeague(){
+  const lid=document.getElementById('league-id-input').value.trim();
+  if(!lid)return;
+  const el=document.getElementById('minileague-content');
+  el.innerHTML='<div class="loading"><div class="loading-spinner"></div>Loading league standings...</div>';
+  try{
+    const data=await fetchWithFallback(`https://fantasy.premierleague.com/api/leagues-classic/${lid}/standings/`);
+    if(data.detail){el.innerHTML=`<div class="error-msg">❌ ${data.detail}</div>`;return;}
+    const league=data.league;
+    const standings=data.standings?.results||[];
+    if(!standings.length){el.innerHTML='<div class="loading" style="color:var(--text-muted)">No standings found.</div>';return;}
+    const top3=standings.slice(0,3);
+    const rest=standings.slice(3,20);
+    const medals=['🥇','🥈','🥉'];
+    const pClass=['gold','silver','bronze'];
+    const mv=m=>{
+      if(m===null||m===undefined)return`<span class="move-same">—</span>`;
+      if(m>0)return`<span class="move-up">▲${m}</span>`;
+      if(m<0)return`<span class="move-down">▼${Math.abs(m)}</span>`;
+      return`<span class="move-same">—</span>`;
+    };
+    let html=`
+      <div class="league-header-card">
+        <div class="league-title">${league.name}</div>
+        <div style="font-size:0.78rem;color:var(--text-muted);margin-top:4px">
+          ${league.league_type==='x'?'Head-to-Head':'Classic'} League &middot; ${standings.length} managers
+          ${league.created?' &middot; Created '+league.created.split('T')[0]:''}
+        </div>
+      </div>
+      <div class="podium-row">
+        ${top3.map((m,i)=>`
+          <div class="podium-card ${pClass[i]}" style="animation-delay:${i*0.08}s">
+            <div class="podium-medal">${medals[i]}</div>
+            <div class="podium-manager">${m.player_name}</div>
+            <div class="podium-team">${m.entry_name}</div>
+            <div class="podium-total">${m.total.toLocaleString()} pts</div>
+            <div class="podium-gw">GW: ${m.event_total} pts</div>
+          </div>`).join('')}
+      </div>`;
+    if(rest.length){
+      html+=`<div style="overflow-x:auto"><table class="league-table">
+        <thead><tr><th>Rank</th><th>Manager</th><th>Team Name</th><th>GW Pts</th><th>Total</th><th>Move</th></tr></thead>
+        <tbody>${rest.map(m=>{
+          const move=m.last_rank&&m.rank_sort?m.last_rank-m.rank_sort:null;
+          const rCls=m.rank===1?'rank-1':m.rank===2?'rank-2':m.rank===3?'rank-3':'rank-other';
+          return`<tr>
+            <td><div class="rank-badge ${rCls}" style="width:26px;height:26px;border-radius:7px;display:inline-flex;align-items:center;justify-content:center;font-size:0.72rem;font-weight:800">${m.rank}</div></td>
+            <td style="font-weight:600">${m.player_name}</td>
+            <td style="color:var(--text-muted);font-size:0.82rem">${m.entry_name}</td>
+            <td style="font-weight:700;color:var(--orange)">${m.event_total}</td>
+            <td style="font-weight:800;color:var(--green)">${m.total.toLocaleString()}</td>
+            <td>${mv(move)}</td>
+          </tr>`;
+        }).join('')}</tbody>
+      </table></div>`;
+    }
+    el.innerHTML=html;
+  }catch(e){
+    el.innerHTML=`<div class="error-msg">❌ Failed to load league. Check the League ID and try again.<br><small>${e.message}</small></div>`;
+  }
+}
+
 </script>
 </body>
 </html>
