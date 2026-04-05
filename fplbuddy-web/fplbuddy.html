@@ -4,6 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>FPLBuddy</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.2/dist/chart.umd.min.js"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
@@ -101,16 +102,16 @@
     .rank-3{background:rgba(180,100,50,0.2);color:#cd7f4a;border:1px solid rgba(180,100,50,0.3)}
     .rank-other{background:rgba(255,255,255,0.05);color:var(--text-muted);border:1px solid var(--border)}
     .news-chip { display:inline-flex; align-items:center; gap:5px; padding:4px 10px; border-radius:6px; font-size:0.72rem; font-weight:600; margin-top:8px; }
-    .news-75{background:rgba(240,165,0,0.12);color:#f0a500;border:1px solid rgba(240,165,0,0.2)}
-    .news-50{background:rgba(255,140,0,0.12);color:#ff8c00;border:1px solid rgba(255,140,0,0.2)}
-    .news-25{background:rgba(255,85,85,0.12);color:#ff5555;border:1px solid rgba(255,85,85,0.2)}
-    .news-0{background:rgba(255,85,85,0.18);color:#ff5555;border:1px solid rgba(255,85,85,0.3)}
+    .news-75 {background:rgba(240,165,0,0.12);color:#f0a500;border:1px solid rgba(240,165,0,0.2)}
+    .news-50 {background:rgba(255,140,0,0.12);color:#ff8c00;border:1px solid rgba(255,140,0,0.2)}
+    .news-25 {background:rgba(255,85,85,0.12);color:#ff5555;border:1px solid rgba(255,85,85,0.2)}
+    .news-0  {background:rgba(255,85,85,0.18);color:#ff5555;border:1px solid rgba(255,85,85,0.3)}
     .news-out{background:rgba(255,85,85,0.22);color:#ff5555;border:1px solid rgba(255,85,85,0.35)}
     .value-tag { display:inline-block; padding:3px 9px; border-radius:6px; font-size:0.68rem; font-weight:700; margin-top:6px; background:rgba(79,142,247,0.12); color:var(--blue); border:1px solid rgba(79,142,247,0.2); }
     .xg-alert { display:inline-flex; align-items:center; gap:5px; padding:4px 10px; border-radius:6px; font-size:0.72rem; font-weight:700; margin-bottom:10px; }
-    .xg-due{background:rgba(167,139,250,0.15);color:var(--purple);border:1px solid rgba(167,139,250,0.25)}
-    .xg-lucky{background:rgba(255,85,85,0.12);color:#ff5555;border:1px solid rgba(255,85,85,0.2)}
-    .xg-match{background:rgba(0,212,170,0.12);color:var(--green);border:1px solid rgba(0,212,170,0.2)}
+    .xg-due   { background:rgba(167,139,250,0.15); color:var(--purple); border:1px solid rgba(167,139,250,0.25); }
+    .xg-lucky { background:rgba(255,85,85,0.12);   color:#ff5555;       border:1px solid rgba(255,85,85,0.2); }
+    .xg-match { background:rgba(0,212,170,0.12);   color:var(--green);  border:1px solid rgba(0,212,170,0.2); }
     .xg-mini-bar-wrap { margin-top:4px; }
     .xg-mini-labels { display:flex; justify-content:space-between; font-size:0.62rem; color:var(--text-muted); margin-bottom:3px; font-weight:600; letter-spacing:0.5px; }
     .xg-bars { display:flex; flex-direction:column; gap:4px; }
@@ -118,16 +119,50 @@
     .xg-bar-label { font-size:0.65rem; color:var(--text-muted); font-weight:600; width:24px; text-align:right; }
     .xg-bar-track { flex:1; height:6px; background:rgba(255,255,255,0.06); border-radius:999px; overflow:hidden; }
     .xg-bar-fill { height:100%; border-radius:999px; }
-    .xg-bar-fill.xg-color{background:linear-gradient(90deg,var(--purple),#7c3aed)}
-    .xg-bar-fill.xa-color{background:linear-gradient(90deg,var(--blue),#2563eb)}
-    .xg-bar-fill.g-color{background:linear-gradient(90deg,var(--green),#00a884)}
-    .xg-bar-fill.a-color{background:linear-gradient(90deg,var(--orange),#e09000)}
+    .xg-bar-fill.xg-color  { background:linear-gradient(90deg,var(--purple),#7c3aed); }
+    .xg-bar-fill.xa-color  { background:linear-gradient(90deg,var(--blue),#2563eb); }
+    .xg-bar-fill.g-color   { background:linear-gradient(90deg,var(--green),#00a884); }
+    .xg-bar-fill.a-color   { background:linear-gradient(90deg,var(--orange),#e09000); }
     .xg-bar-val { font-size:0.72rem; font-weight:700; width:30px; }
+    /* LIVE GW */
+    .live-gw-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(260px,1fr)); gap:14px; margin-bottom:48px; }
+    .live-player-card { background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:16px 18px; backdrop-filter:blur(12px); transition:border-color var(--transition),transform var(--transition); opacity:0; transform:translateY(16px); animation:cardIn 0.4s cubic-bezier(0.16,1,0.3,1) forwards; }
+    .live-player-card:hover { border-color:var(--border-hover); transform:translateY(-2px); }
+    .live-pts { font-size:2rem; font-weight:800; color:var(--green); line-height:1; }
+    .live-pts-label { font-size:0.65rem; font-weight:600; text-transform:uppercase; letter-spacing:1px; color:var(--text-muted); margin-top:2px; }
+    .live-events { margin-top:10px; display:flex; flex-wrap:wrap; gap:5px; }
+    .live-event-chip { padding:3px 8px; border-radius:6px; font-size:0.68rem; font-weight:700; }
+    .ev-goal   { background:rgba(0,212,170,0.15);  color:#00d4aa; border:1px solid rgba(0,212,170,0.25); }
+    .ev-assist { background:rgba(79,142,247,0.12);  color:#4f8ef7; border:1px solid rgba(79,142,247,0.2); }
+    .ev-cs     { background:rgba(167,139,250,0.12); color:#a78bfa; border:1px solid rgba(167,139,250,0.2); }
+    .ev-bonus  { background:rgba(240,165,0,0.12);   color:#f0a500; border:1px solid rgba(240,165,0,0.2); }
+    .ev-yellow { background:rgba(240,165,0,0.1);    color:#f0a500; border:1px solid rgba(240,165,0,0.15); }
+    .ev-red    { background:rgba(255,85,85,0.12);   color:#ff5555; border:1px solid rgba(255,85,85,0.2); }
+    .ev-save   { background:rgba(0,212,170,0.1);    color:#00d4aa; border:1px solid rgba(0,212,170,0.15); }
+    .gw-summary-bar { display:grid; grid-template-columns:repeat(4,1fr); gap:10px; margin-bottom:24px; }
+    .gw-summary-card { background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:14px 16px; backdrop-filter:blur(12px); text-align:center; }
+    .gw-summary-val { font-size:1.5rem; font-weight:800; color:var(--green); }
+    .gw-summary-lbl { font-size:0.65rem; font-weight:600; text-transform:uppercase; letter-spacing:1px; color:var(--text-muted); margin-top:3px; }
+    .refresh-btn { display:inline-flex; align-items:center; gap:8px; padding:8px 18px; background:var(--green-dim); border:1px solid rgba(0,212,170,0.25); border-radius:999px; color:var(--green); font-size:0.8rem; font-weight:600; cursor:pointer; font-family:'Outfit',sans-serif; transition:all var(--transition); margin-bottom:20px; }
+    .refresh-btn:hover { background:rgba(0,212,170,0.25); }
+    /* SCOUT */
+    .scout-wrap { background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:24px; backdrop-filter:blur(12px); margin-bottom:28px; }
+    .scout-title { font-size:0.85rem; font-weight:700; color:var(--text); margin-bottom:4px; }
+    .scout-sub   { font-size:0.75rem; color:var(--text-muted); margin-bottom:20px; }
+    .scout-canvas-wrap { position:relative; height:420px; }
+    .scout-filters { display:flex; gap:8px; margin-bottom:16px; flex-wrap:wrap; }
+    .scout-filter { padding:6px 14px; border-radius:999px; font-size:0.78rem; font-weight:600; cursor:pointer; border:1px solid var(--border); background:var(--surface); color:var(--text-muted); transition:all var(--transition); font-family:'Outfit',sans-serif; }
+    .scout-filter.active { background:var(--green); color:#0b0f1a; border-color:var(--green); }
+    .scout-legend { display:flex; gap:16px; flex-wrap:wrap; margin-top:12px; }
+    .scout-legend-item { display:flex; align-items:center; gap:6px; font-size:0.75rem; color:var(--text-muted); font-weight:500; }
+    .scout-legend-dot { width:10px; height:10px; border-radius:50%; flex-shrink:0; }
+    /* LOADING/ERR */
     .loading { text-align:center; padding:80px 20px; color:var(--text-faint); font-size:0.85rem; font-weight:500; }
     .loading-spinner { width:32px; height:32px; border:2px solid var(--border); border-top-color:var(--green); border-radius:50%; animation:spin 0.8s linear infinite; margin:0 auto 16px; }
     @keyframes spin{to{transform:rotate(360deg)}}
     .error-msg { text-align:center; padding:40px; color:#ff5555; font-size:0.85rem; }
-    .info-msg { text-align:center; padding:16px 20px; color:var(--text-muted); font-size:0.82rem; background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); }
+    .info-msg  { text-align:center; padding:40px; color:var(--text-muted); font-size:0.85rem; background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); }
+    /* AI CHAT */
     .chat-container { max-width:740px; }
     .api-key-box { background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:20px; margin-bottom:14px; backdrop-filter:blur(12px); }
     .api-key-label { font-size:0.72rem; font-weight:700; text-transform:uppercase; letter-spacing:1px; color:var(--text-muted); margin-bottom:10px; }
@@ -161,6 +196,7 @@
       .card-grid{grid-template-columns:1fr}
       .gw-hero{flex-direction:column;align-items:flex-start}
       .stats-grid{grid-template-columns:repeat(3,1fr)}
+      .gw-summary-bar{grid-template-columns:repeat(2,1fr)}
     }
   </style>
 </head>
@@ -188,6 +224,8 @@
     <button class="tab" onclick="switchTab('transfers',event)">🔄 Transfer Trends</button>
     <button class="tab" onclick="switchTab('injuries',event)">🩹 Injury Tracker</button>
     <button class="tab" onclick="switchTab('xg',event)">📊 xG Stats</button>
+    <button class="tab" onclick="switchTab('livegw',event)">🔴 Live GW</button>
+    <button class="tab" onclick="switchTab('scout',event)">🎯 Scout</button>
     <button class="tab" onclick="switchTab('ai-chat',event)">🤖 AI Chat</button>
   </div>
 
@@ -200,8 +238,14 @@
   <div id="transfers-section" style="display:none"><div class="card-grid" id="transfer-cards"><div class="loading"><div class="loading-spinner"></div>Loading transfer data...</div></div></div>
   <div id="injuries-section" style="display:none"><div class="card-grid" id="injury-cards"><div class="loading"><div class="loading-spinner"></div>Loading injury tracker...</div></div></div>
   <div id="xg-section" style="display:none">
-    <div id="xg-status" class="info-msg" style="display:none;margin-bottom:20px"></div>
+    <div id="xg-status" class="info-msg" style="margin-bottom:20px;display:none"></div>
     <div class="card-grid" id="xg-cards"><div class="loading"><div class="loading-spinner"></div>Fetching xG data from Understat...</div></div>
+  </div>
+  <div id="livegw-section" style="display:none">
+    <div id="livegw-content"><div class="loading"><div class="loading-spinner"></div>Loading live GW data...</div></div>
+  </div>
+  <div id="scout-section" style="display:none">
+    <div id="scout-content"><div class="loading"><div class="loading-spinner"></div>Building scout chart...</div></div>
   </div>
   <div id="ai-chat-section" style="display:none">
     <div class="chat-container">
@@ -237,6 +281,7 @@ let fplData=null, fixtureData=null, gwId=0;
 let understatPlayers=null;
 let openaiKey='';
 let renderedTabs=new Set(['fixtures']);
+let scoutChart=null, scoutPos='ALL';
 
 async function fetchJSON(url){ const r=await fetch(url); if(!r.ok) throw new Error('Failed: '+url); return r.json(); }
 async function fetchText(url){ const r=await fetch(url); if(!r.ok) throw new Error('Failed: '+url); return r.text(); }
@@ -248,16 +293,12 @@ function posName(t){return {1:'GKP',2:'DEF',3:'MID',4:'FWD'}[t]||'?';}
 function price(p){return '£'+(p.now_cost/10).toFixed(1)+'m';}
 function teamOf(p){return fplData.teams.find(t=>t.id===p.team);}
 function makeCard(i){const c=document.createElement('div');c.className='card';c.style.animationDelay=(i*0.05)+'s';return c;}
-function rankBadge(i){
-  const cls=i===0?'rank-1':i===1?'rank-2':i===2?'rank-3':'rank-other';
-  const lbl=i===0?'🥇':i===1?'🥈':i===2?'🥉':'#'+(i+1);
-  return `<div class="rank-badge ${cls}">${lbl}</div>`;
-}
+function rankBadge(i){const cls=i===0?'rank-1':i===1?'rank-2':i===2?'rank-3':'rank-other';const lbl=i===0?'🥇':i===1?'🥈':i===2?'🥉':'#'+(i+1);return `<div class="rank-badge ${cls}">${lbl}</div>`;}
 
 function switchTab(tab,e){
   document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
   e.target.classList.add('active');
-  ['fixtures','players','power','value','transfers','injuries','xg','ai-chat'].forEach(id=>{
+  ['fixtures','players','power','value','transfers','injuries','xg','livegw','scout','ai-chat'].forEach(id=>{
     const el=document.getElementById(id+'-section');
     if(el) el.style.display='none';
   });
@@ -269,6 +310,8 @@ function switchTab(tab,e){
     transfers:'Transfer Trends — This Gameweek',
     injuries:'Injury Tracker — Availability & News',
     xg:'Underlying Stats — xG & xA from Understat',
+    livegw:'Live Gameweek — Real-Time Points Tracker',
+    scout:'Scout — Form vs Fixture Bubble Chart',
     'ai-chat':'AI-Powered FPL Assistant'
   };
   document.getElementById('section-label').textContent=labels[tab]||tab;
@@ -276,12 +319,14 @@ function switchTab(tab,e){
   if(sec) sec.style.display='block';
   if(fplData && !renderedTabs.has(tab)){
     renderedTabs.add(tab);
-    if(tab==='players')        renderPlayers();
+    if(tab==='players')   renderPlayers();
     else if(tab==='power')     renderPower();
     else if(tab==='value')     renderValue();
     else if(tab==='transfers') renderTransfers();
     else if(tab==='injuries')  renderInjuries();
     else if(tab==='xg')        renderXG();
+    else if(tab==='livegw')    renderLiveGW();
+    else if(tab==='scout')     renderScout();
   }
 }
 
@@ -310,31 +355,30 @@ function calcPower(p){
   return Math.round(score*10)/10;
 }
 
-// ---- UNDERSTAT PARSER ----
 function parseUnderstat(html){
   try{
     const match=html.match(/playersData\s*=\s*JSON\.parse\('(.*?)'\)/);
     if(!match) return null;
     const raw=match[1].replace(/\\'/g,"'").replace(/\\\\/g,"\\");
     return JSON.parse(raw);
-  }catch(e){ return null; }
+  }catch(e){return null;}
 }
 
-function matchUnderstat(fplPlayer,uPlayers){
+function matchUnderstat(fplPlayer, uPlayers){
   if(!uPlayers) return null;
-  const fplLast=(fplPlayer.second_name||'').toLowerCase().replace(/[^a-z]/g,'');
+  const fplName=(fplPlayer.web_name||'').toLowerCase().replace(/[^a-z ]/g,'');
   const fplFirst=(fplPlayer.first_name||'').toLowerCase().replace(/[^a-z]/g,'');
-  const fplWeb=(fplPlayer.web_name||'').toLowerCase().replace(/[^a-z ]/g,'');
+  const fplLast=(fplPlayer.second_name||'').toLowerCase().replace(/[^a-z]/g,'');
   let best=null,bestScore=0;
   for(const u of uPlayers){
     const uName=(u.player_name||'').toLowerCase().replace(/[^a-z ]/g,'');
     const parts=uName.split(' ');
     const uLast=parts[parts.length-1]||'';
     let score=0;
-    if(uName===fplWeb) score=10;
+    if(uName===fplName) score=10;
     else if(uLast===fplLast&&fplLast.length>3) score=7;
     else if(uName.includes(fplLast)&&fplLast.length>3) score=5;
-    else if(fplWeb.includes(uLast)&&uLast.length>3) score=5;
+    else if(fplName.includes(uLast)&&uLast.length>3) score=5;
     else if(uName.includes(fplFirst)&&fplFirst.length>2) score=3;
     if(score>bestScore){bestScore=score;best=u;}
   }
@@ -344,12 +388,11 @@ function matchUnderstat(fplPlayer,uPlayers){
 function xgAlertLabel(goals,xg){
   if(goals===0&&xg===0) return null;
   const diff=goals-xg;
-  if(diff<-1.5) return {cls:'xg-due',txt:'🟣 Due a goal — high xG, low returns'};
-  if(diff>2.0)  return {cls:'xg-lucky',txt:'🔴 Overperforming xG — may regress'};
+  if(diff<-1.5) return {cls:'xg-due',   txt:'🟣 Due a goal (high xG, low returns)'};
+  if(diff>2.0)  return {cls:'xg-lucky', txt:'🔴 Overperforming xG — may regress'};
   return {cls:'xg-match',txt:'✅ Performing in line with xG'};
 }
 
-// ---- RENDER: TOP PLAYERS ----
 function renderPlayers(){
   const grid=document.getElementById('player-cards');
   const sorted=[...fplData.elements].filter(p=>p.minutes>0).sort((a,b)=>parseFloat(b.form)-parseFloat(a.form)).slice(0,12);
@@ -379,7 +422,6 @@ function renderPlayers(){
   });
 }
 
-// ---- RENDER: POWER RANKINGS ----
 function renderPower(){
   const grid=document.getElementById('power-cards');
   const scored=fplData.elements.filter(p=>p.minutes>450).map(p=>({...p,power:calcPower(p)})).sort((a,b)=>b.power-a.power).slice(0,12);
@@ -416,7 +458,6 @@ function renderPower(){
   });
 }
 
-// ---- RENDER: VALUE PICKS ----
 function renderValue(){
   const grid=document.getElementById('value-cards');
   const picks=fplData.elements.filter(p=>p.minutes>450&&p.now_cost>0).map(p=>({...p,ptsCost:p.total_points/(p.now_cost/10),epNext:parseFloat(p.ep_next)||0})).sort((a,b)=>b.ptsCost-a.ptsCost).slice(0,12);
@@ -447,7 +488,6 @@ function renderValue(){
   });
 }
 
-// ---- RENDER: TRANSFER TRENDS ----
 function renderTransfers(){
   const grid=document.getElementById('transfer-cards');
   const byIn=[...fplData.elements].sort((a,b)=>b.transfers_in_event-a.transfers_in_event).slice(0,6);
@@ -482,7 +522,6 @@ function renderTransfers(){
   });
 }
 
-// ---- RENDER: INJURY TRACKER ----
 function renderInjuries(){
   const grid=document.getElementById('injury-cards');
   const injured=fplData.elements.filter(p=>p.news&&p.news.trim()!=='').sort((a,b)=>(a.chance_of_playing_next_round||100)-(b.chance_of_playing_next_round||100));
@@ -517,7 +556,6 @@ function renderInjuries(){
   });
 }
 
-// ---- RENDER: xG STATS ----
 async function renderXG(){
   const grid=document.getElementById('xg-cards');
   const statusBox=document.getElementById('xg-status');
@@ -533,27 +571,16 @@ async function renderXG(){
   }catch(err){
     console.warn('Understat fetch failed:',err.message);
     statusBox.style.display='block';
-    statusBox.innerHTML='⚠️ Understat live fetch blocked by CORS — showing FPL goal data as proxy. Deploy to a server for live xG.';
+    statusBox.innerHTML='⚠️ Understat live fetch blocked by CORS — showing FPL goal data as proxy. <strong>Deploy to a server for live xG.</strong>';
     buildXGCardsFallback(grid);
   }
 }
 
 function buildXGCards(grid){
-  const candidates=fplData.elements
-    .filter(p=>p.minutes>360&&(p.element_type===3||p.element_type===4||p.element_type===2))
-    .sort((a,b)=>parseFloat(b.form)-parseFloat(a.form))
-    .slice(0,20);
+  const candidates=fplData.elements.filter(p=>p.minutes>360&&(p.element_type===3||p.element_type===4||p.element_type===2)).sort((a,b)=>parseFloat(b.form)-parseFloat(a.form)).slice(0,20);
   const enriched=candidates.map(p=>{
     const u=matchUnderstat(p,understatPlayers);
-    return {
-      ...p,
-      xG:u?parseFloat(u.xG||0):null,
-      xA:u?parseFloat(u.xA||0):null,
-      shots:u?parseInt(u.shots||0):null,
-      keyPasses:u?parseInt(u.key_passes||0):null,
-      xG90:u&&p.minutes>0?(parseFloat(u.xG||0)/(p.minutes/90)):null,
-      xA90:u&&p.minutes>0?(parseFloat(u.xA||0)/(p.minutes/90)):null,
-    };
+    return {...p,xG:u?parseFloat(u.xG||0):null,xA:u?parseFloat(u.xA||0):null,shots:u?parseInt(u.shots||0):null,keyPasses:u?parseInt(u.key_passes||0):null,xG90:u&&p.minutes>0?(parseFloat(u.xG||0)/(p.minutes/90)):null,xA90:u&&p.minutes>0?(parseFloat(u.xA||0)/(p.minutes/90)):null};
   }).sort((a,b)=>(b.xG90||0)-(a.xG90||0));
   grid.innerHTML='';
   enriched.slice(0,12).forEach((p,i)=>{
@@ -563,8 +590,6 @@ function buildXGCards(grid){
     const xg90=p.xG90!=null?p.xG90.toFixed(2):'–';
     const xa90=p.xA90!=null?p.xA90.toFixed(2):'–';
     const alert=p.xG!=null?xgAlertLabel(p.goals_scored,p.xG):null;
-    const shots=p.shots!=null?p.shots:'–';
-    const kp=p.keyPasses!=null?p.keyPasses:'–';
     const xgW=p.xG!=null?Math.min(p.xG/20*100,100):0;
     const xaW=p.xA!=null?Math.min(p.xA/15*100,100):0;
     const gW=Math.min(p.goals_scored/15*100,100);
@@ -581,18 +606,18 @@ function buildXGCards(grid){
       <div class="stats-grid-3" style="margin-bottom:10px">
         <div class="stat-item"><div class="stat-label">xG</div><div class="stat-value purple">${xg}</div></div>
         <div class="stat-item"><div class="stat-label">xA</div><div class="stat-value blue">${xa}</div></div>
-        <div class="stat-item"><div class="stat-label">Shots</div><div class="stat-value">${shots}</div></div>
+        <div class="stat-item"><div class="stat-label">Shots</div><div class="stat-value">${p.shots!=null?p.shots:'–'}</div></div>
         <div class="stat-item"><div class="stat-label">xG/90</div><div class="stat-value purple">${xg90}</div></div>
         <div class="stat-item"><div class="stat-label">xA/90</div><div class="stat-value blue">${xa90}</div></div>
-        <div class="stat-item"><div class="stat-label">Key Passes</div><div class="stat-value">${kp}</div></div>
+        <div class="stat-item"><div class="stat-label">Key Passes</div><div class="stat-value">${p.keyPasses!=null?p.keyPasses:'–'}</div></div>
       </div>
       <div class="xg-mini-bar-wrap">
         <div class="xg-mini-labels"><span>Expected vs Actual</span><span>Season total</span></div>
         <div class="xg-bars">
-          <div class="xg-bar-row"><span class="xg-bar-label" style="color:var(--purple)">xG</span><div class="xg-bar-track"><div class="xg-bar-fill xg-color" style="width:${xgW}%"></div></div><span class="xg-bar-val" style="color:var(--purple)">${xg}</span></div>
-          <div class="xg-bar-row"><span class="xg-bar-label" style="color:var(--green)">G</span><div class="xg-bar-track"><div class="xg-bar-fill g-color" style="width:${gW}%"></div></div><span class="xg-bar-val" style="color:var(--green)">${p.goals_scored}</span></div>
-          <div class="xg-bar-row"><span class="xg-bar-label" style="color:var(--blue)">xA</span><div class="xg-bar-track"><div class="xg-bar-fill xa-color" style="width:${xaW}%"></div></div><span class="xg-bar-val" style="color:var(--blue)">${xa}</span></div>
-          <div class="xg-bar-row"><span class="xg-bar-label" style="color:var(--orange)">A</span><div class="xg-bar-track"><div class="xg-bar-fill a-color" style="width:${aW}%"></div></div><span class="xg-bar-val" style="color:var(--orange)">${p.assists}</span></div>
+          <div class="xg-bar-row"><span class="xg-bar-label" style="color:var(--purple);font-size:0.6rem">xG</span><div class="xg-bar-track"><div class="xg-bar-fill xg-color" style="width:${xgW}%"></div></div><span class="xg-bar-val" style="color:var(--purple)">${xg}</span></div>
+          <div class="xg-bar-row"><span class="xg-bar-label" style="color:var(--green);font-size:0.6rem">G</span><div class="xg-bar-track"><div class="xg-bar-fill g-color" style="width:${gW}%"></div></div><span class="xg-bar-val" style="color:var(--green)">${p.goals_scored}</span></div>
+          <div class="xg-bar-row"><span class="xg-bar-label" style="color:var(--blue);font-size:0.6rem">xA</span><div class="xg-bar-track"><div class="xg-bar-fill xa-color" style="width:${xaW}%"></div></div><span class="xg-bar-val" style="color:var(--blue)">${xa}</span></div>
+          <div class="xg-bar-row"><span class="xg-bar-label" style="color:var(--orange);font-size:0.6rem">A</span><div class="xg-bar-track"><div class="xg-bar-fill a-color" style="width:${aW}%"></div></div><span class="xg-bar-val" style="color:var(--orange)">${p.assists}</span></div>
         </div>
       </div>`;
     grid.appendChild(c);
@@ -600,17 +625,14 @@ function buildXGCards(grid){
 }
 
 function buildXGCardsFallback(grid){
-  const candidates=fplData.elements
-    .filter(p=>p.minutes>360&&(p.element_type===3||p.element_type===4))
-    .sort((a,b)=>(b.goals_scored+b.assists)-(a.goals_scored+a.assists))
-    .slice(0,12);
+  const candidates=fplData.elements.filter(p=>p.minutes>360&&(p.element_type===3||p.element_type===4)).sort((a,b)=>(b.goals_scored+b.assists)-(a.goals_scored+a.assists)).slice(0,12);
   grid.innerHTML='';
   candidates.forEach((p,i)=>{
     const team=teamOf(p);const c=makeCard(i);
     const gW=Math.min(p.goals_scored/15*100,100);
     const aW=Math.min(p.assists/12*100,100);
-    const g90=p.minutes>0?(p.goals_scored/(p.minutes/90)).toFixed(2):'–';
-    const a90=p.minutes>0?(p.assists/(p.minutes/90)).toFixed(2):'–';
+    const g90=(p.minutes>0?(p.goals_scored/(p.minutes/90)).toFixed(2):'–');
+    const a90=(p.minutes>0?(p.assists/(p.minutes/90)).toFixed(2):'–');
     c.innerHTML=`
       <div class="player-header">
         <img class="player-photo" src="https://resources.premierleague.com/premierleague/photos/players/110x140/p${p.code}.png" alt="${p.web_name}" onerror="this.src='https://resources.premierleague.com/premierleague/photos/players/110x140/Photo-Missing.png'">
@@ -625,13 +647,178 @@ function buildXGCardsFallback(grid){
         <div class="stat-item"><div class="stat-label">G+A</div><div class="stat-value">${p.goals_scored+p.assists}</div></div>
         <div class="stat-item"><div class="stat-label">Goals/90</div><div class="stat-value green">${g90}</div></div>
         <div class="stat-item"><div class="stat-label">Assists/90</div><div class="stat-value blue">${a90}</div></div>
-        <div class="stat-item"><div class="stat-label">Minutes</div><div class="stat-value">${p.minutes}</div></div>
+        <div class="stat-item"><div class="stat-label">Mins</div><div class="stat-value">${p.minutes}</div></div>
       </div>
       <div class="xg-bars">
-        <div class="xg-bar-row"><span class="xg-bar-label" style="color:var(--green)">G</span><div class="xg-bar-track"><div class="xg-bar-fill g-color" style="width:${gW}%"></div></div><span class="xg-bar-val" style="color:var(--green)">${p.goals_scored}</span></div>
-        <div class="xg-bar-row"><span class="xg-bar-label" style="color:var(--orange)">A</span><div class="xg-bar-track"><div class="xg-bar-fill a-color" style="width:${aW}%"></div></div><span class="xg-bar-val" style="color:var(--orange)">${p.assists}</span></div>
+        <div class="xg-bar-row"><span class="xg-bar-label" style="color:var(--green);font-size:0.6rem">G</span><div class="xg-bar-track"><div class="xg-bar-fill g-color" style="width:${gW}%"></div></div><span class="xg-bar-val" style="color:var(--green)">${p.goals_scored}</span></div>
+        <div class="xg-bar-row"><span class="xg-bar-label" style="color:var(--orange);font-size:0.6rem">A</span><div class="xg-bar-track"><div class="xg-bar-fill a-color" style="width:${aW}%"></div></div><span class="xg-bar-val" style="color:var(--orange)">${p.assists}</span></div>
       </div>`;
     grid.appendChild(c);
+  });
+}
+
+// ---- LIVE GW ----
+async function renderLiveGW(){
+  const content=document.getElementById('livegw-content');
+  await loadLiveGW(content);
+}
+
+async function loadLiveGW(content){
+  content.innerHTML='<div class="loading"><div class="loading-spinner"></div>Fetching live GW data...</div>';
+  try{
+    const url=PROXY+encodeURIComponent('https://fantasy.premierleague.com/api/event/'+gwId+'/live/');
+    const data=await fetchJSON(url);
+    const elements=data.elements||[];
+    const liveMap={};
+    elements.forEach(el=>{
+      liveMap[el.id]={
+        points:el.stats?.total_points||0,minutes:el.stats?.minutes||0,
+        goals:el.stats?.goals_scored||0,assists:el.stats?.assists||0,
+        cs:el.stats?.clean_sheets||0,bonus:el.stats?.bonus||0,
+        yellow:el.stats?.yellow_cards||0,red:el.stats?.red_cards||0,
+        saves:el.stats?.saves||0,og:el.stats?.own_goals||0,
+        pen_miss:el.stats?.penalties_missed||0,
+      };
+    });
+    const topPlayers=fplData.elements.map(p=>({...p,live:liveMap[p.id]||{points:0}})).filter(p=>p.live.points>0).sort((a,b)=>b.live.points-a.live.points).slice(0,15);
+    const totalGoals=Object.values(liveMap).reduce((s,p)=>s+p.goals,0);
+    const totalAssists=Object.values(liveMap).reduce((s,p)=>s+p.assists,0);
+    const topScore=topPlayers[0]?.live.points||0;
+    const activePlayers=Object.values(liveMap).filter(p=>p.minutes>0).length;
+
+    function makeEvents(live){
+      const chips=[];
+      if(live.goals)    chips.push(`<span class="live-event-chip ev-goal">⚽ ${live.goals>1?live.goals+'× ':''}Goal${live.goals>1?'s':''}</span>`);
+      if(live.assists)  chips.push(`<span class="live-event-chip ev-assist">🅰️ ${live.assists>1?live.assists+'× ':''}Assist${live.assists>1?'s':''}</span>`);
+      if(live.cs)       chips.push(`<span class="live-event-chip ev-cs">🧱 Clean Sheet</span>`);
+      if(live.saves>=3) chips.push(`<span class="live-event-chip ev-save">🧤 ${live.saves} Saves</span>`);
+      if(live.bonus)    chips.push(`<span class="live-event-chip ev-bonus">⭐ ${live.bonus} Bonus</span>`);
+      if(live.yellow)   chips.push(`<span class="live-event-chip ev-yellow">🟨 Yellow</span>`);
+      if(live.red)      chips.push(`<span class="live-event-chip ev-red">🟥 Red Card</span>`);
+      if(live.og)       chips.push(`<span class="live-event-chip ev-red">😬 OG</span>`);
+      if(live.pen_miss) chips.push(`<span class="live-event-chip ev-red">❌ Pen Miss</span>`);
+      return chips.join('');
+    }
+
+    let html=`
+      <button class="refresh-btn" onclick="loadLiveGW(document.getElementById('livegw-content'))">🔄 Refresh</button>
+      <div class="gw-summary-bar">
+        <div class="gw-summary-card"><div class="gw-summary-val">${topScore}</div><div class="gw-summary-lbl">Top Score</div></div>
+        <div class="gw-summary-card"><div class="gw-summary-val">${totalGoals}</div><div class="gw-summary-lbl">Goals Scored</div></div>
+        <div class="gw-summary-card"><div class="gw-summary-val">${totalAssists}</div><div class="gw-summary-lbl">Assists</div></div>
+        <div class="gw-summary-card"><div class="gw-summary-val">${activePlayers}</div><div class="gw-summary-lbl">Players Active</div></div>
+      </div>
+      <div class="live-gw-grid">`;
+    topPlayers.forEach((p,i)=>{
+      const team=teamOf(p);const events=makeEvents(p.live);
+      html+=`
+        <div class="live-player-card" style="animation-delay:${i*0.05}s">
+          <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px">
+            <img class="player-photo" src="https://resources.premierleague.com/premierleague/photos/players/110x140/p${p.code}.png" alt="${p.web_name}" onerror="this.src='https://resources.premierleague.com/premierleague/photos/players/110x140/Photo-Missing.png'" style="width:44px;height:55px">
+            <div style="flex:1">
+              <div style="font-size:0.9rem;font-weight:700;margin-bottom:3px">${p.web_name}</div>
+              <div style="display:flex;align-items:center;gap:4px;font-size:0.72rem;color:var(--text-muted)">
+                <img src="https://resources.premierleague.com/premierleague/badges/50/t${team?team.code:''}.png" style="width:12px;height:12px;object-fit:contain" onerror="this.style.display='none'">
+                ${team?team.name:'?'} · ${posName(p.element_type)} · ${p.live.minutes}'
+              </div>
+            </div>
+            <div style="text-align:right"><div class="live-pts">${p.live.points}</div><div class="live-pts-label">pts</div></div>
+          </div>
+          <div class="live-events">${events||'<span style="font-size:0.72rem;color:var(--text-faint)">Playing / No returns yet</span>'}</div>
+        </div>`;
+    });
+    if(!topPlayers.length) html+=`<div class="info-msg" style="grid-column:1/-1">No live data yet — games may not have started for GW${gwId}.</div>`;
+    html+='</div>';
+    content.innerHTML=html;
+  }catch(err){
+    content.innerHTML=`<div class="error-msg">Could not load live GW data.<br><small>${err.message}</small></div>`;
+  }
+}
+
+// ---- SCOUT CHART ----
+function renderScout(){
+  const content=document.getElementById('scout-content');
+  content.innerHTML=`
+    <div class="scout-wrap">
+      <div class="scout-title">🎯 Form vs Fixture Scout</div>
+      <div class="scout-sub">Bubble size = ownership %. Top-right quadrant = best transfer targets. Hover a bubble for player details.</div>
+      <div class="scout-filters">
+        <button class="scout-filter active" onclick="setScoutPos('ALL',this)">All</button>
+        <button class="scout-filter" onclick="setScoutPos('GKP',this)">GKP</button>
+        <button class="scout-filter" onclick="setScoutPos('DEF',this)">DEF</button>
+        <button class="scout-filter" onclick="setScoutPos('MID',this)">MID</button>
+        <button class="scout-filter" onclick="setScoutPos('FWD',this)">FWD</button>
+      </div>
+      <div class="scout-canvas-wrap"><canvas id="scout-canvas"></canvas></div>
+      <div class="scout-legend">
+        <div class="scout-legend-item"><div class="scout-legend-dot" style="background:#00d4aa"></div>GKP</div>
+        <div class="scout-legend-item"><div class="scout-legend-dot" style="background:#4f8ef7"></div>DEF</div>
+        <div class="scout-legend-item"><div class="scout-legend-dot" style="background:#f0a500"></div>MID</div>
+        <div class="scout-legend-item"><div class="scout-legend-dot" style="background:#ff5555"></div>FWD</div>
+        <div class="scout-legend-item" style="margin-left:auto;font-style:italic">Bubble size = % ownership</div>
+      </div>
+    </div>`;
+  drawScoutChart();
+}
+
+function setScoutPos(pos,btn){
+  scoutPos=pos;
+  document.querySelectorAll('.scout-filter').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  drawScoutChart();
+}
+
+function drawScoutChart(){
+  if(scoutChart){scoutChart.destroy();scoutChart=null;}
+  const canvas=document.getElementById('scout-canvas');
+  if(!canvas||!fplData) return;
+  const posColors={1:'rgba(0,212,170,0.8)',2:'rgba(79,142,247,0.8)',3:'rgba(240,165,0,0.8)',4:'rgba(255,85,85,0.8)'};
+  const posNames2={1:'GKP',2:'DEF',3:'MID',4:'FWD'};
+  const players=fplData.elements.filter(p=>{
+    if(p.minutes<180) return false;
+    if(scoutPos==='ALL') return true;
+    return posName(p.element_type)===scoutPos;
+  });
+  const dataPoints=players.map(p=>({
+    x:parseFloat(((6-fixtureScore(p.team))/4*10).toFixed(2)),
+    y:parseFloat(p.form)||0,
+    r:Math.max(4,Math.min(parseFloat(p.selected_by_percent||1)*0.7,28)),
+    label:p.web_name,team:teamOf(p)?.short_name||'?',
+    price:price(p),pos:posNames2[p.element_type],
+    ownership:p.selected_by_percent,
+    color:posColors[p.element_type]||'rgba(255,255,255,0.6)',
+  }));
+  const datasets=[
+    {label:'GKP',pos:'GKP',color:'rgba(0,212,170,0.75)',border:'rgba(0,212,170,1)'},
+    {label:'DEF',pos:'DEF',color:'rgba(79,142,247,0.75)',border:'rgba(79,142,247,1)'},
+    {label:'MID',pos:'MID',color:'rgba(240,165,0,0.75)',border:'rgba(240,165,0,1)'},
+    {label:'FWD',pos:'FWD',color:'rgba(255,85,85,0.75)',border:'rgba(255,85,85,1)'},
+  ].map(d=>({
+    label:d.label,
+    data:dataPoints.filter(p=>p.pos===d.label),
+    backgroundColor:d.color,borderColor:d.border,borderWidth:1.5,
+  }));
+  scoutChart=new Chart(canvas,{
+    type:'bubble',
+    data:{datasets},
+    options:{
+      responsive:true,maintainAspectRatio:false,animation:{duration:600},
+      plugins:{
+        legend:{display:false},
+        tooltip:{
+          backgroundColor:'rgba(11,15,26,0.95)',borderColor:'rgba(0,212,170,0.3)',borderWidth:1,
+          titleColor:'#e8eaf0',bodyColor:'#6b7280',padding:12,
+          callbacks:{
+            title:items=>items[0]?.raw?.label||'',
+            label:item=>{const d=item.raw;return [`${d.team} · ${d.pos} · ${d.price}`,`Form: ${d.y}  |  Fixture ease: ${d.x.toFixed(1)}/10`,`Owned by ${d.ownership}%`];}
+          }
+        }
+      },
+      scales:{
+        x:{title:{display:true,text:'Fixture Ease (Next 3 GWs) →',color:'#6b7280',font:{size:12,weight:'600'}},min:0,max:10,grid:{color:'rgba(255,255,255,0.05)'},ticks:{color:'#6b7280',font:{size:11}}},
+        y:{title:{display:true,text:'Form (Last 4 GWs) →',color:'#6b7280',font:{size:12,weight:'600'}},min:0,grid:{color:'rgba(255,255,255,0.05)'},ticks:{color:'#6b7280',font:{size:11}}}
+      }
+    }
   });
 }
 
