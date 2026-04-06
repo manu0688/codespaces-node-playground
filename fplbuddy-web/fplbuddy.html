@@ -505,6 +505,55 @@
     .tooltip-wrap.tip-open .tooltip-box{opacity:1}
     .stats-grid,.stat-item{overflow:visible!important}
     .goal-threat-row{overflow:visible!important}
+
+    /* ════════════════════════════════════════════════════
+       SCOUT HISTORY — Phase 1
+    ════════════════════════════════════════════════════ */
+    .sh-search-wrap{position:relative;margin-bottom:20px}
+    .sh-search-input{width:100%;padding:12px 18px;border-radius:12px;border:1.5px solid var(--border);background:var(--surface);color:var(--text);font-size:1rem;font-family:'Outfit',sans-serif;outline:none;transition:border-color .2s}
+    .sh-search-input:focus{border-color:var(--green)}
+    .sh-suggestions{position:absolute;top:calc(100% + 6px);left:0;right:0;background:rgba(11,15,26,0.98);border:1px solid var(--border);border-radius:12px;z-index:9999;overflow:hidden;box-shadow:0 8px 32px rgba(0,0,0,0.5)}
+    .sh-pill{padding:10px 16px;cursor:pointer;display:flex;align-items:center;gap:10px;transition:background .15s;border-bottom:1px solid rgba(255,255,255,0.05)}
+    .sh-pill:last-child{border-bottom:none}
+    .sh-pill:hover{background:rgba(0,212,170,0.08)}
+    .sh-pill-name{font-weight:700;font-size:0.9rem;color:var(--text)}
+    .sh-pill-meta{font-size:0.74rem;color:var(--text-muted)}
+    .sh-pill-pos{padding:2px 7px;border-radius:6px;background:rgba(0,212,170,0.12);color:var(--green);font-size:0.65rem;font-weight:700}
+    .sh-no-results{padding:14px 16px;color:var(--text-muted);font-size:0.85rem;text-align:center}
+
+    /* Loading & empty */
+    .sh-loading{display:flex;flex-direction:column;align-items:center;gap:14px;padding:60px 20px;color:var(--text-muted);font-size:0.9rem}
+    .sh-spinner{width:36px;height:36px;border:3px solid rgba(0,212,170,0.2);border-top-color:#00d4aa;border-radius:50%;animation:spin .8s linear infinite}
+    @keyframes spin{to{transform:rotate(360deg)}}
+    .sh-empty{display:flex;flex-direction:column;align-items:center;gap:16px;padding:80px 20px;text-align:center}
+    .sh-empty-icon{font-size:3.5rem;opacity:0.4}
+    .sh-empty-title{font-size:1.1rem;font-weight:700;color:var(--text-muted)}
+    .sh-empty-sub{font-size:0.84rem;color:var(--text-muted);opacity:.7;max-width:340px}
+
+    /* Profile banner */
+    .sh-banner{display:flex;align-items:center;gap:18px;background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:18px 22px;margin-bottom:22px;flex-wrap:wrap}
+    .sh-banner-photo{width:72px;height:90px;object-fit:cover;border-radius:10px;border:2px solid rgba(0,212,170,0.25);flex-shrink:0}
+    .sh-banner-info{flex:1;min-width:180px}
+    .sh-banner-name{font-size:1.35rem;font-weight:800;color:var(--text);margin-bottom:4px}
+    .sh-banner-meta{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:10px}
+    .sh-banner-team-badge{width:22px;height:22px;object-fit:contain}
+    .sh-banner-team{font-size:0.82rem;color:var(--text-muted);font-weight:500}
+    .sh-banner-pills{display:flex;gap:8px;flex-wrap:wrap}
+    .sh-stat-pill{background:rgba(255,255,255,0.05);border:1px solid var(--border);border-radius:8px;padding:6px 12px;text-align:center;min-width:70px}
+    .sh-stat-pill-val{font-size:1rem;font-weight:800;color:var(--green)}
+    .sh-stat-pill-lbl{font-size:0.62rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:.5px;margin-top:2px}
+
+    /* Past seasons table */
+    .sh-section-title{font-size:0.78rem;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--text-muted);margin-bottom:10px;padding-bottom:6px;border-bottom:1px solid var(--border)}
+    .sh-table-wrap{overflow-x:auto;border-radius:12px;border:1px solid var(--border);margin-bottom:24px}
+    .sh-table{width:100%;border-collapse:collapse;font-size:0.83rem}
+    .sh-table th{background:rgba(255,255,255,0.04);padding:10px 14px;text-align:left;font-size:0.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--text-muted);white-space:nowrap;border-bottom:1px solid var(--border)}
+    .sh-table td{padding:10px 14px;border-bottom:1px solid rgba(255,255,255,0.04);color:var(--text);white-space:nowrap}
+    .sh-table tr:last-child td{border-bottom:none}
+    .sh-table tr:hover td{background:rgba(0,212,170,0.04)}
+    .sh-table td.hi{color:var(--green);font-weight:700}
+    .sh-table td.dim{color:var(--text-muted)}
+    .sh-no-data{padding:20px;text-align:center;color:var(--text-muted);font-size:0.85rem}
   </style>
 </head>
 <body>
@@ -525,6 +574,7 @@
     <span class="tab-tip-wrap"><button class="tab" onclick="switchTab('xg',event)">📊 xG Stats</button><i class="tab-tip-icon" onclick="toggleTip(this)" onmouseenter="this.parentElement.classList.add('tip-open')" onmouseleave="this.parentElement.classList.remove('tip-open')">ⓘ<span class="tab-tip-box">Expected Goals (xG) and Expected Assists (xA) — chances created vs actual returns</span></i></span>
     <span class="tab-tip-wrap"><button class="tab" onclick="switchTab('livegw',event)">🔴 Live GW</button><i class="tab-tip-icon" onclick="toggleTip(this)" onmouseenter="this.parentElement.classList.add('tip-open')" onmouseleave="this.parentElement.classList.remove('tip-open')">ⓘ<span class="tab-tip-box">Real-time points for the current gameweek pulled from the FPL live endpoint</span></i></span>
     <span class="tab-tip-wrap"><button class="tab" onclick="switchTab('scout',event)">🎯 Scout</button><i class="tab-tip-icon" onclick="toggleTip(this)" onmouseenter="this.parentElement.classList.add('tip-open')" onmouseleave="this.parentElement.classList.remove('tip-open')">ⓘ<span class="tab-tip-box">Bubble chart plotting form vs fixture ease. Top-right corner = ideal transfer targets</span></i></span>
+    <span class="tab-tip-wrap"><button class="tab" onclick="switchTab('scouthistory',event)">🔬 Scout History</button><i class="tab-tip-icon" onclick="toggleTip(this)" onmouseenter="this.parentElement.classList.add('tip-open')" onmouseleave="this.parentElement.classList.remove('tip-open')">ⓘ<span class="tab-tip-box">Deep-dive player analysis — current season match log, past season totals, profile banner</span></i></span>
     <span class="tab-tip-wrap"><button class="tab" onclick="switchTab('myteam',event)">👤 My Team</button><i class="tab-tip-icon" onclick="toggleTip(this)" onmouseenter="this.parentElement.classList.add('tip-open')" onmouseleave="this.parentElement.classList.remove('tip-open')">ⓘ<span class="tab-tip-box">Enter your FPL team ID to analyse your squad, see captain picks and a visual pitch view</span></i></span>
     <span class="tab-tip-wrap"><button class="tab" onclick="switchTab('ai-chat',event)">🤖 AI Chat</button><i class="tab-tip-icon" onclick="toggleTip(this)" onmouseenter="this.parentElement.classList.add('tip-open')" onmouseleave="this.parentElement.classList.remove('tip-open')">ⓘ<span class="tab-tip-box">GPT-powered FPL assistant. Ask anything about transfers, captains or your squad</span></i></span>
     <span class="tab-tip-wrap"><button class="tab" onclick="switchTab('differentials',event)">🔍 Differentials</button><i class="tab-tip-icon" onclick="toggleTip(this)" onmouseenter="this.parentElement.classList.add('tip-open')" onmouseleave="this.parentElement.classList.remove('tip-open')">ⓘ<span class="tab-tip-box">Players owned by less than 10% of managers but with high power scores</span></i></span>
@@ -598,7 +648,10 @@
   <div id="scout-section" style="display:none"><div id="scout-content">
     <div class="how-calc"><div class="how-calc-hdr" onclick="toggleHowCalc(this)"><span>ℹ️ 🎯 How does the Scout chart work?</span><i class="how-calc-arrow">▾</i></div><div class="how-calc-body"><ul><li><strong>X axis — Fixture ease</strong> — Avg FDR inverted: higher = easier upcoming fixtures</li><li><strong>Y axis — Form</strong> — Average FPL points across the last 4 gameweeks</li><li><strong>Bubble size</strong> — Ownership %, bigger = more widely owned</li><li><strong>Sweet spot</strong> — Top-right: high form AND easy fixtures = ideal transfer targets</li><li><strong>Filters</strong> — Use position buttons to isolate GKs, DEFs, MIDs or FWDs</li></ul></div></div>
     </div></div>
-  <div id="myteam-section" style="display:none">
+  <div id="scouthistory-section" style="display:none">
+  <div id="scouthistory-content"></div>
+</div>
+<div id="myteam-section" style="display:none">
     <div class="myteam-input-wrap">
       <div class="myteam-input-label">🔍 Enter your FPL Team ID</div>
       <div class="myteam-input-row">
@@ -743,10 +796,10 @@ function rankBadge(i){const cls=i===0?'rank-1':i===1?'rank-2':i===2?'rank-3':'ra
 function switchTab(tab, e) {
   document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
   e.target.classList.add('active');
-  ['fixtures','players','power','value','transfers','injuries','xg','livegw','scout','myteam','ai-chat','differentials','history','minileague','fixturegrid','chipplanner','pricechange','seasonpts','h2h'].forEach(id=>{
+  ['fixtures','players','power','value','transfers','injuries','xg','livegw','scout','scouthistory','myteam','ai-chat','differentials','history','minileague','fixturegrid','chipplanner','pricechange','seasonpts','h2h'].forEach(id=>{
     const el=document.getElementById(id+'-section');if(el)el.style.display='none';
   });
-  const labels={fixtures:'Best Fixture Runs — Next 5 Gameweeks',players:'Top Players By Form',power:'Power Rankings — Composite FPL Score',value:'Value Picks — Best Points Per Million',transfers:'Transfer Trends — This Gameweek',injuries:'Injury Tracker — Availability & News',xg:'Underlying Stats — xG & xA',livegw:'Live Gameweek — Real-Time Points',scout:'Scout — Form vs Fixture Bubble Chart',myteam:'My Team — Analyser & Captain Picker','ai-chat':'AI-Powered FPL Assistant','differentials':'Differentials — Hidden Gems Under 10% Ownership','history':'Player History — GW Points Chart & Stats','minileague':'Mini-League — Standings & Leaderboard','fixturegrid':'Full Fixture Grid — Season Difficulty Ticker','chipplanner':'Chip Planner — Best GWs to Play Your Chips','pricechange':'Price Change Predictor — Who\'s Rising & Falling','seasonpts':'Season Points — GW-by-GW Performance Chart','h2h':'Head-to-Head — Compare vs Another Manager'};
+  const labels={fixtures:'Best Fixture Runs — Next 5 Gameweeks',players:'Top Players By Form',power:'Power Rankings — Composite FPL Score',value:'Value Picks — Best Points Per Million',transfers:'Transfer Trends — This Gameweek',injuries:'Injury Tracker — Availability & News',xg:'Underlying Stats — xG & xA',livegw:'Live Gameweek — Real-Time Points',scout:'Scout — Form vs Fixture Bubble Chart',scouthistory:'Scout History — Player vs Opponent Analysis',myteam:'My Team — Analyser & Captain Picker','ai-chat':'AI-Powered FPL Assistant','differentials':'Differentials — Hidden Gems Under 10% Ownership','history':'Player History — GW Points Chart & Stats','minileague':'Mini-League — Standings & Leaderboard','fixturegrid':'Full Fixture Grid — Season Difficulty Ticker','chipplanner':'Chip Planner — Best GWs to Play Your Chips','pricechange':'Price Change Predictor — Who\'s Rising & Falling','seasonpts':'Season Points — GW-by-GW Performance Chart','h2h':'Head-to-Head — Compare vs Another Manager'};
   document.getElementById('section-label').textContent = labels[tab]||tab;
   const sec = document.getElementById(tab+'-section');if(sec)sec.style.display='block';
   if(fplData && !renderedTabs.has(tab)){
@@ -765,6 +818,7 @@ function switchTab(tab, e) {
     else if(tab==='pricechange')renderPriceChange();
     else if(tab==='seasonpts')renderSeasonPts();
     else if(tab==='h2h')renderH2H();
+    else if(tab==='scouthistory')initScoutHistory();
   }
 }
 
@@ -2546,6 +2600,219 @@ document.addEventListener('click',function(e){
   }
 });
 // ══ END TOOLTIP HELPERS ════════════════════════════════════════════════════
+
+
+// ══════════════════════════════════════════════════════════════════════════
+// SCOUT HISTORY — Phase 1
+// ══════════════════════════════════════════════════════════════════════════
+let shSelectedPlayer = null;
+let shSummary = null;
+
+function initScoutHistory(){
+  const el = document.getElementById('scouthistory-content');
+  if(!fplData){ el.innerHTML='<div class="info-msg">⚠️ FPL data not loaded yet.</div>'; return; }
+  renderSHShell(el);
+}
+
+function renderSHShell(el){
+  el.innerHTML = `
+    <div class="sh-search-wrap">
+      <input id="sh-search" class="sh-search-input" type="text"
+        placeholder="Search player e.g. Salah, Haaland, Palmer..."
+        autocomplete="off"
+        oninput="shOnSearch(this.value)"
+        onfocus="shOnSearch(this.value)">
+      <div id="sh-suggestions" class="sh-suggestions" style="display:none"></div>
+    </div>
+    <div id="sh-result">
+      <div class="sh-empty">
+        <div class="sh-empty-icon">🔬</div>
+        <div class="sh-empty-title">Search for a player above to begin</div>
+        <div class="sh-empty-sub">Select any FPL player to see their current season stats and career history</div>
+      </div>
+    </div>`;
+
+  // Close suggestions on outside click
+  document.addEventListener('click', function shClose(e){
+    if(!e.target.closest('.sh-search-wrap')){
+      const s = document.getElementById('sh-suggestions');
+      if(s) s.style.display='none';
+    }
+  });
+}
+
+function shOnSearch(query){
+  const box = document.getElementById('sh-suggestions');
+  if(!box) return;
+  const q = query.trim().toLowerCase();
+  if(q.length < 2){ box.style.display='none'; return; }
+
+  const matches = fplData.elements
+    .filter(p => p.web_name.toLowerCase().includes(q) || (p.first_name+' '+p.second_name).toLowerCase().includes(q))
+    .slice(0, 8);
+
+  if(!matches.length){
+    box.innerHTML = `<div class="sh-no-results">No players found matching "<strong>${query}</strong>"</div>`;
+    box.style.display='block'; return;
+  }
+
+  box.innerHTML = matches.map(p => {
+    const team = fplData.teams.find(t=>t.id===p.team);
+    return `<div class="sh-pill" onclick="shSelectPlayer(${p.id})">
+      <img src="https://resources.premierleague.com/premierleague/photos/players/110x140/p${p.code}.png"
+        onerror="this.src='https://resources.premierleague.com/premierleague/photos/players/110x140/Photo-Missing.png'"
+        style="width:32px;height:40px;object-fit:cover;border-radius:6px;flex-shrink:0">
+      <div>
+        <div class="sh-pill-name">${p.web_name} <span class="sh-pill-pos">${posName(p.element_type)}</span></div>
+        <div class="sh-pill-meta">${team?team.name:'?'} · £${(p.now_cost/10).toFixed(1)}m · ${p.selected_by_percent}% owned</div>
+      </div>
+    </div>`;
+  }).join('');
+  box.style.display='block';
+}
+
+function shSelectPlayer(playerId){
+  const box = document.getElementById('sh-suggestions');
+  const input = document.getElementById('sh-search');
+  const result = document.getElementById('sh-result');
+  if(!result) return;
+
+  shSelectedPlayer = fplData.elements.find(p=>p.id===playerId);
+  if(box){ box.style.display='none'; }
+  if(input && shSelectedPlayer){ input.value = shSelectedPlayer.web_name; }
+
+  result.innerHTML = `<div class="sh-loading"><div class="sh-spinner"></div><span>Fetching player history…</span></div>`;
+
+  const url = `https://fantasy.premierleague.com/api/element-summary/${playerId}/`;
+  const proxy = `https://corsproxy.io/?${encodeURIComponent(url)}`;
+
+  fetch(proxy)
+    .then(r=>{ if(!r.ok) throw new Error('Network error'); return r.json(); })
+    .then(data=>{
+      // Fallback: allorigins if corsproxy fails
+      shSummary = data;
+      shRenderProfile(result, shSelectedPlayer, data);
+    })
+    .catch(()=>{
+      // Try allorigins fallback
+      const fallback = `https://api.allorigins.win/get?url=${encodeURIComponent(url)}`;
+      fetch(fallback)
+        .then(r=>r.json())
+        .then(d=>{ shSummary=JSON.parse(d.contents); shRenderProfile(result, shSelectedPlayer, shSummary); })
+        .catch(()=>{ result.innerHTML='<div class="info-msg">⚠️ Could not load player data — please try again.</div>'; });
+    });
+}
+
+function shRenderProfile(container, p, summary){
+  const team = fplData.teams.find(t=>t.id===p.team);
+  const hist = summary.history || [];
+  const past = (summary.history_past || []).slice().reverse().slice(0,5);
+
+  // Current season aggregates from history[]
+  const totalPts = hist.reduce((s,g)=>s+g.total_points,0);
+  const totalGoals = hist.reduce((s,g)=>s+g.goals_scored,0);
+  const totalAssists = hist.reduce((s,g)=>s+g.assists,0);
+  const ppg = hist.length ? (totalPts/hist.length).toFixed(1) : '0.0';
+  const gws = hist.length;
+
+  // Banner
+  const banner = `
+    <div class="sh-banner">
+      <img class="sh-banner-photo"
+        src="https://resources.premierleague.com/premierleague/photos/players/110x140/p${p.code}.png"
+        onerror="this.src='https://resources.premierleague.com/premierleague/photos/players/110x140/Photo-Missing.png'"
+        alt="${p.web_name}">
+      <div class="sh-banner-info">
+        <div class="sh-banner-name">${p.web_name}</div>
+        <div class="sh-banner-meta">
+          <img class="sh-banner-team-badge"
+            src="https://resources.premierleague.com/premierleague/badges/50/t${team?team.code:''}.png"
+            onerror="this.style.display='none'">
+          <span class="sh-banner-team">${team?team.name:'?'}</span>
+          <span class="pos-badge" style="padding:2px 8px;font-size:0.65rem">${posName(p.element_type)}</span>
+          <span style="color:var(--text-muted);font-size:0.8rem">£${(p.now_cost/10).toFixed(1)}m</span>
+          <span style="color:var(--text-muted);font-size:0.8rem">${p.selected_by_percent}% owned</span>
+        </div>
+        <div class="sh-banner-pills">
+          ${[['Total Pts',totalPts,''],['Goals',totalGoals,''],['Assists',totalAssists,''],['Pts/Game',ppg,''],['GWs Played',gws,'']].map(([lbl,val])=>`
+          <div class="sh-stat-pill">
+            <div class="sh-stat-pill-val">${val}</div>
+            <div class="sh-stat-pill-lbl">${lbl}</div>
+          </div>`).join('')}
+        </div>
+      </div>
+    </div>`;
+
+  // Past seasons table
+  let pastTable = '';
+  if(!past.length){
+    pastTable = `<div class="sh-no-data">No previous season data available</div>`;
+  } else {
+    pastTable = `
+      <div class="sh-table-wrap">
+        <table class="sh-table">
+          <thead><tr>
+            <th>Season</th><th>GWs</th><th>Goals</th><th>Assists</th>
+            <th>Total Pts</th><th>Avg Pts/GW</th>
+          </tr></thead>
+          <tbody>
+            ${past.map(s=>{
+              const avg = s.start_cost ? (s.total_points/(s.season_name.includes('2')?38:38)).toFixed(1) : '—';
+              const gws2 = s.minutes > 0 ? Math.round(s.minutes/90) : '—';
+              const avgPts = s.total_points && gws2 && gws2!=='—' ? (s.total_points/gws2).toFixed(1) : '—';
+              return `<tr>
+                <td class="hi">${s.season_name}</td>
+                <td>${s.element_code ? '—' : '—'}</td>
+                <td class="dim">${gws2}</td>
+                <td class="hi">${s.goals_scored}</td>
+                <td class="hi">${s.assists}</td>
+                <td class="hi">${s.total_points}</td>
+                <td>${avgPts}</td>
+              </tr>`;
+            }).join('')}
+          </tbody>
+        </table>
+      </div>`;
+  }
+
+  container.innerHTML = `
+    ${banner}
+    <div class="sh-section-title">📅 Current Season — GW by GW (${gws} appearances)</div>
+    ${shCurrentSeasonTable(hist)}
+    <div class="sh-section-title" style="margin-top:24px">🏆 Previous Seasons — All Opponents</div>
+    ${pastTable}`;
+}
+
+function shCurrentSeasonTable(hist){
+  if(!hist.length) return '<div class="sh-no-data">No current season data yet</div>';
+  return `
+    <div class="sh-table-wrap">
+      <table class="sh-table">
+        <thead><tr>
+          <th>GW</th><th>Opponent</th><th>H/A</th><th>Pts</th>
+          <th>Goals</th><th>Assists</th><th>Mins</th><th>Bonus</th><th>CS</th>
+        </tr></thead>
+        <tbody>
+          ${hist.slice().reverse().map(g=>{
+            const opp = fplData.teams.find(t=>t.id===g.opponent_team);
+            const ptsCls = g.total_points>=8?'hi':g.total_points>=4?'':'dim';
+            return `<tr>
+              <td class="dim">GW${g.round}</td>
+              <td>${opp?opp.short_name:'?'}</td>
+              <td class="dim">${g.was_home?'H':'A'}</td>
+              <td class="${ptsCls}" style="font-weight:${g.total_points>=8?800:400}">${g.total_points}</td>
+              <td>${g.goals_scored||'—'}</td>
+              <td>${g.assists||'—'}</td>
+              <td class="dim">${g.minutes}</td>
+              <td>${g.bonus||'—'}</td>
+              <td>${g.clean_sheets?'✅':'—'}</td>
+            </tr>`;
+          }).join('')}
+        </tbody>
+      </table>
+    </div>`;
+}
+// ══ END SCOUT HISTORY ════════════════════════════════════════════════════
 
 </script>
 
