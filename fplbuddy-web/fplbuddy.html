@@ -49,10 +49,13 @@
     .card-header { display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:14px; }
     .team-name { font-size:0.95rem; font-weight:700; display:flex; align-items:center; gap:10px; }
     .team-badge { width:32px; height:32px; object-fit:contain; filter:drop-shadow(0 2px 4px rgba(0,0,0,0.4)); }
-    .badge { padding:4px 10px; border-radius:999px; font-size:0.68rem; font-weight:700; letter-spacing:0.5px; text-transform:uppercase; }
-    .easy{background:rgba(0,212,170,0.15);color:#00d4aa;border:1px solid rgba(0,212,170,0.25)}
-    .medium{background:rgba(240,165,0,0.12);color:#f0a500;border:1px solid rgba(240,165,0,0.25)}
-    .hard{background:rgba(255,85,85,0.12);color:#ff5555;border:1px solid rgba(255,85,85,0.25)}
+    .badge { padding:4px 10px; border-radius:999px; font-size:0.68rem; font-weight:700; letter-spacing:0.5px; text-transform:uppercase; border:1px solid transparent; }
+    .very-easy{background:rgba(0,212,170,0.18);color:#00d4aa;border:1px solid rgba(0,212,170,0.4)}
+    .easy{background:rgba(56,200,100,0.15);color:#38c864;border:1px solid rgba(56,200,100,0.35)}
+    .medium{background:rgba(240,165,0,0.15);color:#f0a500;border:1px solid rgba(240,165,0,0.35)}
+    .tough{background:rgba(255,120,30,0.16);color:#ff781e;border:1px solid rgba(255,120,30,0.35)}
+    .difficult{background:rgba(255,60,60,0.15);color:#ff4646;border:1px solid rgba(255,60,60,0.35)}
+    .nightmare{background:rgba(160,10,10,0.22);color:#ff2020;border:1px solid rgba(160,10,10,0.5)}
     .pos-badge { padding:4px 10px; border-radius:999px; font-size:0.68rem; font-weight:700; letter-spacing:0.5px; background:rgba(0,212,170,0.1); color:var(--green); border:1px solid rgba(0,212,170,0.2); }
     .difficulty { font-size:0.75rem; color:var(--text-muted); margin-bottom:12px; font-weight:500; }
     .fixtures { display:flex; gap:5px; flex-wrap:wrap; }
@@ -484,13 +487,7 @@
     .how-calc-body li strong{color:var(--text)}
     /* ══ END TOOLTIPS ════════════════════════════════════════ */
 
-    /* ── Fixture difficulty badge tiers ── */
-    .badge.very-easy{background:rgba(0,212,170,0.18);color:#00d4aa;border-color:rgba(0,212,170,0.4)}
-    .badge.easy{background:rgba(56,200,100,0.15);color:#38c864;border-color:rgba(56,200,100,0.35)}
-    .badge.medium{background:rgba(240,165,0,0.15);color:#f0a500;border-color:rgba(240,165,0,0.35)}
-    .badge.tough{background:rgba(255,120,30,0.16);color:#ff781e;border-color:rgba(255,120,30,0.35)}
-    .badge.difficult{background:rgba(255,60,60,0.15);color:#ff4646;border-color:rgba(255,60,60,0.35)}
-    .badge.nightmare{background:rgba(160,10,10,0.22);color:#ff2020;border-color:rgba(160,10,10,0.5)}
+    /* fixture difficulty tiers handled by standalone classes */
   </style>
 </head>
 <body>
@@ -522,7 +519,7 @@
     <span class="tab-tip-wrap"><button class="tab" onclick="switchTab('seasonpts',event)">📊 Season Points</button><i class="tab-tip-icon" onclick="toggleTip(this)" onmouseenter="this.parentElement.classList.add('tip-open')" onmouseleave="this.parentElement.classList.remove('tip-open')">ⓘ<span class="tab-tip-box">Your GW-by-GW points chart with cumulative total, rank trend and chips played</span></i></span>
     <span class="tab-tip-wrap"><button class="tab" onclick="switchTab('h2h',event)">⚔️ Head-to-Head</button><i class="tab-tip-icon" onclick="toggleTip(this)" onmouseenter="this.parentElement.classList.add('tip-open')" onmouseleave="this.parentElement.classList.remove('tip-open')">ⓘ<span class="tab-tip-box">Compare your FPL season vs a rival — W/D/L record, pts diff and GW battle table</span></i></span>
   </div>
-  <p class="section-title" id="section-label">Best Fixture Runs — Next 5 Gameweeks</p>
+  <p class="section-title" id="section-label">Fixture Runs — Next 5 Gameweeks</p>
 
   <div id="fixtures-section"><div id="proxy-status-bar"></div><div class="card-grid" id="fixture-cards"><div class="loading"><div class="loading-spinner"></div>Fetching live FPL data...</div></div></div>
   <div id="players-section" style="display:none">
@@ -711,8 +708,8 @@ let scoutChart=null, scoutPos='ALL';
 
 // ── HELPERS ───────────────────────────────────────────────────────────────
 function diffClass(d){return d<=2?'fix-1':d===3?'fix-3':d===4?'fix-4':'fix-5';}
-function badgeClass(avg){return avg<=2.0?'very-easy':avg<=2.6?'easy':avg<=3.2?'medium':avg<=3.7?'tough':avg<=4.2?'difficult':'nightmare';}
-function badgeLabel(avg){return avg<=2.0?'🟢 Blank Fix':avg<=2.6?'🟢 Easy Run':avg<=3.2?'🟡 Moderate':avg<=3.7?'🟠 Tough Run':avg<=4.2?'🔴 Difficult':'🔴 Nightmare';}
+function badgeClass(avg){return avg<=2.3?'very-easy':avg<=2.8?'easy':avg<=3.2?'medium':avg<=3.6?'tough':avg<=4.0?'difficult':'nightmare';}
+function badgeLabel(avg){return avg<=2.3?'🟢 Blank Fix':avg<=2.8?'🟢 Easy Run':avg<=3.2?'🟡 Moderate':avg<=3.6?'🟠 Tough Run':avg<=4.0?'🔴 Difficult':'🔴 Nightmare';}
 function posName(t){return {1:'GKP',2:'DEF',3:'MID',4:'FWD'}[t]||'?';}
 function price(p){return '£'+(p.now_cost/10).toFixed(1)+'m';}
 function teamOf(p){return fplData.teams.find(t=>t.id===p.team);}
@@ -779,7 +776,7 @@ function renderFixtures(allFixtures){
   const relevant=allFixtures.filter(f=>upcomingGWs.includes(f.event));
   const tf={};teams.forEach(t=>{tf[t.id]=[];});
   relevant.forEach(f=>{tf[f.team_h].push({opp:f.team_a,difficulty:f.team_h_difficulty,venue:'H'});tf[f.team_a].push({opp:f.team_h,difficulty:f.team_a_difficulty,venue:'A'});});
-  const scored=teams.map(t=>{const fx=tf[t.id].slice(0,5);if(!fx.length)return null;const avg=fx.reduce((s,f)=>s+f.difficulty,0)/fx.length;return{team:t,fixtures:fx,avg:Math.round(avg*100)/100};}).filter(Boolean).sort((a,b)=>a.avg-b.avg).slice(0,12);
+  const scored=teams.map(t=>{const fx=tf[t.id].slice(0,5);if(!fx.length)return null;const avg=fx.reduce((s,f)=>s+f.difficulty,0)/fx.length;return{team:t,fixtures:fx,avg:Math.round(avg*100)/100};}).filter(Boolean).sort((a,b)=>a.avg-b.avg);
   grid.innerHTML='';
   scored.forEach(({team,fixtures,avg},i)=>{
     const chips=fixtures.map(f=>{const opp=teams.find(t=>t.id===f.opp);return `<span class="fix-chip ${diffClass(f.difficulty)}">${opp?opp.short_name:'?'} (${f.venue})</span>`;}).join('');
@@ -1727,12 +1724,12 @@ function renderChipPlanner(){
 // PHASE 7 ── PRICE CHANGE PREDICTOR
 // ══════════════════════════════════════════════════════════════════════════
 let pcView='rise';
+let pcRising=[], pcFalling=[];
 
 function renderPriceChange(){
   const el=document.getElementById('pricechange-content');
   if(!fplData){el.innerHTML='<div class="info-msg">⚠️ FPL data not loaded yet.</div>';return;}
 
-  // Build player pool
   const players=fplData.elements
     .filter(p=>p.minutes>0&&parseFloat(p.selected_by_percent)>0)
     .map(p=>{
@@ -1742,87 +1739,15 @@ function renderPriceChange(){
       return {...p,netTransfers,momentum,own};
     });
 
-  // Strictly separate risers vs fallers — fix: sort fallers by transfers_out_event desc
-  const rising=[...players]
+  // Store in module-level vars so renderPCView() can access them from onclick
+  pcRising=[...players]
     .filter(p=>p.transfers_in_event>p.transfers_out_event)
     .sort((a,b)=>b.netTransfers-a.netTransfers)
     .slice(0,12);
-  const falling=[...players]
+  pcFalling=[...players]
     .filter(p=>p.transfers_out_event>p.transfers_in_event)
     .sort((a,b)=>b.transfers_out_event-a.transfers_out_event)
     .slice(0,12);
-
-  const maxMomPos=rising.length?Math.max(...rising.map(p=>p.momentum)):1;
-  const maxMomNeg=falling.length?Math.max(...falling.map(p=>Math.abs(p.momentum))):1;
-
-  function pcCards(list,type){
-    if(!list.length)return `<div class="info-msg">No significant ${type==='rise'?'risers':'fallers'} this GW yet — check back closer to the deadline.</div>`;
-    return list.map((p,i)=>{
-      const team=teamOf(p);
-      const ptsCost=p.now_cost>0?(p.total_points/(p.now_cost/10)).toFixed(1):'?';
-      const momPct=type==='rise'
-        ?Math.round((p.momentum/maxMomPos)*100)
-        :Math.round((Math.abs(p.momentum)/maxMomNeg)*100);
-      const netStr=p.netTransfers>0?`+${p.netTransfers.toLocaleString()}`:p.netTransfers.toLocaleString();
-      const inStr=(p.transfers_in_event||0).toLocaleString();
-      const outStr=(p.transfers_out_event||0).toLocaleString();
-      return `<div class="pc-card ${type}" data-pid="${p.id}" style="animation-delay:${i*0.05}s" onclick="openDrawer(${p.id})">
-        <div class="pc-badge ${type}">${type==='rise'?'🔺 Rise Likely':'🔻 Fall Likely'}</div>
-        <div class="pc-player-row">
-          <img class="pc-photo"
-            src="https://resources.premierleague.com/premierleague/photos/players/110x140/p${p.code}.png"
-            onerror="this.src='https://resources.premierleague.com/premierleague/photos/players/110x140/Photo-Missing.png'"
-            alt="${p.web_name}">
-          <div>
-            <div class="pc-name">${p.web_name}</div>
-            <div class="pc-sub">${team?team.name:'?'} · ${posName(p.element_type)} · £${(p.now_cost/10).toFixed(1)}m</div>
-          </div>
-        </div>
-        <div class="pc-stats">
-          <div class="pc-stat">
-            <div class="pc-stat-label">Net Δ</div>
-            <div class="pc-stat-val" style="color:${type==='rise'?'#00d4aa':'#ff5555'}">${netStr}</div>
-          </div>
-          <div class="pc-stat">
-            <div class="pc-stat-label">Owned</div>
-            <div class="pc-stat-val" style="color:#a78bfa">${p.own}%</div>
-          </div>
-          <div class="pc-stat">
-            <div class="pc-stat-label">Form</div>
-            <div class="pc-stat-val" style="color:#00d4aa">${p.form}</div>
-          </div>
-          <div class="pc-stat">
-            <div class="pc-stat-label">Transfers In</div>
-            <div class="pc-stat-val" style="color:#00d4aa">${inStr}</div>
-          </div>
-          <div class="pc-stat">
-            <div class="pc-stat-label">Transfers Out</div>
-            <div class="pc-stat-val" style="color:#ff5555">${outStr}</div>
-          </div>
-          <div class="pc-stat">
-            <div class="pc-stat-label">Pts/£m</div>
-            <div class="pc-stat-val">${ptsCost}</div>
-          </div>
-        </div>
-        <div class="pc-momentum-bar ${type}" style="width:${momPct}%"></div>
-      </div>`;
-    }).join('');
-  }
-
-  function renderPCView(){
-    const list=pcView==='rise'?rising:falling;
-    const type=pcView==='rise'?'rise':'fall';
-    document.getElementById('pc-grid-area').innerHTML=`
-      <div class="pc-section-label">${type==='rise'
-        ?`🔺 ${rising.length} player${rising.length!==1?'s':''} rising in price this GW`
-        :`🔻 ${falling.length} player${falling.length!==1?'s':''} falling in price this GW`}
-      </div>
-      <div class="pc-grid">${pcCards(list,type)}</div>`;
-    // Update active state on toggle buttons
-    document.querySelectorAll('.pc-tab').forEach(b=>b.classList.remove('active'));
-    const activeBtn=document.getElementById(type==='rise'?'pc-btn-rise':'pc-btn-fall');
-    if(activeBtn) activeBtn.classList.add('active');
-  }
 
   el.innerHTML=`
     <div class="how-calc">
@@ -1833,9 +1758,9 @@ function renderPriceChange(){
       <div class="how-calc-body">
         <ul>
           <li><strong>Transfer velocity</strong> — Heavy net buying relative to ownership signals a likely price rise</li>
-          <li><strong>FPL's rule</strong> — A player rises when net transfers exceed ~1% of total managers owning them</li>
+          <li><strong>FPL rule</strong> — A player rises when net transfers exceed ~1% of total managers owning them</li>
           <li><strong>Risers</strong> — Sorted by net transfers in (transfers_in − transfers_out) descending</li>
-          <li><strong>Fallers</strong> — Sorted by transfers out descending — most sold players shown first</li>
+          <li><strong>Fallers</strong> — Sorted by transfers_out_event descending — most sold players shown first</li>
           <li><strong>Note</strong> — These are signals, not guarantees. FPL processes prices once per day after 6am BST</li>
         </ul>
       </div>
@@ -1845,13 +1770,72 @@ function renderPriceChange(){
     </div>
     <div class="pc-tabs">
       <button class="pc-tab ${pcView==='rise'?'active':''}" id="pc-btn-rise"
-        onclick="pcView='rise';renderPCView()">🔺 Risers (${rising.length})</button>
+        onclick="pcView='rise';renderPCView()">🔺 Risers (${pcRising.length})</button>
       <button class="pc-tab ${pcView==='fall'?'active':''}" id="pc-btn-fall"
-        onclick="pcView='fall';renderPCView()">🔻 Fallers (${falling.length})</button>
+        onclick="pcView='fall';renderPCView()">🔻 Fallers (${pcFalling.length})</button>
     </div>
     <div id="pc-grid-area"></div>`;
 
   renderPCView();
+}
+
+// TOP-LEVEL — accessible from onclick in DOM
+function renderPCView(){
+  const el=document.getElementById('pc-grid-area');
+  if(!el) return;
+  const isRise=pcView==='rise';
+  const list=isRise?pcRising:pcFalling;
+  const type=isRise?'rise':'fall';
+
+  if(!list.length){
+    el.innerHTML=`<div class="info-msg">No significant ${isRise?'risers':'fallers'} this GW yet — check back closer to the deadline.</div>`;
+    return;
+  }
+
+  const maxMom=list.length?Math.max(...list.map(p=>Math.abs(p.momentum))):1;
+
+  const cards=list.map((p,i)=>{
+    const team=teamOf(p);
+    const ptsCost=p.now_cost>0?(p.total_points/(p.now_cost/10)).toFixed(1):'?';
+    const momPct=Math.round((Math.abs(p.momentum)/maxMom)*100);
+    const netStr=p.netTransfers>0?`+${p.netTransfers.toLocaleString()}`:p.netTransfers.toLocaleString();
+    const inStr=(p.transfers_in_event||0).toLocaleString();
+    const outStr=(p.transfers_out_event||0).toLocaleString();
+    return `<div class="pc-card ${type}" data-pid="${p.id}" style="animation-delay:${i*0.05}s" onclick="openDrawer(${p.id})">
+      <div class="pc-badge ${type}">${type==='rise'?'🔺 Rise Likely':'🔻 Fall Likely'}</div>
+      <div class="pc-player-row">
+        <img class="pc-photo"
+          src="https://resources.premierleague.com/premierleague/photos/players/110x140/p${p.code}.png"
+          onerror="this.src='https://resources.premierleague.com/premierleague/photos/players/110x140/Photo-Missing.png'"
+          alt="${p.web_name}">
+        <div>
+          <div class="pc-name">${p.web_name}</div>
+          <div class="pc-sub">${team?team.name:'?'} · ${posName(p.element_type)} · £${(p.now_cost/10).toFixed(1)}m</div>
+        </div>
+      </div>
+      <div class="pc-stats">
+        <div class="pc-stat"><div class="pc-stat-label">Net Δ</div><div class="pc-stat-val" style="color:${type==='rise'?'#00d4aa':'#ff5555'}">${netStr}</div></div>
+        <div class="pc-stat"><div class="pc-stat-label">Owned</div><div class="pc-stat-val" style="color:#a78bfa">${p.own}%</div></div>
+        <div class="pc-stat"><div class="pc-stat-label">Form</div><div class="pc-stat-val" style="color:#00d4aa">${p.form}</div></div>
+        <div class="pc-stat"><div class="pc-stat-label">Transfers In</div><div class="pc-stat-val" style="color:#00d4aa">${inStr}</div></div>
+        <div class="pc-stat"><div class="pc-stat-label">Transfers Out</div><div class="pc-stat-val" style="color:#ff5555">${outStr}</div></div>
+        <div class="pc-stat"><div class="pc-stat-label">Pts/£m</div><div class="pc-stat-val">${ptsCost}</div></div>
+      </div>
+      <div class="pc-momentum-bar ${type}" style="width:${momPct}%"></div>
+    </div>`;
+  }).join('');
+
+  el.innerHTML=`
+    <div class="pc-section-label">${isRise
+      ?`🔺 ${pcRising.length} player${pcRising.length!==1?'s':''} rising in price this GW`
+      :`🔻 ${pcFalling.length} player${pcFalling.length!==1?'s':''} falling in price this GW`}
+    </div>
+    <div class="pc-grid">${cards}</div>`;
+
+  // Sync active button state
+  document.querySelectorAll('.pc-tab').forEach(b=>b.classList.remove('active'));
+  const activeBtn=document.getElementById(isRise?'pc-btn-rise':'pc-btn-fall');
+  if(activeBtn) activeBtn.classList.add('active');
 }
 
 
