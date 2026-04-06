@@ -460,6 +460,29 @@
     .h2h-streak.draw{background:rgba(107,114,128,0.12);color:#6b7280;border:1px solid rgba(107,114,128,0.2)}
     .chip-dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-left:4px;background:#a78bfa;vertical-align:middle}
     /* ══ END PHASE 9 CSS ══════════════════════════════════════ */
+
+    /* ══ TOOLTIPS ════════════════════════════════════════════ */
+    .tooltip-wrap{position:relative;display:inline-flex;align-items:center;gap:3px}
+    .tooltip-box{position:absolute;bottom:calc(100% + 8px);left:50%;transform:translateX(-50%);background:rgba(11,15,26,0.97);border:1px solid rgba(0,212,170,0.35);border-radius:8px;padding:8px 11px;font-size:0.72rem;line-height:1.5;color:#e8eaf0;white-space:normal;width:max-content;max-width:220px;pointer-events:none;opacity:0;transition:opacity 0.15s ease;z-index:999;text-align:left;box-shadow:0 4px 20px rgba(0,0,0,0.5);font-weight:400}
+    .tooltip-box::after{content:'';position:absolute;top:100%;left:50%;transform:translateX(-50%);border:5px solid transparent;border-top-color:rgba(0,212,170,0.35)}
+    .tooltip-wrap:hover .tooltip-box,.tooltip-wrap.tip-open .tooltip-box{opacity:1;pointer-events:none}
+    .tip-icon{font-size:0.66rem;color:rgba(0,212,170,0.55);cursor:help;line-height:1;user-select:none;flex-shrink:0;font-style:normal}
+    .tab-tip-wrap{display:inline-flex;align-items:center;position:relative;vertical-align:middle}
+    .tab-tip-icon{font-size:0.62rem;color:rgba(255,255,255,0.3);cursor:help;padding:2px 3px;line-height:1;user-select:none;transition:color 0.15s;font-style:normal}
+    .tab-tip-icon:hover{color:rgba(0,212,170,0.7)}
+    .tab-tip-box{position:absolute;bottom:calc(100% + 10px);left:50%;transform:translateX(-50%);background:rgba(11,15,26,0.97);border:1px solid rgba(0,212,170,0.35);border-radius:9px;padding:9px 13px;font-size:0.72rem;line-height:1.55;color:#e8eaf0;white-space:normal;width:max-content;max-width:230px;pointer-events:none;opacity:0;transition:opacity 0.15s ease;z-index:1000;text-align:left;box-shadow:0 6px 24px rgba(0,0,0,0.6);font-weight:400}
+    .tab-tip-box::after{content:'';position:absolute;top:100%;left:50%;transform:translateX(-50%);border:5px solid transparent;border-top-color:rgba(0,212,170,0.35)}
+    .tab-tip-wrap:hover .tab-tip-box,.tab-tip-wrap.tip-open .tab-tip-box{opacity:1}
+    .how-calc{background:rgba(0,212,170,0.04);border:1px solid rgba(0,212,170,0.15);border-radius:10px;margin-bottom:18px;overflow:hidden}
+    .how-calc-hdr{display:flex;align-items:center;justify-content:space-between;padding:11px 15px;cursor:pointer;transition:background 0.15s;user-select:none;font-size:0.82rem;font-weight:700;color:rgba(0,212,170,0.8)}
+    .how-calc-hdr:hover{background:rgba(0,212,170,0.07)}
+    .how-calc-arrow{transition:transform 0.25s;font-style:normal;font-size:0.75rem;display:inline-block}
+    .how-calc-body{max-height:0;overflow:hidden;transition:max-height 0.32s ease}
+    .how-calc-body.open{max-height:500px}
+    .how-calc-body ul{padding:4px 15px 14px 28px;margin:0}
+    .how-calc-body li{font-size:0.79rem;color:var(--text-muted);line-height:1.65;margin-bottom:3px}
+    .how-calc-body li strong{color:var(--text)}
+    /* ══ END TOOLTIPS ════════════════════════════════════════ */
   </style>
 </head>
 <body>
@@ -472,24 +495,24 @@
   <div id="gw-info"></div>
   <div class="tabs-wrap">
     <button class="tab active" onclick="switchTab('fixtures',event)">📅 Fixture Runs</button>
-    <button class="tab" onclick="switchTab('players',event)">⚡ Top Players</button>
-    <button class="tab" onclick="switchTab('power',event)">🏆 Power Rankings</button>
-    <button class="tab" onclick="switchTab('value',event)">💸 Value Picks</button>
-    <button class="tab" onclick="switchTab('transfers',event)">🔄 Transfers</button>
-    <button class="tab" onclick="switchTab('injuries',event)">🩹 Injuries</button>
-    <button class="tab" onclick="switchTab('xg',event)">📊 xG Stats</button>
-    <button class="tab" onclick="switchTab('livegw',event)">🔴 Live GW</button>
-    <button class="tab" onclick="switchTab('scout',event)">🎯 Scout</button>
-    <button class="tab" onclick="switchTab('myteam',event)">👤 My Team</button>
-    <button class="tab" onclick="switchTab('ai-chat',event)">🤖 AI Chat</button>
-    <button class="tab" onclick="switchTab('differentials',event)">🔍 Differentials</button>
-    <button class="tab" onclick="switchTab('history',event)">📈 GW History</button>
-    <button class="tab" onclick="switchTab('minileague',event)">🏆 Mini League</button>
-    <button class="tab" onclick="switchTab('fixturegrid',event)">🗓️ Fixture Grid</button>
-    <button class="tab" onclick="switchTab('chipplanner',event)">🃏 Chip Planner</button>
-    <button class="tab" onclick="switchTab('pricechange',event)">💰 Price Changes</button>
-    <button class="tab" onclick="switchTab('seasonpts',event)">📊 Season Points</button>
-    <button class="tab" onclick="switchTab('h2h',event)">⚔️ Head-to-Head</button>
+    <span class="tab-tip-wrap"><button class="tab" onclick="switchTab('players',event)">⚡ Top Players</button><i class="tab-tip-icon" onclick="toggleTip(this)" onmouseenter="this.parentElement.classList.add('tip-open')" onmouseleave="this.parentElement.classList.remove('tip-open')">ⓘ<span class="tab-tip-box">Best players right now — filter by form, price, position and sort method of your choice</span></i></span>
+    <span class="tab-tip-wrap"><button class="tab" onclick="switchTab('power',event)">🏆 Power Rankings</button><i class="tab-tip-icon" onclick="toggleTip(this)" onmouseenter="this.parentElement.classList.add('tip-open')" onmouseleave="this.parentElement.classList.remove('tip-open')">ⓘ<span class="tab-tip-box">Composite score combining form, pts/game, pts per £m, fixture ease and transfer momentum</span></i></span>
+    <span class="tab-tip-wrap"><button class="tab" onclick="switchTab('value',event)">💸 Value Picks</button><i class="tab-tip-icon" onclick="toggleTip(this)" onmouseenter="this.parentElement.classList.add('tip-open')" onmouseleave="this.parentElement.classList.remove('tip-open')">ⓘ<span class="tab-tip-box">Best points-per-million players. Total season points divided by current price</span></i></span>
+    <span class="tab-tip-wrap"><button class="tab" onclick="switchTab('transfers',event)">🔄 Transfers</button><i class="tab-tip-icon" onclick="toggleTip(this)" onmouseenter="this.parentElement.classList.add('tip-open')" onmouseleave="this.parentElement.classList.remove('tip-open')">ⓘ<span class="tab-tip-box">Who managers are buying and selling most this gameweek</span></i></span>
+    <span class="tab-tip-wrap"><button class="tab" onclick="switchTab('injuries',event)">🩹 Injuries</button><i class="tab-tip-icon" onclick="toggleTip(this)" onmouseenter="this.parentElement.classList.add('tip-open')" onmouseleave="this.parentElement.classList.remove('tip-open')">ⓘ<span class="tab-tip-box">Players with active injury or suspension news and their chance of playing next GW</span></i></span>
+    <span class="tab-tip-wrap"><button class="tab" onclick="switchTab('xg',event)">📊 xG Stats</button><i class="tab-tip-icon" onclick="toggleTip(this)" onmouseenter="this.parentElement.classList.add('tip-open')" onmouseleave="this.parentElement.classList.remove('tip-open')">ⓘ<span class="tab-tip-box">Expected Goals (xG) and Expected Assists (xA) — chances created vs actual returns</span></i></span>
+    <span class="tab-tip-wrap"><button class="tab" onclick="switchTab('livegw',event)">🔴 Live GW</button><i class="tab-tip-icon" onclick="toggleTip(this)" onmouseenter="this.parentElement.classList.add('tip-open')" onmouseleave="this.parentElement.classList.remove('tip-open')">ⓘ<span class="tab-tip-box">Real-time points for the current gameweek pulled from the FPL live endpoint</span></i></span>
+    <span class="tab-tip-wrap"><button class="tab" onclick="switchTab('scout',event)">🎯 Scout</button><i class="tab-tip-icon" onclick="toggleTip(this)" onmouseenter="this.parentElement.classList.add('tip-open')" onmouseleave="this.parentElement.classList.remove('tip-open')">ⓘ<span class="tab-tip-box">Bubble chart plotting form vs fixture ease. Top-right corner = ideal transfer targets</span></i></span>
+    <span class="tab-tip-wrap"><button class="tab" onclick="switchTab('myteam',event)">👤 My Team</button><i class="tab-tip-icon" onclick="toggleTip(this)" onmouseenter="this.parentElement.classList.add('tip-open')" onmouseleave="this.parentElement.classList.remove('tip-open')">ⓘ<span class="tab-tip-box">Enter your FPL team ID to analyse your squad, see captain picks and a visual pitch view</span></i></span>
+    <span class="tab-tip-wrap"><button class="tab" onclick="switchTab('ai-chat',event)">🤖 AI Chat</button><i class="tab-tip-icon" onclick="toggleTip(this)" onmouseenter="this.parentElement.classList.add('tip-open')" onmouseleave="this.parentElement.classList.remove('tip-open')">ⓘ<span class="tab-tip-box">GPT-powered FPL assistant. Ask anything about transfers, captains or your squad</span></i></span>
+    <span class="tab-tip-wrap"><button class="tab" onclick="switchTab('differentials',event)">🔍 Differentials</button><i class="tab-tip-icon" onclick="toggleTip(this)" onmouseenter="this.parentElement.classList.add('tip-open')" onmouseleave="this.parentElement.classList.remove('tip-open')">ⓘ<span class="tab-tip-box">Players owned by less than 10% of managers but with high power scores</span></i></span>
+    <span class="tab-tip-wrap"><button class="tab" onclick="switchTab('history',event)">📈 GW History</button><i class="tab-tip-icon" onclick="toggleTip(this)" onmouseenter="this.parentElement.classList.add('tip-open')" onmouseleave="this.parentElement.classList.remove('tip-open')">ⓘ<span class="tab-tip-box">Search any player to see their GW-by-GW points as a line chart with full stat table</span></i></span>
+    <span class="tab-tip-wrap"><button class="tab" onclick="switchTab('minileague',event)">🏆 Mini League</button><i class="tab-tip-icon" onclick="toggleTip(this)" onmouseenter="this.parentElement.classList.add('tip-open')" onmouseleave="this.parentElement.classList.remove('tip-open')">ⓘ<span class="tab-tip-box">Enter a league ID to see live standings, rank movements and points gaps</span></i></span>
+    <span class="tab-tip-wrap"><button class="tab" onclick="switchTab('fixturegrid',event)">🗓️ Fixture Grid</button><i class="tab-tip-icon" onclick="toggleTip(this)" onmouseenter="this.parentElement.classList.add('tip-open')" onmouseleave="this.parentElement.classList.remove('tip-open')">ⓘ<span class="tab-tip-box">Full 20-team × 8-GW colour-coded fixture ticker, sorted easiest to hardest</span></i></span>
+    <span class="tab-tip-wrap"><button class="tab" onclick="switchTab('chipplanner',event)">🃏 Chip Planner</button><i class="tab-tip-icon" onclick="toggleTip(this)" onmouseenter="this.parentElement.classList.add('tip-open')" onmouseleave="this.parentElement.classList.remove('tip-open')">ⓘ<span class="tab-tip-box">Recommends the best remaining GW to play each of your 4 chips based on fixture data</span></i></span>
+    <span class="tab-tip-wrap"><button class="tab" onclick="switchTab('pricechange',event)">💰 Price Changes</button><i class="tab-tip-icon" onclick="toggleTip(this)" onmouseenter="this.parentElement.classList.add('tip-open')" onmouseleave="this.parentElement.classList.remove('tip-open')">ⓘ<span class="tab-tip-box">Players most likely to rise or fall based on transfer velocity this GW</span></i></span>
+    <span class="tab-tip-wrap"><button class="tab" onclick="switchTab('seasonpts',event)">📊 Season Points</button><i class="tab-tip-icon" onclick="toggleTip(this)" onmouseenter="this.parentElement.classList.add('tip-open')" onmouseleave="this.parentElement.classList.remove('tip-open')">ⓘ<span class="tab-tip-box">Your GW-by-GW points chart with cumulative total, rank trend and chips played</span></i></span>
+    <span class="tab-tip-wrap"><button class="tab" onclick="switchTab('h2h',event)">⚔️ Head-to-Head</button><i class="tab-tip-icon" onclick="toggleTip(this)" onmouseenter="this.parentElement.classList.add('tip-open')" onmouseleave="this.parentElement.classList.remove('tip-open')">ⓘ<span class="tab-tip-box">Compare your FPL season vs a rival — W/D/L record, pts diff and GW battle table</span></i></span>
   </div>
   <p class="section-title" id="section-label">Best Fixture Runs — Next 5 Gameweeks</p>
 
@@ -550,7 +573,9 @@
     <div class="card-grid" id="xg-cards"></div>
   </div>
   <div id="livegw-section" style="display:none"><div id="livegw-content"><div class="loading"><div class="loading-spinner"></div>Loading...</div></div></div>
-  <div id="scout-section" style="display:none"><div id="scout-content"></div></div>
+  <div id="scout-section" style="display:none"><div id="scout-content">
+    <div class="how-calc"><div class="how-calc-hdr" onclick="toggleHowCalc(this)"><span>ℹ️ 🎯 How does the Scout chart work?</span><i class="how-calc-arrow">▾</i></div><div class="how-calc-body"><ul><li><strong>X axis — Fixture ease</strong> — Avg FDR inverted: higher = easier upcoming fixtures</li><li><strong>Y axis — Form</strong> — Average FPL points across the last 4 gameweeks</li><li><strong>Bubble size</strong> — Ownership %, bigger = more widely owned</li><li><strong>Sweet spot</strong> — Top-right: high form AND easy fixtures = ideal transfer targets</li><li><strong>Filters</strong> — Use position buttons to isolate GKs, DEFs, MIDs or FWDs</li></ul></div></div>
+    </div></div>
   <div id="myteam-section" style="display:none">
     <div class="myteam-input-wrap">
       <div class="myteam-input-label">🔍 Enter your FPL Team ID</div>
@@ -619,10 +644,14 @@
   </div>
 
   <div id="chipplanner-section" style="display:none">
-    <div id="chipplanner-content"></div>
+    <div id="chipplanner-content">
+    <div class="how-calc"><div class="how-calc-hdr" onclick="toggleHowCalc(this)"><span>ℹ️ 🃏 How are chip recommendations made?</span><i class="how-calc-arrow">▾</i></div><div class="how-calc-body"><ul><li><strong>Wildcard</strong> — GW with highest density of easy fixtures across top FPL teams</li><li><strong>Free Hit</strong> — GW with the most blanks or a high-value double gameweek reset opportunity</li><li><strong>Bench Boost</strong> — GW where the most teams have a double gameweek so bench players also score</li><li><strong>Triple Captain</strong> — GW where the best premium player has the easiest single fixture</li><li><strong>Scores</strong> — Each GW gets a composite score; highest score = recommended GW to play that chip</li></ul></div></div>
+    </div>
   </div>
   <div id="pricechange-section" style="display:none">
-    <div id="pricechange-content"></div>
+    <div id="pricechange-content">
+    <div class="how-calc"><div class="how-calc-hdr" onclick="toggleHowCalc(this)"><span>ℹ️ 💰 How is price change predicted?</span><i class="how-calc-arrow">▾</i></div><div class="how-calc-body"><ul><li><strong>Transfer velocity</strong> — Heavy net buying relative to ownership signals a likely price rise</li><li><strong>FPL's rule</strong> — A player rises when net transfers exceed ~1% of total managers owning them</li><li><strong>ep_next</strong> — High expected points + high net transfers = strong rise candidate</li><li><strong>Price fall signal</strong> — Heavy net sell-off with low form triggers a fall flag</li><li><strong>Note</strong> — These are signals, not guarantees. FPL processes prices once per day after 6am BST</li></ul></div></div>
+    </div>
   </div>
 
   <div id="seasonpts-section" style="display:none">
@@ -779,7 +808,7 @@ function renderPlayers(){
   shown.forEach((p,i)=>{
     const team=teamOf(p);
     const c=makeCard(i,p.id);
-    c.innerHTML=`<div class="card-header"><div class="player-header" style="margin-bottom:0"><img class="player-photo" src="https://resources.premierleague.com/premierleague/photos/players/110x140/p${p.code}.png" alt="${p.web_name}" onerror="this.src='https://resources.premierleague.com/premierleague/photos/players/110x140/Photo-Missing.png'"><div class="player-info"><div class="player-name">${p.web_name}</div><div class="player-team-row"><img src="https://resources.premierleague.com/premierleague/badges/50/t${team?team.code:''}.png" onerror="this.style.display='none'">${team?team.name:'?'}</div></div></div><span class="pos-badge">${posName(p.element_type)}</span></div><div class="stats-grid"><div class="stat-item"><div class="stat-label">Price</div><div class="stat-value">${price(p)}</div></div><div class="stat-item"><div class="stat-label">Form</div><div class="stat-value green">${p.form}</div></div><div class="stat-item"><div class="stat-label">Total Pts</div><div class="stat-value">${p.total_points}</div></div><div class="stat-item"><div class="stat-label">Pts/Game</div><div class="stat-value">${p.points_per_game}</div></div><div class="stat-item"><div class="stat-label">Ownership</div><div class="stat-value purple">${p.selected_by_percent}%</div></div><div class="stat-item"><div class="stat-label">Pts/£m</div><div class="stat-value blue">${p.now_cost>0?(p.total_points/(p.now_cost/10)).toFixed(1):'?'}</div></div></div>`;
+    c.innerHTML=`<div class="card-header"><div class="player-header" style="margin-bottom:0"><img class="player-photo" src="https://resources.premierleague.com/premierleague/photos/players/110x140/p${p.code}.png" alt="${p.web_name}" onerror="this.src='https://resources.premierleague.com/premierleague/photos/players/110x140/Photo-Missing.png'"><div class="player-info"><div class="player-name">${p.web_name}</div><div class="player-team-row"><img src="https://resources.premierleague.com/premierleague/badges/50/t${team?team.code:''}.png" onerror="this.style.display='none'">${team?team.name:'?'}</div></div></div><span class="pos-badge">${posName(p.element_type)}</span></div><div class="stats-grid"><div class="stat-item"><div class="stat-label tooltip-wrap">Price<i class="tip-icon">ⓘ</i><span class="tooltip-box">Current FPL price in millions</span></div><div class="stat-value">${price(p)}</div></div><div class="stat-item"><div class="stat-label tooltip-wrap">Form<i class="tip-icon">ⓘ</i><span class="tooltip-box">Average FPL points scored across the last 4 gameweeks</span></div><div class="stat-value green">${p.form}</div></div><div class="stat-item"><div class="stat-label tooltip-wrap">Total Pts<i class="tip-icon">ⓘ</i><span class="tooltip-box">Total FPL points scored this season</span></div><div class="stat-value">${p.total_points}</div></div><div class="stat-item"><div class="stat-label tooltip-wrap">Pts/Game<i class="tip-icon">ⓘ</i><span class="tooltip-box">Average FPL points per gameweek played</span></div><div class="stat-value">${p.points_per_game}</div></div><div class="stat-item"><div class="stat-label tooltip-wrap">Ownership<i class="tip-icon">ⓘ</i><span class="tooltip-box">Percentage of FPL managers who own this player</span></div><div class="stat-value purple">${p.selected_by_percent}%</div></div><div class="stat-item"><div class="stat-label tooltip-wrap">Pts/£m<i class="tip-icon">ⓘ</i><span class="tooltip-box">Total season points ÷ current price — higher = better value</span></div><div class="stat-value blue">${p.now_cost>0?(p.total_points/(p.now_cost/10)).toFixed(1):'?'}</div></div></div>`;
     grid.appendChild(c);
   });
 }
@@ -794,7 +823,7 @@ function renderPower(){
     const fixAvg=Math.round(fixtureScore(p.team)*10)/10;
     const fixCls=fixAvg<=2.5?'green':fixAvg<=3.2?'orange':'red';
     const ptsCost=p.now_cost>0?(p.total_points/(p.now_cost/10)).toFixed(1):'?';
-    c.innerHTML=`${rankBadge(i)}<div class="player-header"><img class="player-photo" src="https://resources.premierleague.com/premierleague/photos/players/110x140/p${p.code}.png" alt="${p.web_name}" onerror="this.src='https://resources.premierleague.com/premierleague/photos/players/110x140/Photo-Missing.png'"><div class="player-info"><div class="player-name">${p.web_name}</div><div class="player-team-row"><img src="https://resources.premierleague.com/premierleague/badges/50/t${team?team.code:''}.png" onerror="this.style.display='none'">${team?team.name:'?'} · <span class="pos-badge" style="padding:2px 7px;font-size:0.62rem">${posName(p.element_type)}</span></div></div></div><div class="power-score-wrap"><div class="power-score-header"><span class="power-score-label">⚡ Power Score</span><span class="power-score-value">${p.power}</span></div><div class="power-bar-bg"><div class="power-bar-fill" style="width:${bw}%"></div></div></div><div class="stats-grid"><div class="stat-item"><div class="stat-label">Form</div><div class="stat-value green">${p.form}</div></div><div class="stat-item"><div class="stat-label">Pts/Game</div><div class="stat-value">${p.points_per_game}</div></div><div class="stat-item"><div class="stat-label">Pts/£m</div><div class="stat-value blue">${ptsCost}</div></div><div class="stat-item"><div class="stat-label">Fix Avg</div><div class="stat-value ${fixCls}">${fixAvg}</div></div><div class="stat-item"><div class="stat-label">Price</div><div class="stat-value">${price(p)}</div></div><div class="stat-item"><div class="stat-label">Selected</div><div class="stat-value">${p.selected_by_percent}%</div></div></div>`;
+    c.innerHTML=`${rankBadge(i)}<div class="player-header"><img class="player-photo" src="https://resources.premierleague.com/premierleague/photos/players/110x140/p${p.code}.png" alt="${p.web_name}" onerror="this.src='https://resources.premierleague.com/premierleague/photos/players/110x140/Photo-Missing.png'"><div class="player-info"><div class="player-name">${p.web_name}</div><div class="player-team-row"><img src="https://resources.premierleague.com/premierleague/badges/50/t${team?team.code:''}.png" onerror="this.style.display='none'">${team?team.name:'?'} · <span class="pos-badge" style="padding:2px 7px;font-size:0.62rem">${posName(p.element_type)}</span></div></div></div><div class="power-score-wrap"><div class="power-score-header"><span class="power-score-label">⚡ Power Score</span><span class="power-score-value">${p.power}</span></div><div class="power-bar-bg"><div class="power-bar-fill" style="width:${bw}%"></div></div></div><div class="stats-grid"><div class="stat-item"><div class="stat-label tooltip-wrap">Form<i class="tip-icon">ⓘ</i><span class="tooltip-box">Average FPL points scored across the last 4 gameweeks</span></div><div class="stat-value green">${p.form}</div></div><div class="stat-item"><div class="stat-label tooltip-wrap">Pts/Game<i class="tip-icon">ⓘ</i><span class="tooltip-box">Average FPL points per gameweek played</span></div><div class="stat-value">${p.points_per_game}</div></div><div class="stat-item"><div class="stat-label tooltip-wrap">Pts/£m<i class="tip-icon">ⓘ</i><span class="tooltip-box">Total season points ÷ current price — higher = better value</span></div><div class="stat-value blue">${ptsCost}</div></div><div class="stat-item"><div class="stat-label tooltip-wrap">Fix Avg<i class="tip-icon">ⓘ</i><span class="tooltip-box">Average fixture difficulty across next 3 GWs (1=easy, 5=hard)</span></div><div class="stat-value ${fixCls}">${fixAvg}</div></div><div class="stat-item"><div class="stat-label tooltip-wrap">Price<i class="tip-icon">ⓘ</i><span class="tooltip-box">Current FPL price in millions</span></div><div class="stat-value">${price(p)}</div></div><div class="stat-item"><div class="stat-label tooltip-wrap">Selected<i class="tip-icon">ⓘ</i><span class="tooltip-box">Percentage of all FPL managers who own this player</span></div><div class="stat-value">${p.selected_by_percent}%</div></div></div>`;
     grid.appendChild(c);
   });
 }
@@ -808,7 +837,7 @@ function renderValue(){
     const team=teamOf(p);const c=makeCard(i,p.id);
     const pr=p.cost_change_event>0?`+${p.cost_change_event*0.1}m`:p.cost_change_event<0?`${p.cost_change_event*0.1}m`:'–';
     const pc=p.cost_change_event>0?'green':p.cost_change_event<0?'red':'';
-    c.innerHTML=`${rankBadge(i)}<div class="player-header"><img class="player-photo" src="https://resources.premierleague.com/premierleague/photos/players/110x140/p${p.code}.png" alt="${p.web_name}" onerror="this.src='https://resources.premierleague.com/premierleague/photos/players/110x140/Photo-Missing.png'"><div class="player-info"><div class="player-name">${p.web_name}</div><div class="player-team-row"><img src="https://resources.premierleague.com/premierleague/badges/50/t${team?team.code:''}.png" onerror="this.style.display='none'">${team?team.name:'?'}</div><span class="value-tag">💰 ${p.ptsCost.toFixed(1)} pts/£m</span></div></div><div class="stats-grid"><div class="stat-item"><div class="stat-label">Price</div><div class="stat-value">${price(p)}</div></div><div class="stat-item"><div class="stat-label">GW Change</div><div class="stat-value ${pc}">${pr}</div></div><div class="stat-item"><div class="stat-label">Total Pts</div><div class="stat-value">${p.total_points}</div></div><div class="stat-item"><div class="stat-label">Pts/Game</div><div class="stat-value">${p.points_per_game}</div></div><div class="stat-item"><div class="stat-label">Next GW ep</div><div class="stat-value green">${p.epNext}</div></div><div class="stat-item"><div class="stat-label">Selected</div><div class="stat-value">${p.selected_by_percent}%</div></div></div>`;
+    c.innerHTML=`${rankBadge(i)}<div class="player-header"><img class="player-photo" src="https://resources.premierleague.com/premierleague/photos/players/110x140/p${p.code}.png" alt="${p.web_name}" onerror="this.src='https://resources.premierleague.com/premierleague/photos/players/110x140/Photo-Missing.png'"><div class="player-info"><div class="player-name">${p.web_name}</div><div class="player-team-row"><img src="https://resources.premierleague.com/premierleague/badges/50/t${team?team.code:''}.png" onerror="this.style.display='none'">${team?team.name:'?'}</div><span class="value-tag">💰 ${p.ptsCost.toFixed(1)} pts/£m</span></div></div><div class="stats-grid"><div class="stat-item"><div class="stat-label tooltip-wrap">Price<i class="tip-icon">ⓘ</i><span class="tooltip-box">Current FPL price in millions</span></div><div class="stat-value">${price(p)}</div></div><div class="stat-item"><div class="stat-label tooltip-wrap">GW Change<i class="tip-icon">ⓘ</i><span class="tooltip-box">Price movement this gameweek (+ = rose, − = fell)</span></div><div class="stat-value ${pc}">${pr}</div></div><div class="stat-item"><div class="stat-label tooltip-wrap">Total Pts<i class="tip-icon">ⓘ</i><span class="tooltip-box">Total FPL points scored this season</span></div><div class="stat-value">${p.total_points}</div></div><div class="stat-item"><div class="stat-label tooltip-wrap">Pts/Game<i class="tip-icon">ⓘ</i><span class="tooltip-box">Average FPL points per gameweek played</span></div><div class="stat-value">${p.points_per_game}</div></div><div class="stat-item"><div class="stat-label">Next GW ep</div><div class="stat-value green">${p.epNext}</div></div><div class="stat-item"><div class="stat-label tooltip-wrap">Selected<i class="tip-icon">ⓘ</i><span class="tooltip-box">Percentage of all FPL managers who own this player</span></div><div class="stat-value">${p.selected_by_percent}%</div></div></div>`;
     grid.appendChild(c);
   });
 }
@@ -827,7 +856,7 @@ function renderTransfers(){
     const net=p.transfers_in_event-p.transfers_out_event;
     const nc=net>0?'green':net<0?'red':'';
     const nl=net>0?`+${net.toLocaleString()}`:net.toLocaleString();
-    c.innerHTML=`<div class="player-header"><img class="player-photo" src="https://resources.premierleague.com/premierleague/photos/players/110x140/p${p.code}.png" alt="${p.web_name}" onerror="this.src='https://resources.premierleague.com/premierleague/photos/players/110x140/Photo-Missing.png'"><div class="player-info"><div class="player-name">${p.web_name}</div><div class="player-team-row"><img src="https://resources.premierleague.com/premierleague/badges/50/t${team?team.code:''}.png" onerror="this.style.display='none'">${team?team.name:'?'}</div></div><span class="pos-badge">${posName(p.element_type)}</span></div><div class="stats-grid"><div class="stat-item"><div class="stat-label">🟢 In</div><div class="stat-value green">${(p.transfers_in_event||0).toLocaleString()}</div></div><div class="stat-item"><div class="stat-label">🔴 Out</div><div class="stat-value red">${(p.transfers_out_event||0).toLocaleString()}</div></div><div class="stat-item"><div class="stat-label">Net Move</div><div class="stat-value ${nc}">${nl}</div></div><div class="stat-item"><div class="stat-label">Owned By</div><div class="stat-value">${p.selected_by_percent}%</div></div><div class="stat-item"><div class="stat-label">Form</div><div class="stat-value">${p.form}</div></div><div class="stat-item"><div class="stat-label">Price</div><div class="stat-value">${price(p)}</div></div></div>`;
+    c.innerHTML=`<div class="player-header"><img class="player-photo" src="https://resources.premierleague.com/premierleague/photos/players/110x140/p${p.code}.png" alt="${p.web_name}" onerror="this.src='https://resources.premierleague.com/premierleague/photos/players/110x140/Photo-Missing.png'"><div class="player-info"><div class="player-name">${p.web_name}</div><div class="player-team-row"><img src="https://resources.premierleague.com/premierleague/badges/50/t${team?team.code:''}.png" onerror="this.style.display='none'">${team?team.name:'?'}</div></div><span class="pos-badge">${posName(p.element_type)}</span></div><div class="stats-grid"><div class="stat-item"><div class="stat-label">🟢 In</div><div class="stat-value green">${(p.transfers_in_event||0).toLocaleString()}</div></div><div class="stat-item"><div class="stat-label">🔴 Out</div><div class="stat-value red">${(p.transfers_out_event||0).toLocaleString()}</div></div><div class="stat-item"><div class="stat-label">Net Move</div><div class="stat-value ${nc}">${nl}</div></div><div class="stat-item"><div class="stat-label">Owned By</div><div class="stat-value">${p.selected_by_percent}%</div></div><div class="stat-item"><div class="stat-label tooltip-wrap">Form<i class="tip-icon">ⓘ</i><span class="tooltip-box">Average FPL points scored across the last 4 gameweeks</span></div><div class="stat-value">${p.form}</div></div><div class="stat-item"><div class="stat-label tooltip-wrap">Price<i class="tip-icon">ⓘ</i><span class="tooltip-box">Current FPL price in millions</span></div><div class="stat-value">${price(p)}</div></div></div>`;
     grid.appendChild(c);
   });
 }
@@ -843,7 +872,7 @@ function renderInjuries(){
     const ch=p.chance_of_playing_next_round;
     let nc='news-75',cl='75%';
     if(ch===null||ch===undefined){nc='news-0';cl='Unknown';}else if(ch===0){nc='news-0';cl='0% — Out';}else if(ch<=25){nc='news-25';cl='25%';}else if(ch<=50){nc='news-50';cl='50%';}
-    c.innerHTML=`<div class="card-header"><div class="player-header" style="margin-bottom:0"><img class="player-photo" src="https://resources.premierleague.com/premierleague/photos/players/110x140/p${p.code}.png" alt="${p.web_name}" onerror="this.src='https://resources.premierleague.com/premierleague/photos/players/110x140/Photo-Missing.png'"><div class="player-info"><div class="player-name">${p.web_name}</div><div class="player-team-row"><img src="https://resources.premierleague.com/premierleague/badges/50/t${team?team.code:''}.png" onerror="this.style.display='none'">${team?team.name:'?'}</div><div class="news-chip ${nc}">⚠️ ${cl} chance of playing</div></div></div><span class="pos-badge">${posName(p.element_type)}</span></div><div class="stat-item" style="margin-bottom:8px"><div class="stat-label">📰 News</div><div style="font-size:0.78rem;color:var(--text);margin-top:4px;line-height:1.5">${p.news}</div></div><div class="stats-grid"><div class="stat-item"><div class="stat-label">Price</div><div class="stat-value">${price(p)}</div></div><div class="stat-item"><div class="stat-label">Selected</div><div class="stat-value">${p.selected_by_percent}%</div></div></div>`;
+    c.innerHTML=`<div class="card-header"><div class="player-header" style="margin-bottom:0"><img class="player-photo" src="https://resources.premierleague.com/premierleague/photos/players/110x140/p${p.code}.png" alt="${p.web_name}" onerror="this.src='https://resources.premierleague.com/premierleague/photos/players/110x140/Photo-Missing.png'"><div class="player-info"><div class="player-name">${p.web_name}</div><div class="player-team-row"><img src="https://resources.premierleague.com/premierleague/badges/50/t${team?team.code:''}.png" onerror="this.style.display='none'">${team?team.name:'?'}</div><div class="news-chip ${nc}">⚠️ ${cl} chance of playing</div></div></div><span class="pos-badge">${posName(p.element_type)}</span></div><div class="stat-item" style="margin-bottom:8px"><div class="stat-label">📰 News</div><div style="font-size:0.78rem;color:var(--text);margin-top:4px;line-height:1.5">${p.news}</div></div><div class="stats-grid"><div class="stat-item"><div class="stat-label tooltip-wrap">Price<i class="tip-icon">ⓘ</i><span class="tooltip-box">Current FPL price in millions</span></div><div class="stat-value">${price(p)}</div></div><div class="stat-item"><div class="stat-label tooltip-wrap">Selected<i class="tip-icon">ⓘ</i><span class="tooltip-box">Percentage of all FPL managers who own this player</span></div><div class="stat-value">${p.selected_by_percent}%</div></div></div>`;
     grid.appendChild(c);
   });
 }
@@ -863,7 +892,7 @@ function buildXGCardsFallback(grid){
     const g90=p.minutes>0?(p.goals_scored/(p.minutes/90)).toFixed(2):'–';
     const a90=p.minutes>0?(p.assists/(p.minutes/90)).toFixed(2):'–';
     const npg=p.goals_scored-(p.penalties_scored||0);
-    c.innerHTML=`<div class="player-header"><img class="player-photo" src="https://resources.premierleague.com/premierleague/photos/players/110x140/p${p.code}.png" alt="${p.web_name}" onerror="this.src='https://resources.premierleague.com/premierleague/photos/players/110x140/Photo-Missing.png'"><div class="player-info"><div class="player-name">${p.web_name}</div><div class="player-team-row"><img src="https://resources.premierleague.com/premierleague/badges/50/t${team?team.code:''}.png" onerror="this.style.display='none'">${team?team.name:'?'} · <span class="pos-badge" style="padding:2px 7px;font-size:0.62rem">${posName(p.element_type)}</span></div></div></div><div class="stats-grid-3" style="margin-bottom:10px"><div class="stat-item"><div class="stat-label">Goals</div><div class="stat-value green">${p.goals_scored}</div></div><div class="stat-item"><div class="stat-label">Assists</div><div class="stat-value blue">${p.assists}</div></div><div class="stat-item"><div class="stat-label">G+A</div><div class="stat-value">${p.goals_scored+p.assists}</div></div><div class="stat-item"><div class="stat-label">Goals/90</div><div class="stat-value green">${g90}</div></div><div class="stat-item"><div class="stat-label">Assists/90</div><div class="stat-value blue">${a90}</div></div><div class="stat-item"><div class="stat-label">Non-Pen G</div><div class="stat-value">${npg}</div></div></div><div class="xg-bars"><div class="xg-bar-row"><span class="xg-bar-label" style="color:var(--green);font-size:0.6rem">G</span><div class="xg-bar-track"><div class="xg-bar-fill g-color" style="width:${gW}%"></div></div><span class="xg-bar-val" style="color:var(--green)">${p.goals_scored}</span></div><div class="xg-bar-row"><span class="xg-bar-label" style="color:var(--orange);font-size:0.6rem">A</span><div class="xg-bar-track"><div class="xg-bar-fill a-color" style="width:${aW}%"></div></div><span class="xg-bar-val" style="color:var(--orange)">${p.assists}</span></div></div>`;
+    c.innerHTML=`<div class="player-header"><img class="player-photo" src="https://resources.premierleague.com/premierleague/photos/players/110x140/p${p.code}.png" alt="${p.web_name}" onerror="this.src='https://resources.premierleague.com/premierleague/photos/players/110x140/Photo-Missing.png'"><div class="player-info"><div class="player-name">${p.web_name}</div><div class="player-team-row"><img src="https://resources.premierleague.com/premierleague/badges/50/t${team?team.code:''}.png" onerror="this.style.display='none'">${team?team.name:'?'} · <span class="pos-badge" style="padding:2px 7px;font-size:0.62rem">${posName(p.element_type)}</span></div></div></div><div class="stats-grid-3" style="margin-bottom:10px"><div class="stat-item"><div class="stat-label tooltip-wrap">Goals<i class="tip-icon">ⓘ</i><span class="tooltip-box">Goals scored this season</span></div><div class="stat-value green">${p.goals_scored}</div></div><div class="stat-item"><div class="stat-label tooltip-wrap">Assists<i class="tip-icon">ⓘ</i><span class="tooltip-box">Assists registered this season</span></div><div class="stat-value blue">${p.assists}</div></div><div class="stat-item"><div class="stat-label">G+A</div><div class="stat-value">${p.goals_scored+p.assists}</div></div><div class="stat-item"><div class="stat-label">Goals/90</div><div class="stat-value green">${g90}</div></div><div class="stat-item"><div class="stat-label">Assists/90</div><div class="stat-value blue">${a90}</div></div><div class="stat-item"><div class="stat-label">Non-Pen G</div><div class="stat-value">${npg}</div></div></div><div class="xg-bars"><div class="xg-bar-row"><span class="xg-bar-label" style="color:var(--green);font-size:0.6rem">G</span><div class="xg-bar-track"><div class="xg-bar-fill g-color" style="width:${gW}%"></div></div><span class="xg-bar-val" style="color:var(--green)">${p.goals_scored}</span></div><div class="xg-bar-row"><span class="xg-bar-label" style="color:var(--orange);font-size:0.6rem">A</span><div class="xg-bar-track"><div class="xg-bar-fill a-color" style="width:${aW}%"></div></div><span class="xg-bar-val" style="color:var(--orange)">${p.assists}</span></div></div>`;
     grid.appendChild(c);
   });
 }
@@ -883,7 +912,7 @@ async function loadLiveGW(content){
     const topScore=topPlayers[0]?.live.points||0;
     const activePlayers=Object.values(liveMap).filter(p=>p.minutes>0).length;
     function makeEvents(live){const chips=[];if(live.goals)chips.push(`<span class="live-event-chip ev-goal">⚽ ${live.goals>1?live.goals+'× ':''}Goal</span>`);if(live.assists)chips.push(`<span class="live-event-chip ev-assist">🅰️ Assist</span>`);if(live.cs)chips.push(`<span class="live-event-chip ev-cs">🧱 CS</span>`);if(live.saves>=3)chips.push(`<span class="live-event-chip ev-assist">🧤 ${live.saves} Saves</span>`);if(live.bonus)chips.push(`<span class="live-event-chip ev-bonus">⭐ ${live.bonus} Bonus</span>`);if(live.yellow)chips.push(`<span class="live-event-chip ev-yellow">🟨</span>`);if(live.red)chips.push(`<span class="live-event-chip ev-red">🟥</span>`);if(live.og)chips.push(`<span class="live-event-chip ev-red">😬 OG</span>`);return chips.join('');}
-    let html=`<button class="refresh-btn" onclick="loadLiveGW(document.getElementById('livegw-content'))">🔄 Refresh</button><div class="gw-summary-bar"><div class="gw-summary-card"><div class="gw-summary-val">${topScore}</div><div class="gw-summary-lbl">Top Score</div></div><div class="gw-summary-card"><div class="gw-summary-val">${totalGoals}</div><div class="gw-summary-lbl">Goals</div></div><div class="gw-summary-card"><div class="gw-summary-val">${totalAssists}</div><div class="gw-summary-lbl">Assists</div></div><div class="gw-summary-card"><div class="gw-summary-val">${activePlayers}</div><div class="gw-summary-lbl">Active</div></div></div><div class="live-gw-grid">`;
+    let html=`<div class="how-calc"><div class="how-calc-hdr" onclick="toggleHowCalc(this)"><span>ℹ️ 📊 What is xG / xA?</span><i class="how-calc-arrow">▾</i></div><div class="how-calc-body"><ul><li><strong>xG (Expected Goals)</strong> — Probability each shot becomes a goal based on shot location and type</li><li><strong>xA (Expected Assists)</strong> — Probability a pass leads to a goal based on chance quality</li><li><strong>xG/90 and xA/90</strong> — Normalised per 90 mins for fair comparison across different minutes played</li><li><strong>Over/under-performing</strong> — Actual goals > xG means the player is finishing above expectation</li><li><strong>Data source</strong> — Understat API via CORS proxy; falls back to FPL G/A per 90 if blocked</li></ul></div></div>    <button class="refresh-btn" onclick="loadLiveGW(document.getElementById('livegw-content'))">🔄 Refresh</button><div class="gw-summary-bar"><div class="gw-summary-card"><div class="gw-summary-val">${topScore}</div><div class="gw-summary-lbl">Top Score</div></div><div class="gw-summary-card"><div class="gw-summary-val">${totalGoals}</div><div class="gw-summary-lbl">Goals</div></div><div class="gw-summary-card"><div class="gw-summary-val">${totalAssists}</div><div class="gw-summary-lbl">Assists</div></div><div class="gw-summary-card"><div class="gw-summary-val">${activePlayers}</div><div class="gw-summary-lbl">Active</div></div></div><div class="live-gw-grid">`;
     topPlayers.forEach((p,i)=>{const team=teamOf(p);const events=makeEvents(p.live);html+=`<div class="live-player-card" style="animation-delay:${i*0.05}s"><div style="display:flex;align-items:center;gap:12px;margin-bottom:12px"><img class="player-photo" src="https://resources.premierleague.com/premierleague/photos/players/110x140/p${p.code}.png" onerror="this.src='https://resources.premierleague.com/premierleague/photos/players/110x140/Photo-Missing.png'" style="width:44px;height:55px"><div style="flex:1"><div style="font-size:0.9rem;font-weight:700">${p.web_name}</div><div style="font-size:0.72rem;color:var(--text-muted)">${team?team.short_name:'?'} · ${posName(p.element_type)} · ${p.live.minutes}'</div></div><div style="text-align:right"><div class="live-pts">${p.live.points}</div><div class="live-pts-label">pts</div></div></div><div class="live-events">${events||'<span style="font-size:0.72rem;color:var(--text-faint)">No returns yet</span>'}</div></div>`;});
     if(!topPlayers.length)html+=`<div class="info-msg" style="grid-column:1/-1">No live data yet for GW${gwId}.</div>`;
     html+='</div>';content.innerHTML=html;
@@ -1061,11 +1090,11 @@ async function renderDifferentials(){
       </div>
       <div class="stats-grid">
         <div class="stat-item"><div class="stat-label">Owned By</div><div class="stat-value purple">${p.ownership}%</div></div>
-        <div class="stat-item"><div class="stat-label">Form</div><div class="stat-value green">${p.form}</div></div>
-        <div class="stat-item"><div class="stat-label">Price</div><div class="stat-value">${price(p)}</div></div>
-        <div class="stat-item"><div class="stat-label">Fix Avg</div><div class="stat-value ${fixCls}">${fixAvg}</div></div>
-        <div class="stat-item"><div class="stat-label">Pts/£m</div><div class="stat-value blue">${ptsCost}</div></div>
-        <div class="stat-item"><div class="stat-label">EP Next</div><div class="stat-value orange">${epNext}</div></div>
+        <div class="stat-item"><div class="stat-label tooltip-wrap">Form<i class="tip-icon">ⓘ</i><span class="tooltip-box">Average FPL points scored across the last 4 gameweeks</span></div><div class="stat-value green">${p.form}</div></div>
+        <div class="stat-item"><div class="stat-label tooltip-wrap">Price<i class="tip-icon">ⓘ</i><span class="tooltip-box">Current FPL price in millions</span></div><div class="stat-value">${price(p)}</div></div>
+        <div class="stat-item"><div class="stat-label tooltip-wrap">Fix Avg<i class="tip-icon">ⓘ</i><span class="tooltip-box">Average fixture difficulty across next 3 GWs (1=easy, 5=hard)</span></div><div class="stat-value ${fixCls}">${fixAvg}</div></div>
+        <div class="stat-item"><div class="stat-label tooltip-wrap">Pts/£m<i class="tip-icon">ⓘ</i><span class="tooltip-box">Total season points ÷ current price — higher = better value</span></div><div class="stat-value blue">${ptsCost}</div></div>
+        <div class="stat-item"><div class="stat-label tooltip-wrap">EP Next<i class="tip-icon">ⓘ</i><span class="tooltip-box">FPL&#39;s expected points prediction for the next GW</span></div><div class="stat-value orange">${epNext}</div></div>
       </div>
       <div style="margin-top:10px;display:flex;align-items:center;justify-content:space-between">
         <span style="font-size:0.68rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px">Diff Score</span>
@@ -1290,7 +1319,8 @@ async function loadMiniLeague(){
   const lid=document.getElementById('league-id-input').value.trim();
   if(!lid)return;
   const el=document.getElementById('minileague-content');
-  el.innerHTML='<div class="loading"><div class="loading-spinner"></div>Loading league standings...</div>';
+  el.innerHTML="<div class=\"how-calc\"><div class=\"how-calc-hdr\" onclick=\"toggleHowCalc(this)\"><span>ℹ️ 🏆 How is Power Score calculated?</span><i class=\"how-calc-arrow\">▾</i></div><div class=\"how-calc-body\"><ul><li><strong>Form (30%)</strong> — Average FPL points across the last 4 GWs</li><li><strong>Points per game (25%)</strong> — Season total ÷ games played</li><li><strong>Pts per £m (20%)</strong> — Season points ÷ current price</li><li><strong>Fixture ease (15%)</strong> — Inverse of avg difficulty next 3 GWs</li><li><strong>Transfer momentum (10%)</strong> — Net GW transfers as % of ownership</li></ul></div></div>    ";
+  el.innerHTML+='<div class="loading"><div class="loading-spinner"></div>Loading league standings...</div>';
   try{
     const data=await fetchWithFallback(`https://fantasy.premierleague.com/api/leagues-classic/${lid}/standings/`);
     if(data.detail){el.innerHTML=`<div class="error-msg">❌ ${data.detail}</div>`;return;}
@@ -1471,18 +1501,18 @@ async function buildDrawer(p, content){
     <div class="drawer-section">
       <div class="drawer-section-title">Season Stats</div>
       <div class="dstats-grid">
-        <div class="dstat"><div class="dstat-label">Goals</div><div class="dstat-val green">${p.goals_scored}</div></div>
-        <div class="dstat"><div class="dstat-label">Assists</div><div class="dstat-val blue">${p.assists}</div></div>
-        <div class="dstat"><div class="dstat-label">Clean Sh</div><div class="dstat-val">${p.clean_sheets}</div></div>
-        <div class="dstat"><div class="dstat-label">Total Pts</div><div class="dstat-val orange">${p.total_points}</div></div>
-        <div class="dstat"><div class="dstat-label">G/90</div><div class="dstat-val green">${gPer90}</div></div>
-        <div class="dstat"><div class="dstat-label">A/90</div><div class="dstat-val blue">${aPer90}</div></div>
-        <div class="dstat"><div class="dstat-label">EP Next</div><div class="dstat-val">${parseFloat(p.ep_next||0).toFixed(1)}</div></div>
-        <div class="dstat"><div class="dstat-label">Minutes</div><div class="dstat-val">${p.minutes}</div></div>
-        <div class="dstat"><div class="dstat-label">Pts/Game</div><div class="dstat-val">${p.points_per_game}</div></div>
-        <div class="dstat"><div class="dstat-label">Pts/£m</div><div class="dstat-val purple">${ptsCost}</div></div>
-        <div class="dstat"><div class="dstat-label">Yel Cards</div><div class="dstat-val orange">${p.yellow_cards}</div></div>
-        <div class="dstat"><div class="dstat-label">Red Cards</div><div class="dstat-val" style="color:#ff5555">${p.red_cards}</div></div>
+        <div class="dstat"><div class="dstat-label tooltip-wrap">Goals<i class="tip-icon">ⓘ</i><span class="tooltip-box">Goals scored this season</span></div><div class="dstat-val green">${p.goals_scored}</div></div>
+        <div class="dstat"><div class="dstat-label tooltip-wrap">Assists<i class="tip-icon">ⓘ</i><span class="tooltip-box">Assists registered this season</span></div><div class="dstat-val blue">${p.assists}</div></div>
+        <div class="dstat"><div class="dstat-label tooltip-wrap">Clean Sh<i class="tip-icon">ⓘ</i><span class="tooltip-box">Clean sheets kept this season</span></div><div class="dstat-val">${p.clean_sheets}</div></div>
+        <div class="dstat"><div class="dstat-label tooltip-wrap">Total Pts<i class="tip-icon">ⓘ</i><span class="tooltip-box">Total FPL points scored this season</span></div><div class="dstat-val orange">${p.total_points}</div></div>
+        <div class="dstat"><div class="dstat-label tooltip-wrap">G/90<i class="tip-icon">ⓘ</i><span class="tooltip-box">Goals scored per 90 minutes played</span></div><div class="dstat-val green">${gPer90}</div></div>
+        <div class="dstat"><div class="dstat-label tooltip-wrap">A/90<i class="tip-icon">ⓘ</i><span class="tooltip-box">Assists per 90 minutes played</span></div><div class="dstat-val blue">${aPer90}</div></div>
+        <div class="dstat"><div class="dstat-label tooltip-wrap">EP Next<i class="tip-icon">ⓘ</i><span class="tooltip-box">FPL&#39;s expected points prediction for the next GW</span></div><div class="dstat-val">${parseFloat(p.ep_next||0).toFixed(1)}</div></div>
+        <div class="dstat"><div class="dstat-label tooltip-wrap">Minutes<i class="tip-icon">ⓘ</i><span class="tooltip-box">Total minutes played this season</span></div><div class="dstat-val">${p.minutes}</div></div>
+        <div class="dstat"><div class="dstat-label tooltip-wrap">Pts/Game<i class="tip-icon">ⓘ</i><span class="tooltip-box">Average FPL points per gameweek played</span></div><div class="dstat-val">${p.points_per_game}</div></div>
+        <div class="dstat"><div class="dstat-label tooltip-wrap">Pts/£m<i class="tip-icon">ⓘ</i><span class="tooltip-box">Total season points ÷ current price — higher = better value</span></div><div class="dstat-val purple">${ptsCost}</div></div>
+        <div class="dstat"><div class="dstat-label tooltip-wrap">Yel Cards<i class="tip-icon">ⓘ</i><span class="tooltip-box">Yellow cards received this season</span></div><div class="dstat-val orange">${p.yellow_cards}</div></div>
+        <div class="dstat"><div class="dstat-label tooltip-wrap">Red Cards<i class="tip-icon">ⓘ</i><span class="tooltip-box">Red cards received this season</span></div><div class="dstat-val" style="color:#ff5555">${p.red_cards}</div></div>
       </div>
     </div>
 
@@ -2387,6 +2417,40 @@ function drawH2HChart(labels,pts1,pts2,name1,name2){
     }
   });
 }
+
+
+// ══ TOOLTIP & HOW-CALC HELPERS ════════════════════════════════════════════
+function toggleTip(el){
+  const wrap=el.closest('.tab-tip-wrap');
+  if(!wrap)return;
+  const open=wrap.classList.contains('tip-open');
+  // Close all others
+  document.querySelectorAll('.tab-tip-wrap.tip-open').forEach(w=>w.classList.remove('tip-open'));
+  if(!open) wrap.classList.add('tip-open');
+}
+
+function toggleHowCalc(hdr){
+  const body=hdr.nextElementSibling;
+  const arrow=hdr.querySelector('.how-calc-arrow');
+  const isOpen=body.classList.contains('open');
+  body.classList.toggle('open',!isOpen);
+  if(arrow) arrow.style.transform=isOpen?'':'rotate(180deg)';
+}
+
+// Close tab tips when clicking elsewhere
+document.addEventListener('click',function(e){
+  if(!e.target.closest('.tab-tip-wrap')){
+    document.querySelectorAll('.tab-tip-wrap.tip-open').forEach(w=>w.classList.remove('tip-open'));
+  }
+});
+
+// Close stat tooltips on outside tap (mobile)
+document.addEventListener('click',function(e){
+  if(!e.target.closest('.tooltip-wrap')){
+    document.querySelectorAll('.tooltip-wrap.tip-open').forEach(w=>w.classList.remove('tip-open'));
+  }
+});
+// ══ END TOOLTIP HELPERS ════════════════════════════════════════════════════
 
 </script>
 
