@@ -483,6 +483,14 @@
     .how-calc-body li{font-size:0.79rem;color:var(--text-muted);line-height:1.65;margin-bottom:3px}
     .how-calc-body li strong{color:var(--text)}
     /* ══ END TOOLTIPS ════════════════════════════════════════ */
+
+    /* ── Fixture difficulty badge tiers ── */
+    .badge.very-easy{background:rgba(0,212,170,0.18);color:#00d4aa;border-color:rgba(0,212,170,0.4)}
+    .badge.easy{background:rgba(56,200,100,0.15);color:#38c864;border-color:rgba(56,200,100,0.35)}
+    .badge.medium{background:rgba(240,165,0,0.15);color:#f0a500;border-color:rgba(240,165,0,0.35)}
+    .badge.tough{background:rgba(255,120,30,0.16);color:#ff781e;border-color:rgba(255,120,30,0.35)}
+    .badge.difficult{background:rgba(255,60,60,0.15);color:#ff4646;border-color:rgba(255,60,60,0.35)}
+    .badge.nightmare{background:rgba(160,10,10,0.22);color:#ff2020;border-color:rgba(160,10,10,0.5)}
   </style>
 </head>
 <body>
@@ -703,8 +711,8 @@ let scoutChart=null, scoutPos='ALL';
 
 // ── HELPERS ───────────────────────────────────────────────────────────────
 function diffClass(d){return d<=2?'fix-1':d===3?'fix-3':d===4?'fix-4':'fix-5';}
-function badgeClass(avg){return avg<=2.6?'easy':avg<=3.2?'medium':'hard';}
-function badgeLabel(avg){return avg<=2.6?'Easy Run':avg<=3.2?'Moderate':'Tough Run';}
+function badgeClass(avg){return avg<=2.0?'very-easy':avg<=2.6?'easy':avg<=3.2?'medium':avg<=3.7?'tough':avg<=4.2?'difficult':'nightmare';}
+function badgeLabel(avg){return avg<=2.0?'🟢 Blank Fix':avg<=2.6?'🟢 Easy Run':avg<=3.2?'🟡 Moderate':avg<=3.7?'🟠 Tough Run':avg<=4.2?'🔴 Difficult':'🔴 Nightmare';}
 function posName(t){return {1:'GKP',2:'DEF',3:'MID',4:'FWD'}[t]||'?';}
 function price(p){return '£'+(p.now_cost/10).toFixed(1)+'m';}
 function teamOf(p){return fplData.teams.find(t=>t.id===p.team);}
@@ -1724,27 +1732,37 @@ function renderPriceChange(){
   const el=document.getElementById('pricechange-content');
   if(!fplData){el.innerHTML='<div class="info-msg">⚠️ FPL data not loaded yet.</div>';return;}
 
-  // Calculate momentum score
+  // Build player pool
   const players=fplData.elements
     .filter(p=>p.minutes>0&&parseFloat(p.selected_by_percent)>0)
     .map(p=>{
       const own=parseFloat(p.selected_by_percent)||0.1;
       const netTransfers=(p.transfers_in_event||0)-(p.transfers_out_event||0);
       const momentum=netTransfers/(own*500);
-      return {...p, netTransfers, momentum, own};
+      return {...p,netTransfers,momentum,own};
     });
 
-  const rising=[...players].filter(p=>p.netTransfers>0).sort((a,b)=>b.momentum-a.momentum).slice(0,12);
-  const falling=[...players].filter(p=>p.netTransfers<0).sort((a,b)=>a.momentum-b.momentum).slice(0,12);
-  const maxMomPos=rising[0]?.momentum||1;
-  const maxMomNeg=Math.abs(falling[0]?.momentum||1);
+  // Strictly separate risers vs fallers — fix: sort fallers by transfers_out_event desc
+  const rising=[...players]
+    .filter(p=>p.transfers_in_event>p.transfers_out_event)
+    .sort((a,b)=>b.netTransfers-a.netTransfers)
+    .slice(0,12);
+  const falling=[...players]
+    .filter(p=>p.transfers_out_event>p.transfers_in_event)
+    .sort((a,b)=>b.transfers_out_event-a.transfers_out_event)
+    .slice(0,12);
+
+  const maxMomPos=rising.length?Math.max(...rising.map(p=>p.momentum)):1;
+  const maxMomNeg=falling.length?Math.max(...falling.map(p=>Math.abs(p.momentum))):1;
 
   function pcCards(list,type){
-    if(!list.length)return '<div class="info-msg">No significant movement this GW yet.</div>';
+    if(!list.length)return `<div class="info-msg">No significant ${type==='rise'?'risers':'fallers'} this GW yet — check back closer to the deadline.</div>`;
     return list.map((p,i)=>{
       const team=teamOf(p);
       const ptsCost=p.now_cost>0?(p.total_points/(p.now_cost/10)).toFixed(1):'?';
-      const momPct=type==='rise'?Math.round((p.momentum/maxMomPos)*100):Math.round((Math.abs(p.momentum)/maxMomNeg)*100);
+      const momPct=type==='rise'
+        ?Math.round((p.momentum/maxMomPos)*100)
+        :Math.round((Math.abs(p.momentum)/maxMomNeg)*100);
       const netStr=p.netTransfers>0?`+${p.netTransfers.toLocaleString()}`:p.netTransfers.toLocaleString();
       const inStr=(p.transfers_in_event||0).toLocaleString();
       const outStr=(p.transfers_out_event||0).toLocaleString();
@@ -1793,30 +1811,49 @@ function renderPriceChange(){
 
   function renderPCView(){
     const list=pcView==='rise'?rising:falling;
-    const type=pcView;
+    const type=pcView==='rise'?'rise':'fall';
     document.getElementById('pc-grid-area').innerHTML=`
-      <div class="pc-section-label">${type==='rise'?`🔺 ${rising.length} players rising in price this GW`:`🔻 ${falling.length} players falling in price this GW`}</div>
+      <div class="pc-section-label">${type==='rise'
+        ?`🔺 ${rising.length} player${rising.length!==1?'s':''} rising in price this GW`
+        :`🔻 ${falling.length} player${falling.length!==1?'s':''} falling in price this GW`}
+      </div>
       <div class="pc-grid">${pcCards(list,type)}</div>`;
+    // Update active state on toggle buttons
+    document.querySelectorAll('.pc-tab').forEach(b=>b.classList.remove('active'));
+    const activeBtn=document.getElementById(type==='rise'?'pc-btn-rise':'pc-btn-fall');
+    if(activeBtn) activeBtn.classList.add('active');
   }
 
   el.innerHTML=`
+    <div class="how-calc">
+      <div class="how-calc-hdr" onclick="toggleHowCalc(this)">
+        <span>ℹ️ How is price change predicted?</span>
+        <i class="how-calc-arrow">▾</i>
+      </div>
+      <div class="how-calc-body">
+        <ul>
+          <li><strong>Transfer velocity</strong> — Heavy net buying relative to ownership signals a likely price rise</li>
+          <li><strong>FPL's rule</strong> — A player rises when net transfers exceed ~1% of total managers owning them</li>
+          <li><strong>Risers</strong> — Sorted by net transfers in (transfers_in − transfers_out) descending</li>
+          <li><strong>Fallers</strong> — Sorted by transfers out descending — most sold players shown first</li>
+          <li><strong>Note</strong> — These are signals, not guarantees. FPL processes prices once per day after 6am BST</li>
+        </ul>
+      </div>
+    </div>
     <div class="info-msg" style="margin-bottom:18px">
-      📌 Price changes are calculated from live GW transfer velocity — heavier buying pressure = more likely to rise. Data updates as transfers happen before the GW deadline.
+      📌 Price changes are calculated from live GW transfer velocity. Data updates as transfers happen before the GW deadline.
     </div>
     <div class="pc-tabs">
-      <button class="pc-tab ${pcView==='rise'?'active':''}" onclick="pcView='rise';document.querySelectorAll('.pc-tab').forEach(b=>b.classList.remove('active'));this.classList.add('active');renderPCView()">🔺 Rising (${rising.length})</button>
-      <button class="pc-tab ${pcView==='fall'?'active':''}" onclick="pcView='fall';document.querySelectorAll('.pc-tab').forEach(b=>b.classList.remove('active'));this.classList.add('active');renderPCView()">🔻 Falling (${falling.length})</button>
+      <button class="pc-tab ${pcView==='rise'?'active':''}" id="pc-btn-rise"
+        onclick="pcView='rise';renderPCView()">🔺 Risers (${rising.length})</button>
+      <button class="pc-tab ${pcView==='fall'?'active':''}" id="pc-btn-fall"
+        onclick="pcView='fall';renderPCView()">🔻 Fallers (${falling.length})</button>
     </div>
     <div id="pc-grid-area"></div>`;
 
   renderPCView();
 }
 
-
-// ══════════════════════════════════════════════════════════════════════════
-// PHASE 8 ── FIXTURE GRID
-// ══════════════════════════════════════════════════════════════════════════
-let fgMyTeamsOnly=false, fgHighlighted=null;
 
 function renderFixtureGrid(){
   const el=document.getElementById('fixturegrid-content');
