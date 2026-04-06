@@ -488,6 +488,16 @@
     /* ══ END TOOLTIPS ════════════════════════════════════════ */
 
     /* fixture difficulty tiers handled by standalone classes */
+
+    /* ── Goal Threat row (Phase B) ── */
+    .goal-threat-row{display:flex;justify-content:space-between;align-items:center;
+      margin-top:10px;padding:7px 10px;border-radius:8px;
+      background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07)}
+    .goal-threat-label{font-size:0.72rem;font-weight:700;color:var(--text-muted);letter-spacing:0.4px;display:flex;align-items:center;gap:4px}
+    .goal-threat-val{font-size:1rem;font-weight:800}
+    .goal-threat-val.green{color:#00d4aa}
+    .goal-threat-val.orange{color:#f0a500}
+    .goal-threat-val.muted{color:var(--text-muted)}
   </style>
 </head>
 <body>
@@ -501,7 +511,7 @@
   <div class="tabs-wrap">
     <button class="tab active" onclick="switchTab('fixtures',event)">📅 Fixture Runs</button>
     <span class="tab-tip-wrap"><button class="tab" onclick="switchTab('players',event)">⚡ Top Players</button><i class="tab-tip-icon" onclick="toggleTip(this)" onmouseenter="this.parentElement.classList.add('tip-open')" onmouseleave="this.parentElement.classList.remove('tip-open')">ⓘ<span class="tab-tip-box">Best players right now — filter by form, price, position and sort method of your choice</span></i></span>
-    <span class="tab-tip-wrap"><button class="tab" onclick="switchTab('power',event)">🏆 Power Rankings</button><i class="tab-tip-icon" onclick="toggleTip(this)" onmouseenter="this.parentElement.classList.add('tip-open')" onmouseleave="this.parentElement.classList.remove('tip-open')">ⓘ<span class="tab-tip-box">Composite score combining form, pts/game, pts per £m, fixture ease and transfer momentum</span></i></span>
+    <span class="tab-tip-wrap"><button class="tab" onclick="switchTab('power',event)">🏆 Power Rankings</button><i class="tab-tip-icon" onclick="toggleTip(this)" onmouseenter="this.parentElement.classList.add('tip-open')" onmouseleave="this.parentElement.classList.remove('tip-open')">ⓘ<span class="tab-tip-box">Composite score: Form 22% + Pts/Game 18% + Pts/£m 15% + Fixture Ease 16% + Goal Imminence 18% + Minutes 7% + Transfer Momentum 4%</span></i></span>
     <span class="tab-tip-wrap"><button class="tab" onclick="switchTab('value',event)">💸 Value Picks</button><i class="tab-tip-icon" onclick="toggleTip(this)" onmouseenter="this.parentElement.classList.add('tip-open')" onmouseleave="this.parentElement.classList.remove('tip-open')">ⓘ<span class="tab-tip-box">Best points-per-million players. Total season points divided by current price</span></i></span>
     <span class="tab-tip-wrap"><button class="tab" onclick="switchTab('transfers',event)">🔄 Transfers</button><i class="tab-tip-icon" onclick="toggleTip(this)" onmouseenter="this.parentElement.classList.add('tip-open')" onmouseleave="this.parentElement.classList.remove('tip-open')">ⓘ<span class="tab-tip-box">Who managers are buying and selling most this gameweek</span></i></span>
     <span class="tab-tip-wrap"><button class="tab" onclick="switchTab('injuries',event)">🩹 Injuries</button><i class="tab-tip-icon" onclick="toggleTip(this)" onmouseenter="this.parentElement.classList.add('tip-open')" onmouseleave="this.parentElement.classList.remove('tip-open')">ⓘ<span class="tab-tip-box">Players with active injury or suspension news and their chance of playing next GW</span></i></span>
@@ -759,13 +769,44 @@ function fixtureScore(teamId){
   const diffs=upcoming.map(f=>f.team_h===teamId?f.team_h_difficulty:f.team_a_difficulty);
   return diffs.reduce((a,b)=>a+b,0)/diffs.length;
 }
+
+// ── GOAL IMMINENCE (Phase B) ──────────────────────────────────────────────
+function buildImminenceMap(elements){
+  const pool=elements.filter(p=>p.minutes>90);
+  const threats=pool.map(p=>parseFloat(p.threat)||0);
+  const icts=pool.map(p=>parseFloat(p.ict_index)||0);
+  const g90s=pool.map(p=>p.minutes>0?(p.goals_scored/(p.minutes/90)):0);
+  const eps=pool.map(p=>parseFloat(p.ep_next)||0);
+  const norm=(val,arr)=>{const mn=Math.min(...arr),mx=Math.max(...arr);return mx>mn?((val-mn)/(mx-mn))*10:0;};
+  goalImminenceMap.clear();
+  elements.forEach(p=>{
+    const tN=norm(parseFloat(p.threat)||0,threats);
+    const iN=norm(parseFloat(p.ict_index)||0,icts);
+    const g9=p.minutes>0?p.goals_scored/(p.minutes/90):0;
+    const gN=norm(g9,g90s);
+    const eN=norm(parseFloat(p.ep_next)||0,eps);
+    goalImminenceMap.set(p.id,Math.round((tN*0.35+iN*0.30+gN*0.20+eN*0.15)*10)/10);
+  });
+}
+function getImminence(p){return goalImminenceMap.get(p.id)??0;}
+
 function calcPower(p){
   const form=parseFloat(p.form)||0, ppg=parseFloat(p.points_per_game)||0;
   const minPct=Math.min(p.minutes/(38*90)*100,100)/100;
   const ptsCost=p.now_cost>0?p.total_points/(p.now_cost/10):0;
   const netTrn=((p.transfers_in_event||0)-(p.transfers_out_event||0))/500000;
   const fixScore=(6-fixtureScore(p.team))/4;
-  return Math.round((Math.min(form,10)*0.28+Math.min(ppg,10)*0.22+Math.min(ptsCost,15)/15*10*0.18+fixScore*10*0.18+minPct*10*0.09+(Math.min(Math.max(netTrn,-1),1)+1)/2*10*0.05)*10)/10;
+  const imm=getImminence(p);
+  // Form 22% | PPG 18% | Pts/£m 15% | FixEase 16% | GoalImminence 18% | Mins 7% | NetTrn 4%
+  return Math.round((
+    Math.min(form,10)*0.22+
+    Math.min(ppg,10)*0.18+
+    Math.min(ptsCost,15)/15*10*0.15+
+    fixScore*10*0.16+
+    imm*0.18+
+    minPct*10*0.07+
+    (Math.min(Math.max(netTrn,-1),1)+1)/2*10*0.04
+  )*10)/10;
 }
 
 // ── FIXTURE RUNS ──────────────────────────────────────────────────────────
@@ -828,7 +869,9 @@ function renderPower(){
     const fixAvg=Math.round(fixtureScore(p.team)*10)/10;
     const fixCls=fixAvg<=2.5?'green':fixAvg<=3.2?'orange':'red';
     const ptsCost=p.now_cost>0?(p.total_points/(p.now_cost/10)).toFixed(1):'?';
-    c.innerHTML=`${rankBadge(i)}<div class="player-header"><img class="player-photo" src="https://resources.premierleague.com/premierleague/photos/players/110x140/p${p.code}.png" alt="${p.web_name}" onerror="this.src='https://resources.premierleague.com/premierleague/photos/players/110x140/Photo-Missing.png'"><div class="player-info"><div class="player-name">${p.web_name}</div><div class="player-team-row"><img src="https://resources.premierleague.com/premierleague/badges/50/t${team?team.code:''}.png" onerror="this.style.display='none'">${team?team.name:'?'} · <span class="pos-badge" style="padding:2px 7px;font-size:0.62rem">${posName(p.element_type)}</span></div></div></div><div class="power-score-wrap"><div class="power-score-header"><span class="power-score-label">⚡ Power Score</span><span class="power-score-value">${p.power}</span></div><div class="power-bar-bg"><div class="power-bar-fill" style="width:${bw}%"></div></div></div><div class="stats-grid"><div class="stat-item"><div class="stat-label tooltip-wrap">Form<i class="tip-icon">ⓘ</i><span class="tooltip-box">Average FPL points scored across the last 4 gameweeks</span></div><div class="stat-value green">${p.form}</div></div><div class="stat-item"><div class="stat-label tooltip-wrap">Pts/Game<i class="tip-icon">ⓘ</i><span class="tooltip-box">Average FPL points per gameweek played</span></div><div class="stat-value">${p.points_per_game}</div></div><div class="stat-item"><div class="stat-label tooltip-wrap">Pts/£m<i class="tip-icon">ⓘ</i><span class="tooltip-box">Total season points ÷ current price — higher = better value</span></div><div class="stat-value blue">${ptsCost}</div></div><div class="stat-item"><div class="stat-label tooltip-wrap">Fix Avg<i class="tip-icon">ⓘ</i><span class="tooltip-box">Average fixture difficulty across next 3 GWs (1=easy, 5=hard)</span></div><div class="stat-value ${fixCls}">${fixAvg}</div></div><div class="stat-item"><div class="stat-label tooltip-wrap">Price<i class="tip-icon">ⓘ</i><span class="tooltip-box">Current FPL price in millions</span></div><div class="stat-value">${price(p)}</div></div><div class="stat-item"><div class="stat-label tooltip-wrap">Selected<i class="tip-icon">ⓘ</i><span class="tooltip-box">Percentage of all FPL managers who own this player</span></div><div class="stat-value">${p.selected_by_percent}%</div></div></div>`;
+    const imm=getImminence(p);
+    const immCls=imm>=7?'green':imm>=4?'orange':'muted';
+    c.innerHTML=`${rankBadge(i)}<div class="player-header"><img class="player-photo" src="https://resources.premierleague.com/premierleague/photos/players/110x140/p${p.code}.png" alt="${p.web_name}" onerror="this.src='https://resources.premierleague.com/premierleague/photos/players/110x140/Photo-Missing.png'"><div class="player-info"><div class="player-name">${p.web_name}</div><div class="player-team-row"><img src="https://resources.premierleague.com/premierleague/badges/50/t${team?team.code:''}.png" onerror="this.style.display='none'">${team?team.name:'?'} · <span class="pos-badge" style="padding:2px 7px;font-size:0.62rem">${posName(p.element_type)}</span></div></div></div><div class="power-score-wrap"><div class="power-score-header"><span class="power-score-label">⚡ Power Score</span><span class="power-score-value">${p.power}</span></div><div class="power-bar-bg"><div class="power-bar-fill" style="width:${bw}%"></div></div></div><div class="stats-grid"><div class="stat-item"><div class="stat-label tooltip-wrap">Form<i class="tip-icon">ⓘ</i><span class="tooltip-box">Average FPL points scored across the last 4 gameweeks</span></div><div class="stat-value green">${p.form}</div></div><div class="stat-item"><div class="stat-label tooltip-wrap">Pts/Game<i class="tip-icon">ⓘ</i><span class="tooltip-box">Average FPL points per gameweek played</span></div><div class="stat-value">${p.points_per_game}</div></div><div class="stat-item"><div class="stat-label tooltip-wrap">Pts/£m<i class="tip-icon">ⓘ</i><span class="tooltip-box">Total season points ÷ current price — higher = better value</span></div><div class="stat-value blue">${ptsCost}</div></div><div class="stat-item"><div class="stat-label tooltip-wrap">Fix Avg<i class="tip-icon">ⓘ</i><span class="tooltip-box">Average fixture difficulty across next 3 GWs (1=easy, 5=hard)</span></div><div class="stat-value ${fixCls}">${fixAvg}</div></div><div class="stat-item"><div class="stat-label tooltip-wrap">Price<i class="tip-icon">ⓘ</i><span class="tooltip-box">Current FPL price in millions</span></div><div class="stat-value">${price(p)}</div></div><div class="stat-item"><div class="stat-label tooltip-wrap">Selected<i class="tip-icon">ⓘ</i><span class="tooltip-box">Percentage of all FPL managers who own this player</span></div><div class="stat-value">${p.selected_by_percent}%</div></div></div><div class="goal-threat-row"><span class="goal-threat-label tooltip-wrap">⚡ Goal Threat<i class="tip-icon">ⓘ</i><span class="tooltip-box">Goal Imminence score (0–10): combines FPL threat, ICT index, goals per 90 and expected points next GW. Now part of the Power Score formula (18% weight).</span></span><span class="goal-threat-val ${immCls}">${imm}</span></div>`;
     grid.appendChild(c);
   });
 }
@@ -1029,6 +1072,7 @@ async function init(){
       fetchWithFallback(FPL_FIXTURES)
     ]);
     fplData=bootstrap;fixtureData=allFixtures;
+    buildImminenceMap(fplData.elements);
     const events=bootstrap.events;
     const currentGW=events.find(e=>e.is_current)||events.find(e=>e.is_next)||events[0];
     gwId=currentGW.id;
@@ -1513,7 +1557,7 @@ async function buildDrawer(p, content){
         <div class="dstat"><div class="dstat-label tooltip-wrap">G/90<i class="tip-icon">ⓘ</i><span class="tooltip-box">Goals scored per 90 minutes played</span></div><div class="dstat-val green">${gPer90}</div></div>
         <div class="dstat"><div class="dstat-label tooltip-wrap">A/90<i class="tip-icon">ⓘ</i><span class="tooltip-box">Assists per 90 minutes played</span></div><div class="dstat-val blue">${aPer90}</div></div>
         <div class="dstat"><div class="dstat-label tooltip-wrap">EP Next<i class="tip-icon">ⓘ</i><span class="tooltip-box">FPL&#39;s expected points prediction for the next GW</span></div><div class="dstat-val">${parseFloat(p.ep_next||0).toFixed(1)}</div></div>
-        <div class="dstat"><div class="dstat-label tooltip-wrap">Minutes<i class="tip-icon">ⓘ</i><span class="tooltip-box">Total minutes played this season</span></div><div class="dstat-val">${p.minutes}</div></div>
+        <div class="dstat"><div class="dstat-label tooltip-wrap">⚡ Goal Threat<i class="tip-icon">ⓘ</i><span class="tooltip-box">Goal Imminence (0–10): combines FPL threat, ICT index, goals per 90 and EP Next. Weighted 18% in the Power Score formula.</span></div><div class="dstat-val" style="color:${getImminence(p)>=7?'#00d4aa':getImminence(p)>=4?'#f0a500':'var(--text-muted)'}">${getImminence(p)}</div></div>
         <div class="dstat"><div class="dstat-label tooltip-wrap">Pts/Game<i class="tip-icon">ⓘ</i><span class="tooltip-box">Average FPL points per gameweek played</span></div><div class="dstat-val">${p.points_per_game}</div></div>
         <div class="dstat"><div class="dstat-label tooltip-wrap">Pts/£m<i class="tip-icon">ⓘ</i><span class="tooltip-box">Total season points ÷ current price — higher = better value</span></div><div class="dstat-val purple">${ptsCost}</div></div>
         <div class="dstat"><div class="dstat-label tooltip-wrap">Yel Cards<i class="tip-icon">ⓘ</i><span class="tooltip-box">Yellow cards received this season</span></div><div class="dstat-val orange">${p.yellow_cards}</div></div>
@@ -1725,6 +1769,7 @@ function renderChipPlanner(){
 // ══════════════════════════════════════════════════════════════════════════
 let pcView='rise';
 let pcRising=[], pcFalling=[];
+let goalImminenceMap=new Map();
 
 function renderPriceChange(){
   const el=document.getElementById('pricechange-content');
