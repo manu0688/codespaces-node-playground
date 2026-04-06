@@ -41,7 +41,7 @@
     .section-title { font-size:0.72rem; font-weight:700; text-transform:uppercase; letter-spacing:2px; color:var(--text-muted); margin-bottom:18px; display:flex; align-items:center; gap:10px; }
     .section-title::after { content:''; flex:1; height:1px; background:var(--border); }
     .card-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(290px,1fr)); gap:14px; margin-bottom:48px; }
-    .card { background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:18px 20px; backdrop-filter:blur(12px); transition:border-color var(--transition),transform var(--transition),box-shadow var(--transition); position:relative; overflow:hidden; opacity:0; transform:translateY(16px); animation:cardIn 0.4s cubic-bezier(0.16,1,0.3,1) forwards; }
+    .card { background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:18px 20px; backdrop-filter:blur(12px); transition:border-color var(--transition),transform var(--transition),box-shadow var(--transition); position:relative; overflow:visible; opacity:0; transform:translateY(16px); animation:cardIn 0.4s cubic-bezier(0.16,1,0.3,1) forwards; }
     @keyframes cardIn{to{opacity:1;transform:translateY(0)}}
     .card::before { content:''; position:absolute; inset:0; pointer-events:none; opacity:0; background:radial-gradient(ellipse 60% 40% at 50% 0%,rgba(0,212,170,0.06),transparent); transition:opacity var(--transition); }
     .card:hover { border-color:var(--border-hover); transform:translateY(-2px); box-shadow:0 8px 32px rgba(0,212,170,0.1),0 2px 8px rgba(0,0,0,0.3); }
@@ -465,8 +465,8 @@
     /* ══ END PHASE 9 CSS ══════════════════════════════════════ */
 
     /* ══ TOOLTIPS ════════════════════════════════════════════ */
-    .tooltip-wrap{position:relative;display:inline-flex;align-items:center;gap:3px}
-    .tooltip-box{position:absolute;bottom:calc(100% + 8px);left:50%;transform:translateX(-50%);background:rgba(11,15,26,0.97);border:1px solid rgba(0,212,170,0.35);border-radius:8px;padding:8px 11px;font-size:0.72rem;line-height:1.5;color:#e8eaf0;white-space:normal;width:max-content;max-width:220px;pointer-events:none;opacity:0;transition:opacity 0.15s ease;z-index:999;text-align:left;box-shadow:0 4px 20px rgba(0,0,0,0.5);font-weight:400}
+    .tooltip-wrap{position:relative;display:inline-flex;align-items:center;gap:3px;z-index:1}
+    .tooltip-box{position:absolute;bottom:calc(100% + 8px);left:50%;transform:translateX(-50%);background:rgba(11,15,26,0.97);border:1px solid rgba(0,212,170,0.35);border-radius:8px;padding:8px 11px;font-size:0.72rem;line-height:1.5;color:#e8eaf0;white-space:normal;width:max-content;max-width:240px;pointer-events:none;opacity:0;transition:opacity 0.15s ease;z-index:99999;text-align:left;box-shadow:0 8px 32px rgba(0,0,0,0.7);font-weight:400}
     .tooltip-box::after{content:'';position:absolute;top:100%;left:50%;transform:translateX(-50%);border:5px solid transparent;border-top-color:rgba(0,212,170,0.35)}
     .tooltip-wrap:hover .tooltip-box,.tooltip-wrap.tip-open .tooltip-box{opacity:1;pointer-events:none}
     .tip-icon{font-size:0.66rem;color:rgba(0,212,170,0.55);cursor:help;line-height:1;user-select:none;flex-shrink:0;font-style:normal}
@@ -498,6 +498,13 @@
     .goal-threat-val.green{color:#00d4aa}
     .goal-threat-val.orange{color:#f0a500}
     .goal-threat-val.muted{color:var(--text-muted)}
+
+    /* ── Tooltip overflow fix — bring to front on hover ── */
+    .tooltip-wrap:hover{z-index:9999;overflow:visible}
+    .tooltip-wrap:hover .tooltip-box,
+    .tooltip-wrap.tip-open .tooltip-box{opacity:1}
+    .stats-grid,.stat-item{overflow:visible!important}
+    .goal-threat-row{overflow:visible!important}
   </style>
 </head>
 <body>
@@ -718,8 +725,8 @@ let scoutChart=null, scoutPos='ALL';
 
 // ── HELPERS ───────────────────────────────────────────────────────────────
 function diffClass(d){return d<=2?'fix-1':d===3?'fix-3':d===4?'fix-4':'fix-5';}
-function badgeClass(avg){return avg<=2.3?'very-easy':avg<=2.8?'easy':avg<=3.2?'medium':avg<=3.6?'tough':avg<=4.0?'difficult':'nightmare';}
-function badgeLabel(avg){return avg<=2.3?'🟢 Blank Fix':avg<=2.8?'🟢 Easy Run':avg<=3.2?'🟡 Moderate':avg<=3.6?'🟠 Tough Run':avg<=4.0?'🔴 Difficult':'🔴 Nightmare';}
+function badgeClass(avg){return avg<=2.0?'very-easy':avg<=2.7?'easy':avg<=3.2?'medium':avg<=3.6?'tough':avg<=4.0?'difficult':'nightmare';}
+function badgeLabel(avg){return avg<=2.0?'🟢 Blank Fix':avg<=2.7?'🟢 Easy Run':avg<=3.2?'🟡 Moderate':avg<=3.6?'🟠 Tough Run':avg<=4.0?'🔴 Difficult':'🔴 Nightmare';}
 function posName(t){return {1:'GKP',2:'DEF',3:'MID',4:'FWD'}[t]||'?';}
 function price(p){return '£'+(p.now_cost/10).toFixed(1)+'m';}
 function teamOf(p){return fplData.teams.find(t=>t.id===p.team);}
@@ -861,7 +868,28 @@ function renderPlayers(){
 // ── POWER RANKINGS ────────────────────────────────────────────────────────
 function renderPower(){
   const grid=document.getElementById('power-cards');
-  const scored=fplData.elements.filter(p=>p.minutes>450).map(p=>({...p,power:calcPower(p)})).sort((a,b)=>b.power-a.power).slice(0,12);
+  const allScored=fplData.elements.filter(p=>p.minutes>450).map(p=>({...p,power:calcPower(p)}));
+  allScored.sort((a,b)=>powerSortDir==='desc'?b.power-a.power:a.power-b.power);
+  const scored=allScored.slice(0,20);
+
+  // Inject sort dropdown into tab header if not already there
+  const hdr=document.getElementById('power-sort-hdr');
+  if(!hdr){
+    const wrap=grid.closest('.tab-content')||grid.parentElement;
+    const ddWrap=document.createElement('div');
+    ddWrap.id='power-sort-hdr';
+    ddWrap.style.cssText='display:flex;justify-content:flex-end;align-items:center;gap:10px;margin-bottom:14px';
+    ddWrap.innerHTML=`<label style="font-size:0.75rem;color:var(--text-muted);font-weight:600">Sort:</label>
+      <select id="power-sort-select" style="background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:5px 10px;font-size:0.8rem;color:var(--text);cursor:pointer;outline:none"
+        onchange="powerSortDir=this.value;renderPower()">
+        <option value="desc" ${powerSortDir==='desc'?'selected':''}>⬇ Highest First</option>
+        <option value="asc"  ${powerSortDir==='asc'?'selected':''}>⬆ Lowest First</option>
+      </select>`;
+    wrap.insertBefore(ddWrap, grid);
+  } else {
+    const sel=document.getElementById('power-sort-select');
+    if(sel) sel.value=powerSortDir;
+  }
   const maxScore=scored[0]?.power||10;grid.innerHTML='';
   scored.forEach((p,i)=>{
     const team=teamOf(p);const c=makeCard(i,p.id);
@@ -1770,6 +1798,7 @@ function renderChipPlanner(){
 let pcView='rise';
 let pcRising=[], pcFalling=[];
 let goalImminenceMap=new Map();
+let powerSortDir='desc';
 
 function renderPriceChange(){
   const el=document.getElementById('pricechange-content');

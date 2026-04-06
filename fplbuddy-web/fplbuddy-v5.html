@@ -41,7 +41,7 @@
     .section-title { font-size:0.72rem; font-weight:700; text-transform:uppercase; letter-spacing:2px; color:var(--text-muted); margin-bottom:18px; display:flex; align-items:center; gap:10px; }
     .section-title::after { content:''; flex:1; height:1px; background:var(--border); }
     .card-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(290px,1fr)); gap:14px; margin-bottom:48px; }
-    .card { background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:18px 20px; backdrop-filter:blur(12px); transition:border-color var(--transition),transform var(--transition),box-shadow var(--transition); position:relative; overflow:hidden; opacity:0; transform:translateY(16px); animation:cardIn 0.4s cubic-bezier(0.16,1,0.3,1) forwards; }
+    .card { background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:18px 20px; backdrop-filter:blur(12px); transition:border-color var(--transition),transform var(--transition),box-shadow var(--transition); position:relative; overflow:visible; opacity:0; transform:translateY(16px); animation:cardIn 0.4s cubic-bezier(0.16,1,0.3,1) forwards; }
     @keyframes cardIn{to{opacity:1;transform:translateY(0)}}
     .card::before { content:''; position:absolute; inset:0; pointer-events:none; opacity:0; background:radial-gradient(ellipse 60% 40% at 50% 0%,rgba(0,212,170,0.06),transparent); transition:opacity var(--transition); }
     .card:hover { border-color:var(--border-hover); transform:translateY(-2px); box-shadow:0 8px 32px rgba(0,212,170,0.1),0 2px 8px rgba(0,0,0,0.3); }
@@ -49,10 +49,13 @@
     .card-header { display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:14px; }
     .team-name { font-size:0.95rem; font-weight:700; display:flex; align-items:center; gap:10px; }
     .team-badge { width:32px; height:32px; object-fit:contain; filter:drop-shadow(0 2px 4px rgba(0,0,0,0.4)); }
-    .badge { padding:4px 10px; border-radius:999px; font-size:0.68rem; font-weight:700; letter-spacing:0.5px; text-transform:uppercase; }
-    .easy{background:rgba(0,212,170,0.15);color:#00d4aa;border:1px solid rgba(0,212,170,0.25)}
-    .medium{background:rgba(240,165,0,0.12);color:#f0a500;border:1px solid rgba(240,165,0,0.25)}
-    .hard{background:rgba(255,85,85,0.12);color:#ff5555;border:1px solid rgba(255,85,85,0.25)}
+    .badge { padding:4px 10px; border-radius:999px; font-size:0.68rem; font-weight:700; letter-spacing:0.5px; text-transform:uppercase; border:1px solid transparent; }
+    .very-easy{background:rgba(0,212,170,0.18);color:#00d4aa;border:1px solid rgba(0,212,170,0.4)}
+    .easy{background:rgba(56,200,100,0.15);color:#38c864;border:1px solid rgba(56,200,100,0.35)}
+    .medium{background:rgba(240,165,0,0.15);color:#f0a500;border:1px solid rgba(240,165,0,0.35)}
+    .tough{background:rgba(255,120,30,0.16);color:#ff781e;border:1px solid rgba(255,120,30,0.35)}
+    .difficult{background:rgba(255,60,60,0.15);color:#ff4646;border:1px solid rgba(255,60,60,0.35)}
+    .nightmare{background:rgba(160,10,10,0.22);color:#ff2020;border:1px solid rgba(160,10,10,0.5)}
     .pos-badge { padding:4px 10px; border-radius:999px; font-size:0.68rem; font-weight:700; letter-spacing:0.5px; background:rgba(0,212,170,0.1); color:var(--green); border:1px solid rgba(0,212,170,0.2); }
     .difficulty { font-size:0.75rem; color:var(--text-muted); margin-bottom:12px; font-weight:500; }
     .fixtures { display:flex; gap:5px; flex-wrap:wrap; }
@@ -240,6 +243,268 @@
     .suggest-item:hover{background:rgba(255,255,255,0.05)}
     .suggest-item:last-child{border-bottom:none}
     /* ══ END PHASE 5 CSS ══════════════════════════════════════ */
+
+    /* ══ PHASE 6 ══════════════════════════════════════════════ */
+    .filter-bar{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:16px 18px;margin-bottom:20px;backdrop-filter:blur(12px)}
+    .filter-row{display:flex;flex-wrap:wrap;gap:14px;align-items:flex-end}
+    .filter-group{display:flex;flex-direction:column;gap:6px}
+    .filter-label{font-size:0.67rem;font-weight:700;text-transform:uppercase;letter-spacing:0.6px;color:var(--text-muted)}
+    .pill-group{display:flex;gap:5px;flex-wrap:wrap}
+    .pill{padding:5px 12px;border-radius:20px;border:1px solid var(--border);background:transparent;color:var(--text-muted);font-size:0.77rem;font-weight:600;cursor:pointer;transition:all 0.18s;font-family:'Outfit',sans-serif}
+    .pill:hover{border-color:var(--green);color:var(--green)}
+    .pill.active{background:rgba(0,212,170,0.14);border-color:rgba(0,212,170,0.5);color:#00d4aa}
+    .filter-select{padding:5px 10px;border-radius:8px;border:1px solid var(--border);background:rgba(255,255,255,0.05);color:var(--text);font-size:0.8rem;font-family:'Outfit',sans-serif;cursor:pointer;outline:none}
+    .filter-select:focus{border-color:rgba(0,212,170,0.5)}
+    .filter-counter{margin-top:10px;font-size:0.75rem;color:var(--text-muted)}
+    .card[data-pid]{cursor:pointer}
+    .card[data-pid]:hover{border-color:rgba(0,212,170,0.4)!important;transform:translateY(-2px)}
+    #player-drawer.open{right:0!important}
+    .drawer-header{position:sticky;top:0;background:#0f1524;border-bottom:1px solid rgba(255,255,255,0.08);padding:13px 18px;display:flex;align-items:center;justify-content:space-between;z-index:10}
+    .drawer-header-title{font-size:0.8rem;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px}
+    .drawer-close{background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);color:var(--text);width:30px;height:30px;border-radius:7px;font-size:1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background 0.15s}
+    .drawer-close:hover{background:rgba(255,255,255,0.14)}
+    .drawer-hero{padding:18px 18px 14px;display:flex;gap:14px;align-items:flex-start;border-bottom:1px solid rgba(255,255,255,0.06)}
+    .drawer-photo{width:78px;height:98px;object-fit:cover;border-radius:10px;border:1px solid rgba(255,255,255,0.08);flex-shrink:0}
+    .drawer-meta{flex:1;min-width:0}
+    .drawer-name{font-size:1.1rem;font-weight:800;margin-bottom:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .drawer-sub{font-size:0.78rem;color:var(--text-muted);margin-bottom:8px}
+    .drawer-badges{display:flex;gap:5px;flex-wrap:wrap}
+    .dbadge{padding:3px 9px;border-radius:6px;font-size:0.71rem;font-weight:700}
+    .dbadge-price{background:rgba(79,142,247,0.14);color:#4f8ef7;border:1px solid rgba(79,142,247,0.25)}
+    .dbadge-own{background:rgba(167,139,250,0.12);color:#a78bfa;border:1px solid rgba(167,139,250,0.25)}
+    .dbadge-avail{background:rgba(0,212,170,0.12);color:#00d4aa;border:1px solid rgba(0,212,170,0.25)}
+    .dbadge-doubt{background:rgba(240,165,0,0.12);color:#f0a500;border:1px solid rgba(240,165,0,0.25)}
+    .dbadge-out{background:rgba(255,85,85,0.12);color:#ff5555;border:1px solid rgba(255,85,85,0.25)}
+    .drawer-section{padding:14px 18px 0}
+    .drawer-section-title{font-size:0.66rem;font-weight:700;text-transform:uppercase;letter-spacing:0.6px;color:var(--text-muted);margin-bottom:8px}
+    .dstats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
+    .dstat{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:8px;padding:7px 4px;text-align:center}
+    .dstat-label{font-size:0.57rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.3px;margin-bottom:3px}
+    .dstat-val{font-size:0.88rem;font-weight:800}
+    .spark-wrap{padding:14px 18px 0}
+    .spark-bars{display:flex;gap:4px;align-items:flex-end;height:46px}
+    .spark-b{flex:1;border-radius:3px 3px 0 0;min-height:4px;transition:height 0.3s}
+    .spark-b.haul{background:#00d4aa}
+    .spark-b.normal{background:#4f8ef7}
+    .spark-b.blank{background:rgba(255,85,85,0.7)}
+    .spark-pts{display:flex;gap:4px;margin-top:4px}
+    .spark-pt{flex:1;font-size:0.66rem;text-align:center;font-weight:700}
+    .spark-gwl{display:flex;gap:4px;margin-top:2px}
+    .spark-gl{flex:1;font-size:0.58rem;text-align:center;color:rgba(255,255,255,0.3)}
+    .fix-list{display:flex;flex-direction:column;gap:5px}
+    .fix-row{display:flex;align-items:center;justify-content:space-between;padding:7px 11px;background:rgba(255,255,255,0.03);border-radius:7px;font-size:0.82rem}
+    .fdr-chip{padding:3px 9px;border-radius:5px;font-size:0.7rem;font-weight:700}
+    .fdr12{background:rgba(0,212,170,0.18);color:#00d4aa}
+    .fdr3{background:rgba(240,165,0,0.18);color:#f0a500}
+    .fdr45{background:rgba(255,85,85,0.18);color:#ff5555}
+    .drawer-hist-btn{display:block;width:calc(100% - 36px);margin:14px 18px 0;padding:11px;background:rgba(0,212,170,0.1);border:1px solid rgba(0,212,170,0.3);border-radius:10px;color:#00d4aa;font-size:0.85rem;font-weight:700;font-family:'Outfit',sans-serif;cursor:pointer;text-align:center;transition:background 0.18s}
+    .drawer-hist-btn:hover{background:rgba(0,212,170,0.22)}
+    .drawer-loading{padding:40px;text-align:center;color:var(--text-muted)}
+    /* ══ END PHASE 6 ══════════════════════════════════════════ */
+
+    /* ══ PHASE 7 CSS ══════════════════════════════════════════ */
+    .chip-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(285px,1fr));gap:16px;margin-bottom:24px}
+    .chip-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:22px;backdrop-filter:blur(12px);animation:cardIn 0.4s cubic-bezier(0.16,1,0.3,1) forwards;opacity:0;transition:border-color 0.2s,transform 0.2s}
+    .chip-card:hover{border-color:rgba(0,212,170,0.3);transform:translateY(-2px)}
+    .chip-icon{font-size:2rem;margin-bottom:10px;line-height:1}
+    .chip-name{font-size:1rem;font-weight:800;margin-bottom:3px}
+    .chip-status{font-size:0.72rem;color:var(--text-muted);margin-bottom:12px}
+    .chip-rec-badge{display:inline-flex;align-items:center;gap:6px;background:rgba(0,212,170,0.1);border:1px solid rgba(0,212,170,0.25);border-radius:20px;padding:5px 14px;font-size:0.83rem;font-weight:800;color:#00d4aa;margin-bottom:12px}
+    .chip-rec-badge.warn{background:rgba(240,165,0,0.1);border-color:rgba(240,165,0,0.3);color:#f0a500}
+    .chip-rec-badge.neutral{background:rgba(107,114,128,0.12);border-color:rgba(107,114,128,0.25);color:#6b7280}
+    .chip-reason{font-size:0.8rem;color:var(--text-muted);line-height:1.6;margin-bottom:12px}
+    .chip-gw-row{display:flex;gap:5px;flex-wrap:wrap}
+    .chip-gw-pill{padding:3px 9px;border-radius:6px;font-size:0.71rem;font-weight:700}
+    .cgw-best{background:rgba(0,212,170,0.15);color:#00d4aa;border:1px solid rgba(0,212,170,0.25)}
+    .cgw-good{background:rgba(79,142,247,0.12);color:#4f8ef7;border:1px solid rgba(79,142,247,0.2)}
+    .cgw-bad{background:rgba(255,85,85,0.1);color:#ff5555;border:1px solid rgba(255,85,85,0.2)}
+    .chip-divider{margin:18px 0 14px;border:none;border-top:1px solid var(--border)}
+    .chip-sub-title{font-size:0.67rem;font-weight:700;text-transform:uppercase;letter-spacing:0.6px;color:var(--text-muted);margin-bottom:10px}
+    .chip-gw-table{width:100%;border-collapse:collapse;font-size:0.8rem}
+    .chip-gw-table th{padding:6px 8px;text-align:left;color:var(--text-muted);font-size:0.65rem;text-transform:uppercase;letter-spacing:0.4px;border-bottom:1px solid var(--border)}
+    .chip-gw-table td{padding:7px 8px;border-bottom:1px solid rgba(255,255,255,0.04)}
+    .chip-gw-table tr:last-child td{border-bottom:none}
+    .chip-gw-table tr:hover td{background:rgba(255,255,255,0.03)}
+    .chip-used{opacity:0.5}
+    .chip-used .chip-rec-badge{background:rgba(107,114,128,0.1);border-color:rgba(107,114,128,0.2);color:#6b7280}
+    .pc-tabs{display:flex;gap:8px;margin-bottom:18px}
+    .pc-tab{padding:6px 18px;border-radius:20px;border:1px solid var(--border);background:transparent;color:var(--text-muted);font-size:0.8rem;font-weight:700;cursor:pointer;font-family:'Outfit',sans-serif;transition:all 0.18s}
+    .pc-tab.active{background:rgba(0,212,170,0.13);border-color:rgba(0,212,170,0.45);color:#00d4aa}
+    .pc-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(255px,1fr));gap:13px}
+    .pc-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:15px;backdrop-filter:blur(12px);animation:cardIn 0.4s cubic-bezier(0.16,1,0.3,1) forwards;opacity:0;cursor:pointer;transition:border-color 0.2s,transform 0.2s}
+    .pc-card:hover{border-color:rgba(0,212,170,0.4);transform:translateY(-2px)}
+    .pc-card.rise{border-top:2px solid rgba(0,212,170,0.6)}
+    .pc-card.fall{border-top:2px solid rgba(255,85,85,0.6)}
+    .pc-badge{display:inline-flex;align-items:center;gap:5px;padding:3px 11px;border-radius:20px;font-size:0.73rem;font-weight:800;margin-bottom:10px}
+    .pc-badge.rise{background:rgba(0,212,170,0.12);color:#00d4aa;border:1px solid rgba(0,212,170,0.25)}
+    .pc-badge.fall{background:rgba(255,85,85,0.1);color:#ff5555;border:1px solid rgba(255,85,85,0.22)}
+    .pc-player-row{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+    .pc-photo{width:40px;height:50px;object-fit:cover;border-radius:7px;border:1px solid rgba(255,255,255,0.07);flex-shrink:0}
+    .pc-name{font-size:0.88rem;font-weight:700;margin-bottom:2px}
+    .pc-sub{font-size:0.72rem;color:var(--text-muted)}
+    .pc-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:5px}
+    .pc-stat{background:rgba(255,255,255,0.03);border-radius:6px;padding:6px 4px;text-align:center}
+    .pc-stat-label{font-size:0.58rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.3px}
+    .pc-stat-val{font-size:0.84rem;font-weight:800;margin-top:2px}
+    .pc-momentum-bar{height:4px;border-radius:2px;margin-top:10px;transition:width 0.4s}
+    .pc-momentum-bar.rise{background:linear-gradient(90deg,rgba(0,212,170,0.3),#00d4aa)}
+    .pc-momentum-bar.fall{background:linear-gradient(90deg,rgba(255,85,85,0.3),#ff5555)}
+    .pc-section-label{font-size:0.67rem;font-weight:700;text-transform:uppercase;letter-spacing:0.6px;color:var(--text-muted);margin-bottom:12px}
+    /* ══ END PHASE 7 CSS ══════════════════════════════════════ */
+
+    /* ══ PHASE 8 CSS ══════════════════════════════════════════ */
+
+    /* ── Fixture Grid ── */
+    .fg-wrap{overflow-x:auto;border-radius:var(--radius);border:1px solid var(--border)}
+    .fg-table{border-collapse:collapse;min-width:600px;width:100%;font-size:0.8rem}
+    .fg-table th{position:sticky;top:0;background:#0d1220;z-index:5;padding:9px 12px;font-size:0.68rem;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;color:var(--text-muted);white-space:nowrap;border-bottom:1px solid var(--border);text-align:center}
+    .fg-table th:first-child{position:sticky;left:0;z-index:6;text-align:left;min-width:140px}
+    .fg-team-cell{position:sticky;left:0;background:#0d1220;z-index:4;padding:8px 12px;font-weight:700;font-size:0.82rem;white-space:nowrap;border-right:1px solid var(--border);cursor:pointer;transition:background 0.15s;display:flex;align-items:center;gap:8px}
+    .fg-team-cell:hover{background:rgba(255,255,255,0.05)}
+    .fg-team-cell img{width:18px;height:18px;object-fit:contain}
+    .fg-cell{padding:7px 10px;text-align:center;font-size:0.76rem;font-weight:700;white-space:nowrap;border:1px solid rgba(255,255,255,0.04);min-width:72px;vertical-align:middle}
+    .fg-cell.fdr1,.fg-cell.fdr2{background:rgba(0,212,170,0.18);color:#00d4aa}
+    .fg-cell.fdr3{background:rgba(240,165,0,0.15);color:#f0a500}
+    .fg-cell.fdr4{background:rgba(255,85,85,0.15);color:#ff7070}
+    .fg-cell.fdr5{background:rgba(255,40,40,0.22);color:#ff5555}
+    .fg-cell.bgw{background:rgba(255,255,255,0.02);color:rgba(255,255,255,0.2);font-size:0.68rem}
+    .fg-cell.dgw{background:rgba(0,212,170,0.1);color:#00d4aa;line-height:1.5}
+    .fg-cell.dgw span{display:block;font-size:0.7rem}
+    .fg-row{transition:background 0.15s}
+    .fg-row:hover td{background-color:rgba(255,255,255,0.04)!important}
+    .fg-row.highlighted .fg-team-cell{background:rgba(0,212,170,0.12)!important}
+    .fg-row.highlighted .fg-cell{outline:1px solid rgba(0,212,170,0.15)}
+    .fg-avg{font-size:0.7rem;font-weight:800;padding:6px 10px;text-align:center;border:1px solid rgba(255,255,255,0.04)}
+    .fg-controls{display:flex;gap:10px;align-items:center;margin-bottom:14px;flex-wrap:wrap}
+    .fg-gw-label{background:rgba(79,142,247,0.15);color:#4f8ef7;padding:4px 10px;border-radius:6px;font-size:0.72rem;font-weight:700}
+    .fg-legend{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px;align-items:center}
+    .fg-legend-item{display:flex;align-items:center;gap:5px;font-size:0.72rem;color:var(--text-muted)}
+    .fg-legend-dot{width:12px;height:12px;border-radius:3px}
+
+    /* ── Pitch View ── */
+    .pitch-outer{position:relative;width:100%;max-width:680px;margin:0 auto}
+    .pitch-svg-wrap{position:relative;width:100%;padding-bottom:calc(62% + 80px)}
+    .pitch-bg{position:absolute;inset:0 0 80px 0;background:linear-gradient(180deg,#1a4a1a 0%,#1e5a1e 50%,#1a4a1a 100%);border-radius:12px;overflow:hidden}
+    .pitch-svg{width:100%;height:100%;position:absolute;inset:0}
+    .pitch-rows{position:absolute;inset:0 0 0 0;display:flex;flex-direction:column;justify-content:space-evenly;padding:8% 4%}
+    .pitch-row{display:flex;justify-content:space-evenly;align-items:center;gap:6px}
+    .bench-area{margin-top:6px;padding:8px 12px;background:rgba(0,0,0,0.25);border-radius:10px;border:1px solid rgba(255,255,255,0.06);display:flex;justify-content:space-evenly;align-items:center;gap:6px}
+    .bench-label{font-size:0.65rem;color:rgba(255,255,255,0.35);text-align:center;margin-bottom:5px;font-weight:700;text-transform:uppercase;letter-spacing:0.6px}
+    .pt{display:flex;flex-direction:column;align-items:center;gap:4px;position:relative;cursor:pointer}
+    .pt:hover .pt-ring{transform:scale(1.08)}
+    .pt-ring{width:52px;height:52px;border-radius:50%;border:3px solid #6b7280;overflow:hidden;position:relative;transition:transform 0.2s,box-shadow 0.2s;flex-shrink:0}
+    .pt-ring.power-high{border-color:#00d4aa;box-shadow:0 0 10px rgba(0,212,170,0.4)}
+    .pt-ring.power-mid{border-color:#f0a500;box-shadow:0 0 8px rgba(240,165,0,0.3)}
+    .pt-ring.power-low{border-color:#ff5555;box-shadow:0 0 8px rgba(255,85,85,0.25)}
+    .pt-ring.cap{border-color:#ffd700!important;border-width:4px;box-shadow:0 0 14px rgba(255,215,0,0.5)!important}
+    .pt-ring.vice{border-color:#c0c0c0!important;border-width:3px;box-shadow:0 0 10px rgba(192,192,192,0.35)!important}
+    .pt-img{width:100%;height:100%;object-fit:cover;object-position:top center;background:#1a2a3a}
+    .pt-initials{width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:0.9rem;font-weight:800;color:#fff;background:rgba(255,255,255,0.08)}
+    .pt-badge{position:absolute;top:-4px;right:-4px;width:18px;height:18px;border-radius:50%;font-size:0.6rem;font-weight:900;display:flex;align-items:center;justify-content:center;z-index:2;border:1.5px solid #0b0f1a}
+    .pt-badge.cap-b{background:#ffd700;color:#000}
+    .pt-badge.vice-b{background:#c0c0c0;color:#000}
+    .pt-name{font-size:0.65rem;font-weight:700;color:#fff;text-align:center;max-width:58px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-shadow:0 1px 3px rgba(0,0,0,0.8)}
+    .pt-pts{font-size:0.6rem;color:rgba(255,255,255,0.65);font-weight:600;text-align:center;text-shadow:0 1px 2px rgba(0,0,0,0.8)}
+    .bench-pt .pt-ring{width:42px;height:42px;opacity:0.7}
+    .bench-pt .pt-name{font-size:0.6rem;max-width:50px}
+    .bench-pt .pt-pts{font-size:0.57rem}
+    .pitch-view-toggle{display:flex;gap:8px;margin-bottom:14px}
+    .pv-toggle-btn{padding:5px 14px;border-radius:20px;border:1px solid var(--border);background:transparent;color:var(--text-muted);font-size:0.78rem;font-weight:700;cursor:pointer;font-family:'Outfit',sans-serif;transition:all 0.18s}
+    .pv-toggle-btn.active{background:rgba(0,212,170,0.14);border-color:rgba(0,212,170,0.45);color:#00d4aa}
+    /* ══ END PHASE 8 CSS ══════════════════════════════════════ */
+
+    /* ══ PHASE 9 CSS ══════════════════════════════════════════ */
+    .sp-stat-bar{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:20px}
+    .sp-stat{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:12px 16px;flex:1;min-width:110px;text-align:center}
+    .sp-stat-val{font-size:1.1rem;font-weight:800;margin-bottom:3px}
+    .sp-stat-lbl{font-size:0.65rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px}
+    .sp-chart-wrap{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:18px;margin-bottom:18px;position:relative}
+    .sp-chart-title{font-size:0.72rem;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;color:var(--text-muted);margin-bottom:14px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px}
+    .sp-toggle-row{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:16px}
+    .sp-toggle-btn{padding:5px 13px;border-radius:20px;border:1px solid var(--border);background:transparent;color:var(--text-muted);font-size:0.77rem;font-weight:700;cursor:pointer;font-family:'Outfit',sans-serif;transition:all 0.18s}
+    .sp-toggle-btn.active{background:rgba(0,212,170,0.14);border-color:rgba(0,212,170,0.45);color:#00d4aa}
+    .sp-input-wrap{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:20px;margin-bottom:20px;backdrop-filter:blur(12px)}
+    .sp-input-label{font-size:0.7rem;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;color:var(--text-muted);margin-bottom:8px}
+    .sp-input-row{display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end}
+    .sp-id-group{display:flex;flex-direction:column;gap:6px;flex:1;min-width:160px}
+    .sp-input{padding:9px 13px;border-radius:9px;border:1px solid var(--border);background:rgba(255,255,255,0.05);color:var(--text);font-size:0.88rem;font-family:'Outfit',sans-serif;outline:none;width:100%}
+    .sp-input:focus{border-color:rgba(0,212,170,0.5)}
+    .sp-btn{padding:9px 22px;border-radius:9px;background:rgba(0,212,170,0.15);border:1px solid rgba(0,212,170,0.35);color:#00d4aa;font-size:0.88rem;font-weight:700;cursor:pointer;font-family:'Outfit',sans-serif;white-space:nowrap;transition:background 0.18s;align-self:flex-end}
+    .sp-btn:hover{background:rgba(0,212,170,0.28)}
+    .sp-btn:disabled{opacity:0.5;cursor:default}
+    .h2h-summary-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px;margin-bottom:20px}
+    .h2h-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:15px;text-align:center}
+    .h2h-card-title{font-size:0.65rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:10px}
+    .h2h-vs-row{display:flex;align-items:center;justify-content:center;gap:10px}
+    .h2h-val{font-size:1.2rem;font-weight:800}
+    .h2h-val.winner{color:#00d4aa}
+    .h2h-sep{color:var(--text-muted);font-size:0.8rem;font-weight:700}
+    .h2h-record-wrap{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:16px;margin-bottom:18px}
+    .h2h-wdl{display:flex;gap:16px;align-items:center;flex-wrap:wrap;margin-bottom:12px}
+    .h2h-wdl-stat{text-align:center}
+    .h2h-wdl-val{font-size:1.5rem;font-weight:900;line-height:1}
+    .h2h-wdl-lbl{font-size:0.65rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;margin-top:3px}
+    .h2h-dots{display:flex;gap:4px;flex-wrap:wrap}
+    .h2h-dot{width:14px;height:14px;border-radius:50%}
+    .h2h-dot.win{background:#00d4aa}
+    .h2h-dot.draw{background:#6b7280}
+    .h2h-dot.loss{background:#ff5555}
+    .h2h-table-wrap{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;margin-bottom:18px}
+    .h2h-table{width:100%;border-collapse:collapse;font-size:0.82rem}
+    .h2h-table th{padding:8px 12px;text-align:center;color:var(--text-muted);font-size:0.66rem;text-transform:uppercase;letter-spacing:0.4px;border-bottom:1px solid var(--border)}
+    .h2h-table th:first-child{text-align:left}
+    .h2h-table td{padding:8px 12px;border-bottom:1px solid rgba(255,255,255,0.04);text-align:center}
+    .h2h-table tr:last-child td{border-bottom:none}
+    .h2h-table tr:hover td{background:rgba(255,255,255,0.03)}
+    .h2h-win-ind{font-size:0.85rem}
+    .h2h-streak{padding:4px 11px;border-radius:20px;font-size:0.75rem;font-weight:700;display:inline-flex}
+    .h2h-streak.win{background:rgba(0,212,170,0.12);color:#00d4aa;border:1px solid rgba(0,212,170,0.25)}
+    .h2h-streak.loss{background:rgba(255,85,85,0.1);color:#ff5555;border:1px solid rgba(255,85,85,0.22)}
+    .h2h-streak.draw{background:rgba(107,114,128,0.12);color:#6b7280;border:1px solid rgba(107,114,128,0.2)}
+    .chip-dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-left:4px;background:#a78bfa;vertical-align:middle}
+    /* ══ END PHASE 9 CSS ══════════════════════════════════════ */
+
+    /* ══ TOOLTIPS ════════════════════════════════════════════ */
+    .tooltip-wrap{position:relative;display:inline-flex;align-items:center;gap:3px;z-index:1}
+    .tooltip-box{position:absolute;bottom:calc(100% + 8px);left:50%;transform:translateX(-50%);background:rgba(11,15,26,0.97);border:1px solid rgba(0,212,170,0.35);border-radius:8px;padding:8px 11px;font-size:0.72rem;line-height:1.5;color:#e8eaf0;white-space:normal;width:max-content;max-width:240px;pointer-events:none;opacity:0;transition:opacity 0.15s ease;z-index:99999;text-align:left;box-shadow:0 8px 32px rgba(0,0,0,0.7);font-weight:400}
+    .tooltip-box::after{content:'';position:absolute;top:100%;left:50%;transform:translateX(-50%);border:5px solid transparent;border-top-color:rgba(0,212,170,0.35)}
+    .tooltip-wrap:hover .tooltip-box,.tooltip-wrap.tip-open .tooltip-box{opacity:1;pointer-events:none}
+    .tip-icon{font-size:0.66rem;color:rgba(0,212,170,0.55);cursor:help;line-height:1;user-select:none;flex-shrink:0;font-style:normal}
+    .tab-tip-wrap{display:inline-flex;align-items:center;position:relative;vertical-align:middle}
+    .tab-tip-icon{font-size:0.62rem;color:rgba(255,255,255,0.3);cursor:help;padding:2px 3px;line-height:1;user-select:none;transition:color 0.15s;font-style:normal}
+    .tab-tip-icon:hover{color:rgba(0,212,170,0.7)}
+    .tab-tip-box{position:absolute;bottom:calc(100% + 10px);left:50%;transform:translateX(-50%);background:rgba(11,15,26,0.97);border:1px solid rgba(0,212,170,0.35);border-radius:9px;padding:9px 13px;font-size:0.72rem;line-height:1.55;color:#e8eaf0;white-space:normal;width:max-content;max-width:230px;pointer-events:none;opacity:0;transition:opacity 0.15s ease;z-index:1000;text-align:left;box-shadow:0 6px 24px rgba(0,0,0,0.6);font-weight:400}
+    .tab-tip-box::after{content:'';position:absolute;top:100%;left:50%;transform:translateX(-50%);border:5px solid transparent;border-top-color:rgba(0,212,170,0.35)}
+    .tab-tip-wrap:hover .tab-tip-box,.tab-tip-wrap.tip-open .tab-tip-box{opacity:1}
+    .how-calc{background:rgba(0,212,170,0.04);border:1px solid rgba(0,212,170,0.15);border-radius:10px;margin-bottom:18px;overflow:hidden}
+    .how-calc-hdr{display:flex;align-items:center;justify-content:space-between;padding:11px 15px;cursor:pointer;transition:background 0.15s;user-select:none;font-size:0.82rem;font-weight:700;color:rgba(0,212,170,0.8)}
+    .how-calc-hdr:hover{background:rgba(0,212,170,0.07)}
+    .how-calc-arrow{transition:transform 0.25s;font-style:normal;font-size:0.75rem;display:inline-block}
+    .how-calc-body{max-height:0;overflow:hidden;transition:max-height 0.32s ease}
+    .how-calc-body.open{max-height:500px}
+    .how-calc-body ul{padding:4px 15px 14px 28px;margin:0}
+    .how-calc-body li{font-size:0.79rem;color:var(--text-muted);line-height:1.65;margin-bottom:3px}
+    .how-calc-body li strong{color:var(--text)}
+    /* ══ END TOOLTIPS ════════════════════════════════════════ */
+
+    /* fixture difficulty tiers handled by standalone classes */
+
+    /* ── Goal Threat row (Phase B) ── */
+    .goal-threat-row{display:flex;justify-content:space-between;align-items:center;
+      margin-top:10px;padding:7px 10px;border-radius:8px;
+      background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07)}
+    .goal-threat-label{font-size:0.72rem;font-weight:700;color:var(--text-muted);letter-spacing:0.4px;display:flex;align-items:center;gap:4px}
+    .goal-threat-val{font-size:1rem;font-weight:800}
+    .goal-threat-val.green{color:#00d4aa}
+    .goal-threat-val.orange{color:#f0a500}
+    .goal-threat-val.muted{color:var(--text-muted)}
+
+    /* ── Tooltip overflow fix — bring to front on hover ── */
+    .tooltip-wrap:hover{z-index:9999;overflow:visible}
+    .tooltip-wrap:hover .tooltip-box,
+    .tooltip-wrap.tip-open .tooltip-box{opacity:1}
+    .stats-grid,.stat-item{overflow:visible!important}
+    .goal-threat-row{overflow:visible!important}
   </style>
 </head>
 <body>
@@ -252,24 +517,75 @@
   <div id="gw-info"></div>
   <div class="tabs-wrap">
     <button class="tab active" onclick="switchTab('fixtures',event)">📅 Fixture Runs</button>
-    <button class="tab" onclick="switchTab('players',event)">⚡ Top Players</button>
-    <button class="tab" onclick="switchTab('power',event)">🏆 Power Rankings</button>
-    <button class="tab" onclick="switchTab('value',event)">💸 Value Picks</button>
-    <button class="tab" onclick="switchTab('transfers',event)">🔄 Transfers</button>
-    <button class="tab" onclick="switchTab('injuries',event)">🩹 Injuries</button>
-    <button class="tab" onclick="switchTab('xg',event)">📊 xG Stats</button>
-    <button class="tab" onclick="switchTab('livegw',event)">🔴 Live GW</button>
-    <button class="tab" onclick="switchTab('scout',event)">🎯 Scout</button>
-    <button class="tab" onclick="switchTab('myteam',event)">👤 My Team</button>
-    <button class="tab" onclick="switchTab('ai-chat',event)">🤖 AI Chat</button>
-    <button class="tab" onclick="switchTab('differentials',event)">🔍 Differentials</button>
-    <button class="tab" onclick="switchTab('history',event)">📈 GW History</button>
-    <button class="tab" onclick="switchTab('minileague',event)">🏆 Mini League</button>
+    <span class="tab-tip-wrap"><button class="tab" onclick="switchTab('players',event)">⚡ Top Players</button><i class="tab-tip-icon" onclick="toggleTip(this)" onmouseenter="this.parentElement.classList.add('tip-open')" onmouseleave="this.parentElement.classList.remove('tip-open')">ⓘ<span class="tab-tip-box">Best players right now — filter by form, price, position and sort method of your choice</span></i></span>
+    <span class="tab-tip-wrap"><button class="tab" onclick="switchTab('power',event)">🏆 Power Rankings</button><i class="tab-tip-icon" onclick="toggleTip(this)" onmouseenter="this.parentElement.classList.add('tip-open')" onmouseleave="this.parentElement.classList.remove('tip-open')">ⓘ<span class="tab-tip-box">Composite score: Form 22% + Pts/Game 18% + Pts/£m 15% + Fixture Ease 16% + Goal Imminence 18% + Minutes 7% + Transfer Momentum 4%</span></i></span>
+    <span class="tab-tip-wrap"><button class="tab" onclick="switchTab('value',event)">💸 Value Picks</button><i class="tab-tip-icon" onclick="toggleTip(this)" onmouseenter="this.parentElement.classList.add('tip-open')" onmouseleave="this.parentElement.classList.remove('tip-open')">ⓘ<span class="tab-tip-box">Best points-per-million players. Total season points divided by current price</span></i></span>
+    <span class="tab-tip-wrap"><button class="tab" onclick="switchTab('transfers',event)">🔄 Transfers</button><i class="tab-tip-icon" onclick="toggleTip(this)" onmouseenter="this.parentElement.classList.add('tip-open')" onmouseleave="this.parentElement.classList.remove('tip-open')">ⓘ<span class="tab-tip-box">Who managers are buying and selling most this gameweek</span></i></span>
+    <span class="tab-tip-wrap"><button class="tab" onclick="switchTab('injuries',event)">🩹 Injuries</button><i class="tab-tip-icon" onclick="toggleTip(this)" onmouseenter="this.parentElement.classList.add('tip-open')" onmouseleave="this.parentElement.classList.remove('tip-open')">ⓘ<span class="tab-tip-box">Players with active injury or suspension news and their chance of playing next GW</span></i></span>
+    <span class="tab-tip-wrap"><button class="tab" onclick="switchTab('xg',event)">📊 xG Stats</button><i class="tab-tip-icon" onclick="toggleTip(this)" onmouseenter="this.parentElement.classList.add('tip-open')" onmouseleave="this.parentElement.classList.remove('tip-open')">ⓘ<span class="tab-tip-box">Expected Goals (xG) and Expected Assists (xA) — chances created vs actual returns</span></i></span>
+    <span class="tab-tip-wrap"><button class="tab" onclick="switchTab('livegw',event)">🔴 Live GW</button><i class="tab-tip-icon" onclick="toggleTip(this)" onmouseenter="this.parentElement.classList.add('tip-open')" onmouseleave="this.parentElement.classList.remove('tip-open')">ⓘ<span class="tab-tip-box">Real-time points for the current gameweek pulled from the FPL live endpoint</span></i></span>
+    <span class="tab-tip-wrap"><button class="tab" onclick="switchTab('scout',event)">🎯 Scout</button><i class="tab-tip-icon" onclick="toggleTip(this)" onmouseenter="this.parentElement.classList.add('tip-open')" onmouseleave="this.parentElement.classList.remove('tip-open')">ⓘ<span class="tab-tip-box">Bubble chart plotting form vs fixture ease. Top-right corner = ideal transfer targets</span></i></span>
+    <span class="tab-tip-wrap"><button class="tab" onclick="switchTab('myteam',event)">👤 My Team</button><i class="tab-tip-icon" onclick="toggleTip(this)" onmouseenter="this.parentElement.classList.add('tip-open')" onmouseleave="this.parentElement.classList.remove('tip-open')">ⓘ<span class="tab-tip-box">Enter your FPL team ID to analyse your squad, see captain picks and a visual pitch view</span></i></span>
+    <span class="tab-tip-wrap"><button class="tab" onclick="switchTab('ai-chat',event)">🤖 AI Chat</button><i class="tab-tip-icon" onclick="toggleTip(this)" onmouseenter="this.parentElement.classList.add('tip-open')" onmouseleave="this.parentElement.classList.remove('tip-open')">ⓘ<span class="tab-tip-box">GPT-powered FPL assistant. Ask anything about transfers, captains or your squad</span></i></span>
+    <span class="tab-tip-wrap"><button class="tab" onclick="switchTab('differentials',event)">🔍 Differentials</button><i class="tab-tip-icon" onclick="toggleTip(this)" onmouseenter="this.parentElement.classList.add('tip-open')" onmouseleave="this.parentElement.classList.remove('tip-open')">ⓘ<span class="tab-tip-box">Players owned by less than 10% of managers but with high power scores</span></i></span>
+    <span class="tab-tip-wrap"><button class="tab" onclick="switchTab('history',event)">📈 GW History</button><i class="tab-tip-icon" onclick="toggleTip(this)" onmouseenter="this.parentElement.classList.add('tip-open')" onmouseleave="this.parentElement.classList.remove('tip-open')">ⓘ<span class="tab-tip-box">Search any player to see their GW-by-GW points as a line chart with full stat table</span></i></span>
+    <span class="tab-tip-wrap"><button class="tab" onclick="switchTab('minileague',event)">🏆 Mini League</button><i class="tab-tip-icon" onclick="toggleTip(this)" onmouseenter="this.parentElement.classList.add('tip-open')" onmouseleave="this.parentElement.classList.remove('tip-open')">ⓘ<span class="tab-tip-box">Enter a league ID to see live standings, rank movements and points gaps</span></i></span>
+    <span class="tab-tip-wrap"><button class="tab" onclick="switchTab('fixturegrid',event)">🗓️ Fixture Grid</button><i class="tab-tip-icon" onclick="toggleTip(this)" onmouseenter="this.parentElement.classList.add('tip-open')" onmouseleave="this.parentElement.classList.remove('tip-open')">ⓘ<span class="tab-tip-box">Full 20-team × 8-GW colour-coded fixture ticker, sorted easiest to hardest</span></i></span>
+    <span class="tab-tip-wrap"><button class="tab" onclick="switchTab('chipplanner',event)">🃏 Chip Planner</button><i class="tab-tip-icon" onclick="toggleTip(this)" onmouseenter="this.parentElement.classList.add('tip-open')" onmouseleave="this.parentElement.classList.remove('tip-open')">ⓘ<span class="tab-tip-box">Recommends the best remaining GW to play each of your 4 chips based on fixture data</span></i></span>
+    <span class="tab-tip-wrap"><button class="tab" onclick="switchTab('pricechange',event)">💰 Price Changes</button><i class="tab-tip-icon" onclick="toggleTip(this)" onmouseenter="this.parentElement.classList.add('tip-open')" onmouseleave="this.parentElement.classList.remove('tip-open')">ⓘ<span class="tab-tip-box">Players most likely to rise or fall based on transfer velocity this GW</span></i></span>
+    <span class="tab-tip-wrap"><button class="tab" onclick="switchTab('seasonpts',event)">📊 Season Points</button><i class="tab-tip-icon" onclick="toggleTip(this)" onmouseenter="this.parentElement.classList.add('tip-open')" onmouseleave="this.parentElement.classList.remove('tip-open')">ⓘ<span class="tab-tip-box">Your GW-by-GW points chart with cumulative total, rank trend and chips played</span></i></span>
+    <span class="tab-tip-wrap"><button class="tab" onclick="switchTab('h2h',event)">⚔️ Head-to-Head</button><i class="tab-tip-icon" onclick="toggleTip(this)" onmouseenter="this.parentElement.classList.add('tip-open')" onmouseleave="this.parentElement.classList.remove('tip-open')">ⓘ<span class="tab-tip-box">Compare your FPL season vs a rival — W/D/L record, pts diff and GW battle table</span></i></span>
   </div>
-  <p class="section-title" id="section-label">Best Fixture Runs — Next 5 Gameweeks</p>
+  <p class="section-title" id="section-label">Fixture Runs — Next 5 Gameweeks</p>
 
   <div id="fixtures-section"><div id="proxy-status-bar"></div><div class="card-grid" id="fixture-cards"><div class="loading"><div class="loading-spinner"></div>Fetching live FPL data...</div></div></div>
-  <div id="players-section" style="display:none"><div class="card-grid" id="player-cards"></div></div>
+  <div id="players-section" style="display:none">
+    <div class="filter-bar">
+      <div class="filter-row">
+        <div class="filter-group">
+          <span class="filter-label">Position</span>
+          <div class="pill-group" id="pos-pills">
+            <button class="pill active" data-pos="ALL">All</button>
+            <button class="pill" data-pos="1">GKP</button>
+            <button class="pill" data-pos="2">DEF</button>
+            <button class="pill" data-pos="3">MID</button>
+            <button class="pill" data-pos="4">FWD</button>
+          </div>
+        </div>
+        <div class="filter-group">
+          <span class="filter-label">Sort By</span>
+          <select class="filter-select" id="sort-select">
+            <option value="form">Form</option>
+            <option value="total_points">Total Pts</option>
+            <option value="points_per_game">Pts/Game</option>
+            <option value="ptspercost">Pts/£m</option>
+            <option value="now_cost">Price ↑</option>
+            <option value="selected_by_percent">Ownership %</option>
+          </select>
+        </div>
+        <div class="filter-group">
+          <span class="filter-label">Max Price</span>
+          <div class="pill-group" id="price-pills">
+            <button class="pill active" data-price="0">Any</button>
+            <button class="pill" data-price="50">≤£5m</button>
+            <button class="pill" data-price="65">≤£6.5m</button>
+            <button class="pill" data-price="80">≤£8m</button>
+            <button class="pill" data-price="100">≤£10m</button>
+          </div>
+        </div>
+        <div class="filter-group">
+          <span class="filter-label">Show</span>
+          <select class="filter-select" id="show-select">
+            <option value="12">Top 12</option>
+            <option value="24">Top 24</option>
+            <option value="0">All</option>
+          </select>
+        </div>
+      </div>
+      <div class="filter-counter" id="players-counter">Loading...</div>
+    </div>
+    <div class="card-grid" id="player-cards"></div>
+  </div>
   <div id="power-section" style="display:none"><div class="card-grid" id="power-cards"></div></div>
   <div id="value-section" style="display:none"><div class="card-grid" id="value-cards"></div></div>
   <div id="transfers-section" style="display:none"><div class="card-grid" id="transfer-cards"></div></div>
@@ -279,7 +595,9 @@
     <div class="card-grid" id="xg-cards"></div>
   </div>
   <div id="livegw-section" style="display:none"><div id="livegw-content"><div class="loading"><div class="loading-spinner"></div>Loading...</div></div></div>
-  <div id="scout-section" style="display:none"><div id="scout-content"></div></div>
+  <div id="scout-section" style="display:none"><div id="scout-content">
+    <div class="how-calc"><div class="how-calc-hdr" onclick="toggleHowCalc(this)"><span>ℹ️ 🎯 How does the Scout chart work?</span><i class="how-calc-arrow">▾</i></div><div class="how-calc-body"><ul><li><strong>X axis — Fixture ease</strong> — Avg FDR inverted: higher = easier upcoming fixtures</li><li><strong>Y axis — Form</strong> — Average FPL points across the last 4 gameweeks</li><li><strong>Bubble size</strong> — Ownership %, bigger = more widely owned</li><li><strong>Sweet spot</strong> — Top-right: high form AND easy fixtures = ideal transfer targets</li><li><strong>Filters</strong> — Use position buttons to isolate GKs, DEFs, MIDs or FWDs</li></ul></div></div>
+    </div></div>
   <div id="myteam-section" style="display:none">
     <div class="myteam-input-wrap">
       <div class="myteam-input-label">🔍 Enter your FPL Team ID</div>
@@ -342,6 +660,28 @@
     <div id="minileague-content"></div>
   </div>
 
+
+  <div id="fixturegrid-section" style="display:none">
+    <div id="fixturegrid-content"></div>
+  </div>
+
+  <div id="chipplanner-section" style="display:none">
+    <div id="chipplanner-content">
+    <div class="how-calc"><div class="how-calc-hdr" onclick="toggleHowCalc(this)"><span>ℹ️ 🃏 How are chip recommendations made?</span><i class="how-calc-arrow">▾</i></div><div class="how-calc-body"><ul><li><strong>Wildcard</strong> — GW with highest density of easy fixtures across top FPL teams</li><li><strong>Free Hit</strong> — GW with the most blanks or a high-value double gameweek reset opportunity</li><li><strong>Bench Boost</strong> — GW where the most teams have a double gameweek so bench players also score</li><li><strong>Triple Captain</strong> — GW where the best premium player has the easiest single fixture</li><li><strong>Scores</strong> — Each GW gets a composite score; highest score = recommended GW to play that chip</li></ul></div></div>
+    </div>
+  </div>
+  <div id="pricechange-section" style="display:none">
+    <div id="pricechange-content">
+    <div class="how-calc"><div class="how-calc-hdr" onclick="toggleHowCalc(this)"><span>ℹ️ 💰 How is price change predicted?</span><i class="how-calc-arrow">▾</i></div><div class="how-calc-body"><ul><li><strong>Transfer velocity</strong> — Heavy net buying relative to ownership signals a likely price rise</li><li><strong>FPL's rule</strong> — A player rises when net transfers exceed ~1% of total managers owning them</li><li><strong>ep_next</strong> — High expected points + high net transfers = strong rise candidate</li><li><strong>Price fall signal</strong> — Heavy net sell-off with low form triggers a fall flag</li><li><strong>Note</strong> — These are signals, not guarantees. FPL processes prices once per day after 6am BST</li></ul></div></div>
+    </div>
+  </div>
+
+  <div id="seasonpts-section" style="display:none">
+    <div id="seasonpts-content"></div>
+  </div>
+  <div id="h2h-section" style="display:none">
+    <div id="h2h-content"></div>
+  </div>
 </div>
 
 <script>
@@ -385,22 +725,28 @@ let scoutChart=null, scoutPos='ALL';
 
 // ── HELPERS ───────────────────────────────────────────────────────────────
 function diffClass(d){return d<=2?'fix-1':d===3?'fix-3':d===4?'fix-4':'fix-5';}
-function badgeClass(avg){return avg<=2.6?'easy':avg<=3.2?'medium':'hard';}
-function badgeLabel(avg){return avg<=2.6?'Easy Run':avg<=3.2?'Moderate':'Tough Run';}
+function badgeClass(avg){return avg<=2.0?'very-easy':avg<=2.7?'easy':avg<=3.2?'medium':avg<=3.6?'tough':avg<=4.0?'difficult':'nightmare';}
+function badgeLabel(avg){return avg<=2.0?'🟢 Blank Fix':avg<=2.7?'🟢 Easy Run':avg<=3.2?'🟡 Moderate':avg<=3.6?'🟠 Tough Run':avg<=4.0?'🔴 Difficult':'🔴 Nightmare';}
 function posName(t){return {1:'GKP',2:'DEF',3:'MID',4:'FWD'}[t]||'?';}
 function price(p){return '£'+(p.now_cost/10).toFixed(1)+'m';}
 function teamOf(p){return fplData.teams.find(t=>t.id===p.team);}
-function makeCard(i){const c=document.createElement('div');c.className='card';c.style.animationDelay=(i*0.05)+'s';return c;}
+function makeCard(i,pid){
+  const c=document.createElement('div');
+  c.className='card';
+  c.style.animationDelay=(i*0.05)+'s';
+  if(pid!=null){c.setAttribute('data-pid',pid);c.addEventListener('click',()=>openDrawer(pid));}
+  return c;
+}
 function rankBadge(i){const cls=i===0?'rank-1':i===1?'rank-2':i===2?'rank-3':'rank-other';const lbl=i===0?'🥇':i===1?'🥈':i===2?'🥉':'#'+(i+1);return `<div class="rank-badge ${cls}">${lbl}</div>`;}
 
 // ── TAB SWITCH ────────────────────────────────────────────────────────────
 function switchTab(tab, e) {
   document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
   e.target.classList.add('active');
-  ['fixtures','players','power','value','transfers','injuries','xg','livegw','scout','myteam','ai-chat','differentials','history','minileague'].forEach(id=>{
+  ['fixtures','players','power','value','transfers','injuries','xg','livegw','scout','myteam','ai-chat','differentials','history','minileague','fixturegrid','chipplanner','pricechange','seasonpts','h2h'].forEach(id=>{
     const el=document.getElementById(id+'-section');if(el)el.style.display='none';
   });
-  const labels={fixtures:'Best Fixture Runs — Next 5 Gameweeks',players:'Top Players By Form',power:'Power Rankings — Composite FPL Score',value:'Value Picks — Best Points Per Million',transfers:'Transfer Trends — This Gameweek',injuries:'Injury Tracker — Availability & News',xg:'Underlying Stats — xG & xA',livegw:'Live Gameweek — Real-Time Points',scout:'Scout — Form vs Fixture Bubble Chart',myteam:'My Team — Analyser & Captain Picker','ai-chat':'AI-Powered FPL Assistant','differentials':'Differentials — Hidden Gems Under 10% Ownership','history':'Player History — GW Points Chart & Stats','minileague':'Mini-League — Standings & Leaderboard'};
+  const labels={fixtures:'Best Fixture Runs — Next 5 Gameweeks',players:'Top Players By Form',power:'Power Rankings — Composite FPL Score',value:'Value Picks — Best Points Per Million',transfers:'Transfer Trends — This Gameweek',injuries:'Injury Tracker — Availability & News',xg:'Underlying Stats — xG & xA',livegw:'Live Gameweek — Real-Time Points',scout:'Scout — Form vs Fixture Bubble Chart',myteam:'My Team — Analyser & Captain Picker','ai-chat':'AI-Powered FPL Assistant','differentials':'Differentials — Hidden Gems Under 10% Ownership','history':'Player History — GW Points Chart & Stats','minileague':'Mini-League — Standings & Leaderboard','fixturegrid':'Full Fixture Grid — Season Difficulty Ticker','chipplanner':'Chip Planner — Best GWs to Play Your Chips','pricechange':'Price Change Predictor — Who\'s Rising & Falling','seasonpts':'Season Points — GW-by-GW Performance Chart','h2h':'Head-to-Head — Compare vs Another Manager'};
   document.getElementById('section-label').textContent = labels[tab]||tab;
   const sec = document.getElementById(tab+'-section');if(sec)sec.style.display='block';
   if(fplData && !renderedTabs.has(tab)){
@@ -414,6 +760,11 @@ function switchTab(tab, e) {
     else if(tab==='livegw')renderLiveGW();
     else if(tab==='scout')renderScout();
     else if(tab==='differentials')renderDifferentials();
+    else if(tab==='fixturegrid')renderFixtureGrid();
+    else if(tab==='chipplanner')renderChipPlanner();
+    else if(tab==='pricechange')renderPriceChange();
+    else if(tab==='seasonpts')renderSeasonPts();
+    else if(tab==='h2h')renderH2H();
   }
 }
 
@@ -425,13 +776,44 @@ function fixtureScore(teamId){
   const diffs=upcoming.map(f=>f.team_h===teamId?f.team_h_difficulty:f.team_a_difficulty);
   return diffs.reduce((a,b)=>a+b,0)/diffs.length;
 }
+
+// ── GOAL IMMINENCE (Phase B) ──────────────────────────────────────────────
+function buildImminenceMap(elements){
+  const pool=elements.filter(p=>p.minutes>90);
+  const threats=pool.map(p=>parseFloat(p.threat)||0);
+  const icts=pool.map(p=>parseFloat(p.ict_index)||0);
+  const g90s=pool.map(p=>p.minutes>0?(p.goals_scored/(p.minutes/90)):0);
+  const eps=pool.map(p=>parseFloat(p.ep_next)||0);
+  const norm=(val,arr)=>{const mn=Math.min(...arr),mx=Math.max(...arr);return mx>mn?((val-mn)/(mx-mn))*10:0;};
+  goalImminenceMap.clear();
+  elements.forEach(p=>{
+    const tN=norm(parseFloat(p.threat)||0,threats);
+    const iN=norm(parseFloat(p.ict_index)||0,icts);
+    const g9=p.minutes>0?p.goals_scored/(p.minutes/90):0;
+    const gN=norm(g9,g90s);
+    const eN=norm(parseFloat(p.ep_next)||0,eps);
+    goalImminenceMap.set(p.id,Math.round((tN*0.35+iN*0.30+gN*0.20+eN*0.15)*10)/10);
+  });
+}
+function getImminence(p){return goalImminenceMap.get(p.id)??0;}
+
 function calcPower(p){
   const form=parseFloat(p.form)||0, ppg=parseFloat(p.points_per_game)||0;
   const minPct=Math.min(p.minutes/(38*90)*100,100)/100;
   const ptsCost=p.now_cost>0?p.total_points/(p.now_cost/10):0;
   const netTrn=((p.transfers_in_event||0)-(p.transfers_out_event||0))/500000;
   const fixScore=(6-fixtureScore(p.team))/4;
-  return Math.round((Math.min(form,10)*0.28+Math.min(ppg,10)*0.22+Math.min(ptsCost,15)/15*10*0.18+fixScore*10*0.18+minPct*10*0.09+(Math.min(Math.max(netTrn,-1),1)+1)/2*10*0.05)*10)/10;
+  const imm=getImminence(p);
+  // Form 22% | PPG 18% | Pts/£m 15% | FixEase 16% | GoalImminence 18% | Mins 7% | NetTrn 4%
+  return Math.round((
+    Math.min(form,10)*0.22+
+    Math.min(ppg,10)*0.18+
+    Math.min(ptsCost,15)/15*10*0.15+
+    fixScore*10*0.16+
+    imm*0.18+
+    minPct*10*0.07+
+    (Math.min(Math.max(netTrn,-1),1)+1)/2*10*0.04
+  )*10)/10;
 }
 
 // ── FIXTURE RUNS ──────────────────────────────────────────────────────────
@@ -442,7 +824,7 @@ function renderFixtures(allFixtures){
   const relevant=allFixtures.filter(f=>upcomingGWs.includes(f.event));
   const tf={};teams.forEach(t=>{tf[t.id]=[];});
   relevant.forEach(f=>{tf[f.team_h].push({opp:f.team_a,difficulty:f.team_h_difficulty,venue:'H'});tf[f.team_a].push({opp:f.team_h,difficulty:f.team_a_difficulty,venue:'A'});});
-  const scored=teams.map(t=>{const fx=tf[t.id].slice(0,5);if(!fx.length)return null;const avg=fx.reduce((s,f)=>s+f.difficulty,0)/fx.length;return{team:t,fixtures:fx,avg:Math.round(avg*100)/100};}).filter(Boolean).sort((a,b)=>a.avg-b.avg).slice(0,12);
+  const scored=teams.map(t=>{const fx=tf[t.id].slice(0,5);if(!fx.length)return null;const avg=fx.reduce((s,f)=>s+f.difficulty,0)/fx.length;return{team:t,fixtures:fx,avg:Math.round(avg*100)/100};}).filter(Boolean).sort((a,b)=>a.avg-b.avg);
   grid.innerHTML='';
   scored.forEach(({team,fixtures,avg},i)=>{
     const chips=fixtures.map(f=>{const opp=teams.find(t=>t.id===f.opp);return `<span class="fix-chip ${diffClass(f.difficulty)}">${opp?opp.short_name:'?'} (${f.venue})</span>`;}).join('');
@@ -453,29 +835,71 @@ function renderFixtures(allFixtures){
 }
 
 // ── TOP PLAYERS ───────────────────────────────────────────────────────────
+// ── FILTER STATE ─────────────────────────────────────────────────────────
+let pf_pos='ALL', pf_price=0, pf_sort='form', pf_show=12;
+
 function renderPlayers(){
+  if(!fplData)return;
   const grid=document.getElementById('player-cards');
-  const sorted=[...fplData.elements].filter(p=>p.minutes>0).sort((a,b)=>parseFloat(b.form)-parseFloat(a.form)).slice(0,12);
+  const counter=document.getElementById('players-counter');
+  let pool=[...fplData.elements].filter(p=>p.minutes>0);
+  if(pf_pos!=='ALL') pool=pool.filter(p=>p.element_type===parseInt(pf_pos));
+  if(pf_price>0) pool=pool.filter(p=>p.now_cost<=pf_price);
+  pool.sort((a,b)=>{
+    if(pf_sort==='ptspercost'){
+      const av=a.now_cost>0?a.total_points/(a.now_cost/10):0;
+      const bv=b.now_cost>0?b.total_points/(b.now_cost/10):0;
+      return bv-av;
+    }
+    if(pf_sort==='now_cost') return a.now_cost-b.now_cost;
+    return parseFloat(b[pf_sort]||0)-parseFloat(a[pf_sort]||0);
+  });
+  const total=pool.length;
+  const shown=pf_show>0?pool.slice(0,pf_show):pool;
+  if(counter) counter.textContent=`Showing ${shown.length} of ${total} players`;
   grid.innerHTML='';
-  sorted.forEach((p,i)=>{
-    const team=teamOf(p);const c=makeCard(i);
-    c.innerHTML=`<div class="card-header"><div class="player-header" style="margin-bottom:0"><img class="player-photo" src="https://resources.premierleague.com/premierleague/photos/players/110x140/p${p.code}.png" alt="${p.web_name}" onerror="this.src='https://resources.premierleague.com/premierleague/photos/players/110x140/Photo-Missing.png'"><div class="player-info"><div class="player-name">${p.web_name}</div><div class="player-team-row"><img src="https://resources.premierleague.com/premierleague/badges/50/t${team?team.code:''}.png" onerror="this.style.display='none'">${team?team.name:'?'}</div></div></div><span class="pos-badge">${posName(p.element_type)}</span></div><div class="stats-grid"><div class="stat-item"><div class="stat-label">Price</div><div class="stat-value">${price(p)}</div></div><div class="stat-item"><div class="stat-label">Form</div><div class="stat-value green">${p.form}</div></div><div class="stat-item"><div class="stat-label">Total Pts</div><div class="stat-value">${p.total_points}</div></div><div class="stat-item"><div class="stat-label">Pts/Game</div><div class="stat-value">${p.points_per_game}</div></div><div class="stat-item"><div class="stat-label">Goals</div><div class="stat-value">${p.goals_scored}</div></div><div class="stat-item"><div class="stat-label">Assists</div><div class="stat-value">${p.assists}</div></div></div>`;
+  shown.forEach((p,i)=>{
+    const team=teamOf(p);
+    const c=makeCard(i,p.id);
+    c.innerHTML=`<div class="card-header"><div class="player-header" style="margin-bottom:0"><img class="player-photo" src="https://resources.premierleague.com/premierleague/photos/players/110x140/p${p.code}.png" alt="${p.web_name}" onerror="this.src='https://resources.premierleague.com/premierleague/photos/players/110x140/Photo-Missing.png'"><div class="player-info"><div class="player-name">${p.web_name}</div><div class="player-team-row"><img src="https://resources.premierleague.com/premierleague/badges/50/t${team?team.code:''}.png" onerror="this.style.display='none'">${team?team.name:'?'}</div></div></div><span class="pos-badge">${posName(p.element_type)}</span></div><div class="stats-grid"><div class="stat-item"><div class="stat-label tooltip-wrap">Price<i class="tip-icon">ⓘ</i><span class="tooltip-box">Current FPL price in millions</span></div><div class="stat-value">${price(p)}</div></div><div class="stat-item"><div class="stat-label tooltip-wrap">Form<i class="tip-icon">ⓘ</i><span class="tooltip-box">Average FPL points scored across the last 4 gameweeks</span></div><div class="stat-value green">${p.form}</div></div><div class="stat-item"><div class="stat-label tooltip-wrap">Total Pts<i class="tip-icon">ⓘ</i><span class="tooltip-box">Total FPL points scored this season</span></div><div class="stat-value">${p.total_points}</div></div><div class="stat-item"><div class="stat-label tooltip-wrap">Pts/Game<i class="tip-icon">ⓘ</i><span class="tooltip-box">Average FPL points per gameweek played</span></div><div class="stat-value">${p.points_per_game}</div></div><div class="stat-item"><div class="stat-label tooltip-wrap">Ownership<i class="tip-icon">ⓘ</i><span class="tooltip-box">Percentage of FPL managers who own this player</span></div><div class="stat-value purple">${p.selected_by_percent}%</div></div><div class="stat-item"><div class="stat-label tooltip-wrap">Pts/£m<i class="tip-icon">ⓘ</i><span class="tooltip-box">Total season points ÷ current price — higher = better value</span></div><div class="stat-value blue">${p.now_cost>0?(p.total_points/(p.now_cost/10)).toFixed(1):'?'}</div></div></div>`;
     grid.appendChild(c);
   });
 }
-
 // ── POWER RANKINGS ────────────────────────────────────────────────────────
 function renderPower(){
   const grid=document.getElementById('power-cards');
-  const scored=fplData.elements.filter(p=>p.minutes>450).map(p=>({...p,power:calcPower(p)})).sort((a,b)=>b.power-a.power).slice(0,12);
+  const allScored=fplData.elements.filter(p=>p.minutes>450).map(p=>({...p,power:calcPower(p)}));
+  allScored.sort((a,b)=>powerSortDir==='desc'?b.power-a.power:a.power-b.power);
+  const scored=allScored.slice(0,20);
+
+  // Inject sort dropdown into tab header if not already there
+  const hdr=document.getElementById('power-sort-hdr');
+  if(!hdr){
+    const wrap=grid.closest('.tab-content')||grid.parentElement;
+    const ddWrap=document.createElement('div');
+    ddWrap.id='power-sort-hdr';
+    ddWrap.style.cssText='display:flex;justify-content:flex-end;align-items:center;gap:10px;margin-bottom:14px';
+    ddWrap.innerHTML=`<label style="font-size:0.75rem;color:var(--text-muted);font-weight:600">Sort:</label>
+      <select id="power-sort-select" style="background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:5px 10px;font-size:0.8rem;color:var(--text);cursor:pointer;outline:none"
+        onchange="powerSortDir=this.value;renderPower()">
+        <option value="desc" ${powerSortDir==='desc'?'selected':''}>⬇ Highest First</option>
+        <option value="asc"  ${powerSortDir==='asc'?'selected':''}>⬆ Lowest First</option>
+      </select>`;
+    wrap.insertBefore(ddWrap, grid);
+  } else {
+    const sel=document.getElementById('power-sort-select');
+    if(sel) sel.value=powerSortDir;
+  }
   const maxScore=scored[0]?.power||10;grid.innerHTML='';
   scored.forEach((p,i)=>{
-    const team=teamOf(p);const c=makeCard(i);
+    const team=teamOf(p);const c=makeCard(i,p.id);
     const bw=Math.round((p.power/maxScore)*100);
     const fixAvg=Math.round(fixtureScore(p.team)*10)/10;
     const fixCls=fixAvg<=2.5?'green':fixAvg<=3.2?'orange':'red';
     const ptsCost=p.now_cost>0?(p.total_points/(p.now_cost/10)).toFixed(1):'?';
-    c.innerHTML=`${rankBadge(i)}<div class="player-header"><img class="player-photo" src="https://resources.premierleague.com/premierleague/photos/players/110x140/p${p.code}.png" alt="${p.web_name}" onerror="this.src='https://resources.premierleague.com/premierleague/photos/players/110x140/Photo-Missing.png'"><div class="player-info"><div class="player-name">${p.web_name}</div><div class="player-team-row"><img src="https://resources.premierleague.com/premierleague/badges/50/t${team?team.code:''}.png" onerror="this.style.display='none'">${team?team.name:'?'} · <span class="pos-badge" style="padding:2px 7px;font-size:0.62rem">${posName(p.element_type)}</span></div></div></div><div class="power-score-wrap"><div class="power-score-header"><span class="power-score-label">⚡ Power Score</span><span class="power-score-value">${p.power}</span></div><div class="power-bar-bg"><div class="power-bar-fill" style="width:${bw}%"></div></div></div><div class="stats-grid"><div class="stat-item"><div class="stat-label">Form</div><div class="stat-value green">${p.form}</div></div><div class="stat-item"><div class="stat-label">Pts/Game</div><div class="stat-value">${p.points_per_game}</div></div><div class="stat-item"><div class="stat-label">Pts/£m</div><div class="stat-value blue">${ptsCost}</div></div><div class="stat-item"><div class="stat-label">Fix Avg</div><div class="stat-value ${fixCls}">${fixAvg}</div></div><div class="stat-item"><div class="stat-label">Price</div><div class="stat-value">${price(p)}</div></div><div class="stat-item"><div class="stat-label">Selected</div><div class="stat-value">${p.selected_by_percent}%</div></div></div>`;
+    const imm=getImminence(p);
+    const immCls=imm>=7?'green':imm>=4?'orange':'muted';
+    c.innerHTML=`${rankBadge(i)}<div class="player-header"><img class="player-photo" src="https://resources.premierleague.com/premierleague/photos/players/110x140/p${p.code}.png" alt="${p.web_name}" onerror="this.src='https://resources.premierleague.com/premierleague/photos/players/110x140/Photo-Missing.png'"><div class="player-info"><div class="player-name">${p.web_name}</div><div class="player-team-row"><img src="https://resources.premierleague.com/premierleague/badges/50/t${team?team.code:''}.png" onerror="this.style.display='none'">${team?team.name:'?'} · <span class="pos-badge" style="padding:2px 7px;font-size:0.62rem">${posName(p.element_type)}</span></div></div></div><div class="power-score-wrap"><div class="power-score-header"><span class="power-score-label">⚡ Power Score</span><span class="power-score-value">${p.power}</span></div><div class="power-bar-bg"><div class="power-bar-fill" style="width:${bw}%"></div></div></div><div class="stats-grid"><div class="stat-item"><div class="stat-label tooltip-wrap">Form<i class="tip-icon">ⓘ</i><span class="tooltip-box">Average FPL points scored across the last 4 gameweeks</span></div><div class="stat-value green">${p.form}</div></div><div class="stat-item"><div class="stat-label tooltip-wrap">Pts/Game<i class="tip-icon">ⓘ</i><span class="tooltip-box">Average FPL points per gameweek played</span></div><div class="stat-value">${p.points_per_game}</div></div><div class="stat-item"><div class="stat-label tooltip-wrap">Pts/£m<i class="tip-icon">ⓘ</i><span class="tooltip-box">Total season points ÷ current price — higher = better value</span></div><div class="stat-value blue">${ptsCost}</div></div><div class="stat-item"><div class="stat-label tooltip-wrap">Fix Avg<i class="tip-icon">ⓘ</i><span class="tooltip-box">Average fixture difficulty across next 3 GWs (1=easy, 5=hard)</span></div><div class="stat-value ${fixCls}">${fixAvg}</div></div><div class="stat-item"><div class="stat-label tooltip-wrap">Price<i class="tip-icon">ⓘ</i><span class="tooltip-box">Current FPL price in millions</span></div><div class="stat-value">${price(p)}</div></div><div class="stat-item"><div class="stat-label tooltip-wrap">Selected<i class="tip-icon">ⓘ</i><span class="tooltip-box">Percentage of all FPL managers who own this player</span></div><div class="stat-value">${p.selected_by_percent}%</div></div></div><div class="goal-threat-row"><span class="goal-threat-label tooltip-wrap">⚡ Goal Threat<i class="tip-icon">ⓘ</i><span class="tooltip-box">Goal Imminence score (0–10): combines FPL threat, ICT index, goals per 90 and expected points next GW. Now part of the Power Score formula (18% weight).</span></span><span class="goal-threat-val ${immCls}">${imm}</span></div>`;
     grid.appendChild(c);
   });
 }
@@ -486,10 +910,10 @@ function renderValue(){
   const picks=fplData.elements.filter(p=>p.minutes>450&&p.now_cost>0).map(p=>({...p,ptsCost:p.total_points/(p.now_cost/10),epNext:parseFloat(p.ep_next)||0})).sort((a,b)=>b.ptsCost-a.ptsCost).slice(0,12);
   grid.innerHTML='';
   picks.forEach((p,i)=>{
-    const team=teamOf(p);const c=makeCard(i);
+    const team=teamOf(p);const c=makeCard(i,p.id);
     const pr=p.cost_change_event>0?`+${p.cost_change_event*0.1}m`:p.cost_change_event<0?`${p.cost_change_event*0.1}m`:'–';
     const pc=p.cost_change_event>0?'green':p.cost_change_event<0?'red':'';
-    c.innerHTML=`${rankBadge(i)}<div class="player-header"><img class="player-photo" src="https://resources.premierleague.com/premierleague/photos/players/110x140/p${p.code}.png" alt="${p.web_name}" onerror="this.src='https://resources.premierleague.com/premierleague/photos/players/110x140/Photo-Missing.png'"><div class="player-info"><div class="player-name">${p.web_name}</div><div class="player-team-row"><img src="https://resources.premierleague.com/premierleague/badges/50/t${team?team.code:''}.png" onerror="this.style.display='none'">${team?team.name:'?'}</div><span class="value-tag">💰 ${p.ptsCost.toFixed(1)} pts/£m</span></div></div><div class="stats-grid"><div class="stat-item"><div class="stat-label">Price</div><div class="stat-value">${price(p)}</div></div><div class="stat-item"><div class="stat-label">GW Change</div><div class="stat-value ${pc}">${pr}</div></div><div class="stat-item"><div class="stat-label">Total Pts</div><div class="stat-value">${p.total_points}</div></div><div class="stat-item"><div class="stat-label">Pts/Game</div><div class="stat-value">${p.points_per_game}</div></div><div class="stat-item"><div class="stat-label">Next GW ep</div><div class="stat-value green">${p.epNext}</div></div><div class="stat-item"><div class="stat-label">Selected</div><div class="stat-value">${p.selected_by_percent}%</div></div></div>`;
+    c.innerHTML=`${rankBadge(i)}<div class="player-header"><img class="player-photo" src="https://resources.premierleague.com/premierleague/photos/players/110x140/p${p.code}.png" alt="${p.web_name}" onerror="this.src='https://resources.premierleague.com/premierleague/photos/players/110x140/Photo-Missing.png'"><div class="player-info"><div class="player-name">${p.web_name}</div><div class="player-team-row"><img src="https://resources.premierleague.com/premierleague/badges/50/t${team?team.code:''}.png" onerror="this.style.display='none'">${team?team.name:'?'}</div><span class="value-tag">💰 ${p.ptsCost.toFixed(1)} pts/£m</span></div></div><div class="stats-grid"><div class="stat-item"><div class="stat-label tooltip-wrap">Price<i class="tip-icon">ⓘ</i><span class="tooltip-box">Current FPL price in millions</span></div><div class="stat-value">${price(p)}</div></div><div class="stat-item"><div class="stat-label tooltip-wrap">GW Change<i class="tip-icon">ⓘ</i><span class="tooltip-box">Price movement this gameweek (+ = rose, − = fell)</span></div><div class="stat-value ${pc}">${pr}</div></div><div class="stat-item"><div class="stat-label tooltip-wrap">Total Pts<i class="tip-icon">ⓘ</i><span class="tooltip-box">Total FPL points scored this season</span></div><div class="stat-value">${p.total_points}</div></div><div class="stat-item"><div class="stat-label tooltip-wrap">Pts/Game<i class="tip-icon">ⓘ</i><span class="tooltip-box">Average FPL points per gameweek played</span></div><div class="stat-value">${p.points_per_game}</div></div><div class="stat-item"><div class="stat-label">Next GW ep</div><div class="stat-value green">${p.epNext}</div></div><div class="stat-item"><div class="stat-label tooltip-wrap">Selected<i class="tip-icon">ⓘ</i><span class="tooltip-box">Percentage of all FPL managers who own this player</span></div><div class="stat-value">${p.selected_by_percent}%</div></div></div>`;
     grid.appendChild(c);
   });
 }
@@ -504,11 +928,11 @@ function renderTransfers(){
   byOut.forEach(p=>{if(!seen.has(p.id)){seen.add(p.id);combined.push({...p});}});
   grid.innerHTML='';
   combined.slice(0,12).forEach((p,i)=>{
-    const team=teamOf(p);const c=makeCard(i);
+    const team=teamOf(p);const c=makeCard(i,p.id);
     const net=p.transfers_in_event-p.transfers_out_event;
     const nc=net>0?'green':net<0?'red':'';
     const nl=net>0?`+${net.toLocaleString()}`:net.toLocaleString();
-    c.innerHTML=`<div class="player-header"><img class="player-photo" src="https://resources.premierleague.com/premierleague/photos/players/110x140/p${p.code}.png" alt="${p.web_name}" onerror="this.src='https://resources.premierleague.com/premierleague/photos/players/110x140/Photo-Missing.png'"><div class="player-info"><div class="player-name">${p.web_name}</div><div class="player-team-row"><img src="https://resources.premierleague.com/premierleague/badges/50/t${team?team.code:''}.png" onerror="this.style.display='none'">${team?team.name:'?'}</div></div><span class="pos-badge">${posName(p.element_type)}</span></div><div class="stats-grid"><div class="stat-item"><div class="stat-label">🟢 In</div><div class="stat-value green">${(p.transfers_in_event||0).toLocaleString()}</div></div><div class="stat-item"><div class="stat-label">🔴 Out</div><div class="stat-value red">${(p.transfers_out_event||0).toLocaleString()}</div></div><div class="stat-item"><div class="stat-label">Net Move</div><div class="stat-value ${nc}">${nl}</div></div><div class="stat-item"><div class="stat-label">Owned By</div><div class="stat-value">${p.selected_by_percent}%</div></div><div class="stat-item"><div class="stat-label">Form</div><div class="stat-value">${p.form}</div></div><div class="stat-item"><div class="stat-label">Price</div><div class="stat-value">${price(p)}</div></div></div>`;
+    c.innerHTML=`<div class="player-header"><img class="player-photo" src="https://resources.premierleague.com/premierleague/photos/players/110x140/p${p.code}.png" alt="${p.web_name}" onerror="this.src='https://resources.premierleague.com/premierleague/photos/players/110x140/Photo-Missing.png'"><div class="player-info"><div class="player-name">${p.web_name}</div><div class="player-team-row"><img src="https://resources.premierleague.com/premierleague/badges/50/t${team?team.code:''}.png" onerror="this.style.display='none'">${team?team.name:'?'}</div></div><span class="pos-badge">${posName(p.element_type)}</span></div><div class="stats-grid"><div class="stat-item"><div class="stat-label">🟢 In</div><div class="stat-value green">${(p.transfers_in_event||0).toLocaleString()}</div></div><div class="stat-item"><div class="stat-label">🔴 Out</div><div class="stat-value red">${(p.transfers_out_event||0).toLocaleString()}</div></div><div class="stat-item"><div class="stat-label">Net Move</div><div class="stat-value ${nc}">${nl}</div></div><div class="stat-item"><div class="stat-label">Owned By</div><div class="stat-value">${p.selected_by_percent}%</div></div><div class="stat-item"><div class="stat-label tooltip-wrap">Form<i class="tip-icon">ⓘ</i><span class="tooltip-box">Average FPL points scored across the last 4 gameweeks</span></div><div class="stat-value">${p.form}</div></div><div class="stat-item"><div class="stat-label tooltip-wrap">Price<i class="tip-icon">ⓘ</i><span class="tooltip-box">Current FPL price in millions</span></div><div class="stat-value">${price(p)}</div></div></div>`;
     grid.appendChild(c);
   });
 }
@@ -520,11 +944,11 @@ function renderInjuries(){
   if(!injured.length){grid.innerHTML='<div class="loading" style="color:var(--green)">✅ No injury news this gameweek!</div>';return;}
   grid.innerHTML='';
   injured.slice(0,15).forEach((p,i)=>{
-    const team=teamOf(p);const c=makeCard(i);
+    const team=teamOf(p);const c=makeCard(i,p.id);
     const ch=p.chance_of_playing_next_round;
     let nc='news-75',cl='75%';
     if(ch===null||ch===undefined){nc='news-0';cl='Unknown';}else if(ch===0){nc='news-0';cl='0% — Out';}else if(ch<=25){nc='news-25';cl='25%';}else if(ch<=50){nc='news-50';cl='50%';}
-    c.innerHTML=`<div class="card-header"><div class="player-header" style="margin-bottom:0"><img class="player-photo" src="https://resources.premierleague.com/premierleague/photos/players/110x140/p${p.code}.png" alt="${p.web_name}" onerror="this.src='https://resources.premierleague.com/premierleague/photos/players/110x140/Photo-Missing.png'"><div class="player-info"><div class="player-name">${p.web_name}</div><div class="player-team-row"><img src="https://resources.premierleague.com/premierleague/badges/50/t${team?team.code:''}.png" onerror="this.style.display='none'">${team?team.name:'?'}</div><div class="news-chip ${nc}">⚠️ ${cl} chance of playing</div></div></div><span class="pos-badge">${posName(p.element_type)}</span></div><div class="stat-item" style="margin-bottom:8px"><div class="stat-label">📰 News</div><div style="font-size:0.78rem;color:var(--text);margin-top:4px;line-height:1.5">${p.news}</div></div><div class="stats-grid"><div class="stat-item"><div class="stat-label">Price</div><div class="stat-value">${price(p)}</div></div><div class="stat-item"><div class="stat-label">Selected</div><div class="stat-value">${p.selected_by_percent}%</div></div></div>`;
+    c.innerHTML=`<div class="card-header"><div class="player-header" style="margin-bottom:0"><img class="player-photo" src="https://resources.premierleague.com/premierleague/photos/players/110x140/p${p.code}.png" alt="${p.web_name}" onerror="this.src='https://resources.premierleague.com/premierleague/photos/players/110x140/Photo-Missing.png'"><div class="player-info"><div class="player-name">${p.web_name}</div><div class="player-team-row"><img src="https://resources.premierleague.com/premierleague/badges/50/t${team?team.code:''}.png" onerror="this.style.display='none'">${team?team.name:'?'}</div><div class="news-chip ${nc}">⚠️ ${cl} chance of playing</div></div></div><span class="pos-badge">${posName(p.element_type)}</span></div><div class="stat-item" style="margin-bottom:8px"><div class="stat-label">📰 News</div><div style="font-size:0.78rem;color:var(--text);margin-top:4px;line-height:1.5">${p.news}</div></div><div class="stats-grid"><div class="stat-item"><div class="stat-label tooltip-wrap">Price<i class="tip-icon">ⓘ</i><span class="tooltip-box">Current FPL price in millions</span></div><div class="stat-value">${price(p)}</div></div><div class="stat-item"><div class="stat-label tooltip-wrap">Selected<i class="tip-icon">ⓘ</i><span class="tooltip-box">Percentage of all FPL managers who own this player</span></div><div class="stat-value">${p.selected_by_percent}%</div></div></div>`;
     grid.appendChild(c);
   });
 }
@@ -539,12 +963,12 @@ function buildXGCardsFallback(grid){
   const candidates=fplData.elements.filter(p=>p.minutes>360&&(p.element_type===3||p.element_type===4)).sort((a,b)=>(b.goals_scored+b.assists)-(a.goals_scored+a.assists)).slice(0,12);
   grid.innerHTML='';
   candidates.forEach((p,i)=>{
-    const team=teamOf(p);const c=makeCard(i);
+    const team=teamOf(p);const c=makeCard(i,p.id);
     const gW=Math.min(p.goals_scored/15*100,100);const aW=Math.min(p.assists/12*100,100);
     const g90=p.minutes>0?(p.goals_scored/(p.minutes/90)).toFixed(2):'–';
     const a90=p.minutes>0?(p.assists/(p.minutes/90)).toFixed(2):'–';
     const npg=p.goals_scored-(p.penalties_scored||0);
-    c.innerHTML=`<div class="player-header"><img class="player-photo" src="https://resources.premierleague.com/premierleague/photos/players/110x140/p${p.code}.png" alt="${p.web_name}" onerror="this.src='https://resources.premierleague.com/premierleague/photos/players/110x140/Photo-Missing.png'"><div class="player-info"><div class="player-name">${p.web_name}</div><div class="player-team-row"><img src="https://resources.premierleague.com/premierleague/badges/50/t${team?team.code:''}.png" onerror="this.style.display='none'">${team?team.name:'?'} · <span class="pos-badge" style="padding:2px 7px;font-size:0.62rem">${posName(p.element_type)}</span></div></div></div><div class="stats-grid-3" style="margin-bottom:10px"><div class="stat-item"><div class="stat-label">Goals</div><div class="stat-value green">${p.goals_scored}</div></div><div class="stat-item"><div class="stat-label">Assists</div><div class="stat-value blue">${p.assists}</div></div><div class="stat-item"><div class="stat-label">G+A</div><div class="stat-value">${p.goals_scored+p.assists}</div></div><div class="stat-item"><div class="stat-label">Goals/90</div><div class="stat-value green">${g90}</div></div><div class="stat-item"><div class="stat-label">Assists/90</div><div class="stat-value blue">${a90}</div></div><div class="stat-item"><div class="stat-label">Non-Pen G</div><div class="stat-value">${npg}</div></div></div><div class="xg-bars"><div class="xg-bar-row"><span class="xg-bar-label" style="color:var(--green);font-size:0.6rem">G</span><div class="xg-bar-track"><div class="xg-bar-fill g-color" style="width:${gW}%"></div></div><span class="xg-bar-val" style="color:var(--green)">${p.goals_scored}</span></div><div class="xg-bar-row"><span class="xg-bar-label" style="color:var(--orange);font-size:0.6rem">A</span><div class="xg-bar-track"><div class="xg-bar-fill a-color" style="width:${aW}%"></div></div><span class="xg-bar-val" style="color:var(--orange)">${p.assists}</span></div></div>`;
+    c.innerHTML=`<div class="player-header"><img class="player-photo" src="https://resources.premierleague.com/premierleague/photos/players/110x140/p${p.code}.png" alt="${p.web_name}" onerror="this.src='https://resources.premierleague.com/premierleague/photos/players/110x140/Photo-Missing.png'"><div class="player-info"><div class="player-name">${p.web_name}</div><div class="player-team-row"><img src="https://resources.premierleague.com/premierleague/badges/50/t${team?team.code:''}.png" onerror="this.style.display='none'">${team?team.name:'?'} · <span class="pos-badge" style="padding:2px 7px;font-size:0.62rem">${posName(p.element_type)}</span></div></div></div><div class="stats-grid-3" style="margin-bottom:10px"><div class="stat-item"><div class="stat-label tooltip-wrap">Goals<i class="tip-icon">ⓘ</i><span class="tooltip-box">Goals scored this season</span></div><div class="stat-value green">${p.goals_scored}</div></div><div class="stat-item"><div class="stat-label tooltip-wrap">Assists<i class="tip-icon">ⓘ</i><span class="tooltip-box">Assists registered this season</span></div><div class="stat-value blue">${p.assists}</div></div><div class="stat-item"><div class="stat-label">G+A</div><div class="stat-value">${p.goals_scored+p.assists}</div></div><div class="stat-item"><div class="stat-label">Goals/90</div><div class="stat-value green">${g90}</div></div><div class="stat-item"><div class="stat-label">Assists/90</div><div class="stat-value blue">${a90}</div></div><div class="stat-item"><div class="stat-label">Non-Pen G</div><div class="stat-value">${npg}</div></div></div><div class="xg-bars"><div class="xg-bar-row"><span class="xg-bar-label" style="color:var(--green);font-size:0.6rem">G</span><div class="xg-bar-track"><div class="xg-bar-fill g-color" style="width:${gW}%"></div></div><span class="xg-bar-val" style="color:var(--green)">${p.goals_scored}</span></div><div class="xg-bar-row"><span class="xg-bar-label" style="color:var(--orange);font-size:0.6rem">A</span><div class="xg-bar-track"><div class="xg-bar-fill a-color" style="width:${aW}%"></div></div><span class="xg-bar-val" style="color:var(--orange)">${p.assists}</span></div></div>`;
     grid.appendChild(c);
   });
 }
@@ -564,7 +988,7 @@ async function loadLiveGW(content){
     const topScore=topPlayers[0]?.live.points||0;
     const activePlayers=Object.values(liveMap).filter(p=>p.minutes>0).length;
     function makeEvents(live){const chips=[];if(live.goals)chips.push(`<span class="live-event-chip ev-goal">⚽ ${live.goals>1?live.goals+'× ':''}Goal</span>`);if(live.assists)chips.push(`<span class="live-event-chip ev-assist">🅰️ Assist</span>`);if(live.cs)chips.push(`<span class="live-event-chip ev-cs">🧱 CS</span>`);if(live.saves>=3)chips.push(`<span class="live-event-chip ev-assist">🧤 ${live.saves} Saves</span>`);if(live.bonus)chips.push(`<span class="live-event-chip ev-bonus">⭐ ${live.bonus} Bonus</span>`);if(live.yellow)chips.push(`<span class="live-event-chip ev-yellow">🟨</span>`);if(live.red)chips.push(`<span class="live-event-chip ev-red">🟥</span>`);if(live.og)chips.push(`<span class="live-event-chip ev-red">😬 OG</span>`);return chips.join('');}
-    let html=`<button class="refresh-btn" onclick="loadLiveGW(document.getElementById('livegw-content'))">🔄 Refresh</button><div class="gw-summary-bar"><div class="gw-summary-card"><div class="gw-summary-val">${topScore}</div><div class="gw-summary-lbl">Top Score</div></div><div class="gw-summary-card"><div class="gw-summary-val">${totalGoals}</div><div class="gw-summary-lbl">Goals</div></div><div class="gw-summary-card"><div class="gw-summary-val">${totalAssists}</div><div class="gw-summary-lbl">Assists</div></div><div class="gw-summary-card"><div class="gw-summary-val">${activePlayers}</div><div class="gw-summary-lbl">Active</div></div></div><div class="live-gw-grid">`;
+    let html=`<div class="how-calc"><div class="how-calc-hdr" onclick="toggleHowCalc(this)"><span>ℹ️ 📊 What is xG / xA?</span><i class="how-calc-arrow">▾</i></div><div class="how-calc-body"><ul><li><strong>xG (Expected Goals)</strong> — Probability each shot becomes a goal based on shot location and type</li><li><strong>xA (Expected Assists)</strong> — Probability a pass leads to a goal based on chance quality</li><li><strong>xG/90 and xA/90</strong> — Normalised per 90 mins for fair comparison across different minutes played</li><li><strong>Over/under-performing</strong> — Actual goals > xG means the player is finishing above expectation</li><li><strong>Data source</strong> — Understat API via CORS proxy; falls back to FPL G/A per 90 if blocked</li></ul></div></div>    <button class="refresh-btn" onclick="loadLiveGW(document.getElementById('livegw-content'))">🔄 Refresh</button><div class="gw-summary-bar"><div class="gw-summary-card"><div class="gw-summary-val">${topScore}</div><div class="gw-summary-lbl">Top Score</div></div><div class="gw-summary-card"><div class="gw-summary-val">${totalGoals}</div><div class="gw-summary-lbl">Goals</div></div><div class="gw-summary-card"><div class="gw-summary-val">${totalAssists}</div><div class="gw-summary-lbl">Assists</div></div><div class="gw-summary-card"><div class="gw-summary-val">${activePlayers}</div><div class="gw-summary-lbl">Active</div></div></div><div class="live-gw-grid">`;
     topPlayers.forEach((p,i)=>{const team=teamOf(p);const events=makeEvents(p.live);html+=`<div class="live-player-card" style="animation-delay:${i*0.05}s"><div style="display:flex;align-items:center;gap:12px;margin-bottom:12px"><img class="player-photo" src="https://resources.premierleague.com/premierleague/photos/players/110x140/p${p.code}.png" onerror="this.src='https://resources.premierleague.com/premierleague/photos/players/110x140/Photo-Missing.png'" style="width:44px;height:55px"><div style="flex:1"><div style="font-size:0.9rem;font-weight:700">${p.web_name}</div><div style="font-size:0.72rem;color:var(--text-muted)">${team?team.short_name:'?'} · ${posName(p.element_type)} · ${p.live.minutes}'</div></div><div style="text-align:right"><div class="live-pts">${p.live.points}</div><div class="live-pts-label">pts</div></div></div><div class="live-events">${events||'<span style="font-size:0.72rem;color:var(--text-faint)">No returns yet</span>'}</div></div>`;});
     if(!topPlayers.length)html+=`<div class="info-msg" style="grid-column:1/-1">No live data yet for GW${gwId}.</div>`;
     html+='</div>';content.innerHTML=html;
@@ -630,16 +1054,34 @@ async function analyseTeam(){
       ['🥇','🥈','🥉'].forEach((medal,i)=>{if(!captainCandidates[i])return;const p=captainCandidates[i];html+=`<div class="captain-pick"><span class="captain-pick-rank">${medal}</span><div class="captain-pick-info"><div class="captain-pick-name">${p.web_name}</div><div class="captain-pick-why">${p.team_obj?p.team_obj.short_name:'?'} · Ease: ${((6-p.fixAvg)/4*10).toFixed(1)}/10 · Form: ${p.form}</div></div><div class="captain-pick-pts">⚡ ${p.power}</div></div>`;});
       html+=`</div></div>`;
     }
+    // Store picks for fixture grid My Teams filter
+    myTeamPicks=picks;
+    // View toggle
     const posLabels={1:'⬛ Goalkeeper',2:'🔵 Defenders',3:'🟡 Midfielders',4:'🔴 Forwards'};
-    [[starters.filter(p=>p.element_type===1),1],[starters.filter(p=>p.element_type===2),2],[starters.filter(p=>p.element_type===3),3],[starters.filter(p=>p.element_type===4),4]].forEach(([group,posType],idx)=>{
-      if(!group.length)return;
-      html+=`<div style="font-size:0.72rem;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:var(--text-muted);margin-bottom:10px;margin-top:${idx>0?'20px':'0'}">${posLabels[posType]}</div><div class="pitch-grid">`;
-      group.forEach(p=>{html+=playerCard(p);});html+=`</div>`;
-    });
+    function buildListView(){
+      let lh='';
+      [[starters.filter(p=>p.element_type===1),1],[starters.filter(p=>p.element_type===2),2],[starters.filter(p=>p.element_type===3),3],[starters.filter(p=>p.element_type===4),4]].forEach(([group,posType],idx)=>{
+        if(!group.length)return;
+        lh+=`<div style="font-size:0.72rem;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:var(--text-muted);margin-bottom:10px;margin-top:${idx>0?'20px':'0'}">${posLabels[posType]}</div><div class="pitch-grid">`;
+        group.forEach(p=>{lh+=playerCard(p);});lh+=`</div>`;
+      });
+      const bench=enriched.filter(p=>p.multiplier===0);
+      if(bench.length){lh+=`<div style="font-size:0.72rem;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:var(--text-muted);margin-bottom:10px;margin-top:20px">🪑 Bench</div><div class="pitch-grid">`;bench.forEach(p=>{lh+=playerCard(p);});lh+=`</div>`;}
+      return lh;
+    }
     const bench=enriched.filter(p=>p.multiplier===0);
-    if(bench.length){html+=`<div style="font-size:0.72rem;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:var(--text-muted);margin-bottom:10px;margin-top:20px">🪑 Bench</div><div class="pitch-grid">`;bench.forEach(p=>{html+=playerCard(p);});html+=`</div>`;}
+    const pitchHtml=buildPitchView(starters,bench);
+    html+=`<div class="pitch-view-toggle">
+      <button class="pv-toggle-btn ${pitchViewMode==='pitch'?'active':''}" onclick="pitchViewMode='pitch';document.querySelectorAll('.pv-toggle-btn').forEach(b=>b.classList.remove('active'));this.classList.add('active');document.getElementById('pitch-render-area').innerHTML=buildPitchViewCached()">⚽ Pitch View</button>
+      <button class="pv-toggle-btn ${pitchViewMode==='list'?'active':''}" onclick="pitchViewMode='list';document.querySelectorAll('.pv-toggle-btn').forEach(b=>b.classList.remove('active'));this.classList.add('active');document.getElementById('pitch-render-area').innerHTML=buildListViewCached()">📋 List View</button>
+    </div>
+    <div id="pitch-render-area">${pitchViewMode==='pitch'?pitchHtml:buildListView()}</div>`;
+    // Store cached builders on window for toggle buttons
+    window.buildPitchViewCached=()=>buildPitchView(starters,bench);
+    window.buildListViewCached=()=>buildListView();
     content.innerHTML=html;
   }catch(err){
+
     content.innerHTML=`<div class="error-msg">❌ Could not load team.<br><small>Check your Team ID is correct.<br>${err.message}</small></div>`;
   }finally{btn.disabled=false;btn.textContent='Analyse My Team';}
 }
@@ -658,6 +1100,7 @@ async function init(){
       fetchWithFallback(FPL_FIXTURES)
     ]);
     fplData=bootstrap;fixtureData=allFixtures;
+    buildImminenceMap(fplData.elements);
     const events=bootstrap.events;
     const currentGW=events.find(e=>e.is_current)||events.find(e=>e.is_next)||events[0];
     gwId=currentGW.id;
@@ -724,11 +1167,11 @@ async function renderDifferentials(){
       </div>
       <div class="stats-grid">
         <div class="stat-item"><div class="stat-label">Owned By</div><div class="stat-value purple">${p.ownership}%</div></div>
-        <div class="stat-item"><div class="stat-label">Form</div><div class="stat-value green">${p.form}</div></div>
-        <div class="stat-item"><div class="stat-label">Price</div><div class="stat-value">${price(p)}</div></div>
-        <div class="stat-item"><div class="stat-label">Fix Avg</div><div class="stat-value ${fixCls}">${fixAvg}</div></div>
-        <div class="stat-item"><div class="stat-label">Pts/£m</div><div class="stat-value blue">${ptsCost}</div></div>
-        <div class="stat-item"><div class="stat-label">EP Next</div><div class="stat-value orange">${epNext}</div></div>
+        <div class="stat-item"><div class="stat-label tooltip-wrap">Form<i class="tip-icon">ⓘ</i><span class="tooltip-box">Average FPL points scored across the last 4 gameweeks</span></div><div class="stat-value green">${p.form}</div></div>
+        <div class="stat-item"><div class="stat-label tooltip-wrap">Price<i class="tip-icon">ⓘ</i><span class="tooltip-box">Current FPL price in millions</span></div><div class="stat-value">${price(p)}</div></div>
+        <div class="stat-item"><div class="stat-label tooltip-wrap">Fix Avg<i class="tip-icon">ⓘ</i><span class="tooltip-box">Average fixture difficulty across next 3 GWs (1=easy, 5=hard)</span></div><div class="stat-value ${fixCls}">${fixAvg}</div></div>
+        <div class="stat-item"><div class="stat-label tooltip-wrap">Pts/£m<i class="tip-icon">ⓘ</i><span class="tooltip-box">Total season points ÷ current price — higher = better value</span></div><div class="stat-value blue">${ptsCost}</div></div>
+        <div class="stat-item"><div class="stat-label tooltip-wrap">EP Next<i class="tip-icon">ⓘ</i><span class="tooltip-box">FPL&#39;s expected points prediction for the next GW</span></div><div class="stat-value orange">${epNext}</div></div>
       </div>
       <div style="margin-top:10px;display:flex;align-items:center;justify-content:space-between">
         <span style="font-size:0.68rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px">Diff Score</span>
@@ -953,7 +1396,8 @@ async function loadMiniLeague(){
   const lid=document.getElementById('league-id-input').value.trim();
   if(!lid)return;
   const el=document.getElementById('minileague-content');
-  el.innerHTML='<div class="loading"><div class="loading-spinner"></div>Loading league standings...</div>';
+  el.innerHTML="<div class=\"how-calc\"><div class=\"how-calc-hdr\" onclick=\"toggleHowCalc(this)\"><span>ℹ️ 🏆 How is Power Score calculated?</span><i class=\"how-calc-arrow\">▾</i></div><div class=\"how-calc-body\"><ul><li><strong>Form (30%)</strong> — Average FPL points across the last 4 GWs</li><li><strong>Points per game (25%)</strong> — Season total ÷ games played</li><li><strong>Pts per £m (20%)</strong> — Season points ÷ current price</li><li><strong>Fixture ease (15%)</strong> — Inverse of avg difficulty next 3 GWs</li><li><strong>Transfer momentum (10%)</strong> — Net GW transfers as % of ownership</li></ul></div></div>    ";
+  el.innerHTML+='<div class="loading"><div class="loading-spinner"></div>Loading league standings...</div>';
   try{
     const data=await fetchWithFallback(`https://fantasy.premierleague.com/api/leagues-classic/${lid}/standings/`);
     if(data.detail){el.innerHTML=`<div class="error-msg">❌ ${data.detail}</div>`;return;}
@@ -1011,6 +1455,1104 @@ async function loadMiniLeague(){
   }
 }
 
+
+
+// ══════════════════════════════════════════════════════════════
+// PHASE 6 ── FILTER BAR EVENT WIRING
+// ══════════════════════════════════════════════════════════════
+document.addEventListener('DOMContentLoaded',()=>{
+  // Position pills
+  document.getElementById('pos-pills')?.addEventListener('click',e=>{
+    const btn=e.target.closest('.pill');
+    if(!btn)return;
+    document.querySelectorAll('#pos-pills .pill').forEach(p=>p.classList.remove('active'));
+    btn.classList.add('active');
+    pf_pos=btn.dataset.pos;
+    if(fplData)renderPlayers();
+  });
+  // Price pills
+  document.getElementById('price-pills')?.addEventListener('click',e=>{
+    const btn=e.target.closest('.pill');
+    if(!btn)return;
+    document.querySelectorAll('#price-pills .pill').forEach(p=>p.classList.remove('active'));
+    btn.classList.add('active');
+    pf_price=parseInt(btn.dataset.price);
+    if(fplData)renderPlayers();
+  });
+  // Sort select
+  document.getElementById('sort-select')?.addEventListener('change',e=>{
+    pf_sort=e.target.value;
+    if(fplData)renderPlayers();
+  });
+  // Show select
+  document.getElementById('show-select')?.addEventListener('change',e=>{
+    pf_show=parseInt(e.target.value);
+    if(fplData)renderPlayers();
+  });
+  // Escape closes drawer
+  document.addEventListener('keydown',e=>{if(e.key==='Escape')closeDrawer();});
+});
+
+// ══════════════════════════════════════════════════════════════
+// PHASE 6 ── PLAYER DRAWER
+// ══════════════════════════════════════════════════════════════
+function openDrawer(playerId){
+  if(!fplData)return;
+  const p=fplData.elements.find(e=>e.id===playerId);
+  if(!p)return;
+  const drawer=document.getElementById('player-drawer');
+  const overlay=document.getElementById('drawer-overlay');
+  const content=document.getElementById('drawer-content');
+  // Show immediately with loading state
+  overlay.style.display='block';
+  drawer.classList.add('open');
+  document.body.style.overflow='hidden';
+  content.innerHTML=`<div class="drawer-loading"><div class="loading-spinner" style="margin:0 auto 12px"></div>Loading player data...</div>`;
+  buildDrawer(p, content);
+}
+
+function closeDrawer(){
+  const drawer=document.getElementById('player-drawer');
+  const overlay=document.getElementById('drawer-overlay');
+  drawer.classList.remove('open');
+  overlay.style.display='none';
+  document.body.style.overflow='';
+}
+
+async function buildDrawer(p, content){
+  const team=teamOf(p);
+  const ptsCost=p.now_cost>0?(p.total_points/(p.now_cost/10)).toFixed(1):'?';
+  const mins90=p.minutes>0?(p.minutes/90).toFixed(1):0;
+  const gPer90=mins90>0?(p.goals_scored/mins90).toFixed(2):0;
+  const aPer90=mins90>0?(p.assists/mins90).toFixed(2):0;
+
+  // Availability badge
+  let availBadge='';
+  const chance=p.chance_of_playing_next_round;
+  if(p.status==='i') availBadge=`<span class="dbadge dbadge-out">🚨 Injured</span>`;
+  else if(p.status==='d') availBadge=`<span class="dbadge dbadge-doubt">⚠️ Doubtful ${chance!=null?chance+'%':''}</span>`;
+  else if(p.status==='s') availBadge=`<span class="dbadge dbadge-out">🚫 Suspended</span>`;
+  else availBadge=`<span class="dbadge dbadge-avail">✅ Available</span>`;
+
+  // Next 3 fixtures
+  const teamFixtures=(fixtureData||[])
+    .filter(f=>!f.finished_provisional&&(f.team_h===p.team||f.team_a===p.team))
+    .sort((a,b)=>a.event-b.event)
+    .slice(0,3);
+
+  const fdrClass=d=>d<=2?'fdr12':d===3?'fdr3':'fdr45';
+  const fixRows=teamFixtures.map(f=>{
+    const isHome=f.team_h===p.team;
+    const oppId=isHome?f.team_a:f.team_h;
+    const opp=fplData.teams.find(t=>t.id===oppId);
+    const diff=isHome?f.team_h_difficulty:f.team_a_difficulty;
+    return `<div class="fix-row">
+      <span style="font-weight:600">${opp?opp.short_name:'?'} <span style="color:var(--text-muted);font-size:0.75rem">${isHome?'(H)':'(A)'}</span></span>
+      <span style="color:var(--text-muted);font-size:0.78rem">GW${f.event}</span>
+      <span class="fdr-chip ${fdrClass(diff)}">FDR ${diff}</span>
+    </div>`;
+  }).join('') || '<div style="color:var(--text-muted);font-size:0.82rem;padding:6px 0">No upcoming fixtures</div>';
+
+  // Build HTML synchronously first
+  content.innerHTML=`
+    <div class="drawer-header">
+      <span class="drawer-header-title">Player Profile</span>
+      <button class="drawer-close" onclick="closeDrawer()">✕</button>
+    </div>
+    <div class="drawer-hero">
+      <img class="drawer-photo"
+        src="https://resources.premierleague.com/premierleague/photos/players/110x140/p${p.code}.png"
+        onerror="this.src='https://resources.premierleague.com/premierleague/photos/players/110x140/Photo-Missing.png'"
+        alt="${p.web_name}">
+      <div class="drawer-meta">
+        <div class="drawer-name">${p.web_name}</div>
+        <div class="drawer-sub">${team?team.name:'?'} · ${posName(p.element_type)}</div>
+        <div class="drawer-badges">
+          <span class="dbadge dbadge-price">£${(p.now_cost/10).toFixed(1)}m</span>
+          <span class="dbadge dbadge-own">${p.selected_by_percent}% owned</span>
+          ${availBadge}
+        </div>
+      </div>
+    </div>
+
+    <div class="drawer-section">
+      <div class="drawer-section-title">Season Stats</div>
+      <div class="dstats-grid">
+        <div class="dstat"><div class="dstat-label tooltip-wrap">Goals<i class="tip-icon">ⓘ</i><span class="tooltip-box">Goals scored this season</span></div><div class="dstat-val green">${p.goals_scored}</div></div>
+        <div class="dstat"><div class="dstat-label tooltip-wrap">Assists<i class="tip-icon">ⓘ</i><span class="tooltip-box">Assists registered this season</span></div><div class="dstat-val blue">${p.assists}</div></div>
+        <div class="dstat"><div class="dstat-label tooltip-wrap">Clean Sh<i class="tip-icon">ⓘ</i><span class="tooltip-box">Clean sheets kept this season</span></div><div class="dstat-val">${p.clean_sheets}</div></div>
+        <div class="dstat"><div class="dstat-label tooltip-wrap">Total Pts<i class="tip-icon">ⓘ</i><span class="tooltip-box">Total FPL points scored this season</span></div><div class="dstat-val orange">${p.total_points}</div></div>
+        <div class="dstat"><div class="dstat-label tooltip-wrap">G/90<i class="tip-icon">ⓘ</i><span class="tooltip-box">Goals scored per 90 minutes played</span></div><div class="dstat-val green">${gPer90}</div></div>
+        <div class="dstat"><div class="dstat-label tooltip-wrap">A/90<i class="tip-icon">ⓘ</i><span class="tooltip-box">Assists per 90 minutes played</span></div><div class="dstat-val blue">${aPer90}</div></div>
+        <div class="dstat"><div class="dstat-label tooltip-wrap">EP Next<i class="tip-icon">ⓘ</i><span class="tooltip-box">FPL&#39;s expected points prediction for the next GW</span></div><div class="dstat-val">${parseFloat(p.ep_next||0).toFixed(1)}</div></div>
+        <div class="dstat"><div class="dstat-label tooltip-wrap">⚡ Goal Threat<i class="tip-icon">ⓘ</i><span class="tooltip-box">Goal Imminence (0–10): combines FPL threat, ICT index, goals per 90 and EP Next. Weighted 18% in the Power Score formula.</span></div><div class="dstat-val" style="color:${getImminence(p)>=7?'#00d4aa':getImminence(p)>=4?'#f0a500':'var(--text-muted)'}">${getImminence(p)}</div></div>
+        <div class="dstat"><div class="dstat-label tooltip-wrap">Pts/Game<i class="tip-icon">ⓘ</i><span class="tooltip-box">Average FPL points per gameweek played</span></div><div class="dstat-val">${p.points_per_game}</div></div>
+        <div class="dstat"><div class="dstat-label tooltip-wrap">Pts/£m<i class="tip-icon">ⓘ</i><span class="tooltip-box">Total season points ÷ current price — higher = better value</span></div><div class="dstat-val purple">${ptsCost}</div></div>
+        <div class="dstat"><div class="dstat-label tooltip-wrap">Yel Cards<i class="tip-icon">ⓘ</i><span class="tooltip-box">Yellow cards received this season</span></div><div class="dstat-val orange">${p.yellow_cards}</div></div>
+        <div class="dstat"><div class="dstat-label tooltip-wrap">Red Cards<i class="tip-icon">ⓘ</i><span class="tooltip-box">Red cards received this season</span></div><div class="dstat-val" style="color:#ff5555">${p.red_cards}</div></div>
+      </div>
+    </div>
+
+    <div class="spark-wrap">
+      <div class="drawer-section-title" style="margin-bottom:8px">Last 5 GW Form</div>
+      <div id="spark-bars-${p.id}" class="spark-bars"><div style="color:var(--text-muted);font-size:0.8rem;align-self:center">Loading...</div></div>
+      <div id="spark-pts-${p.id}" class="spark-pts"></div>
+      <div id="spark-gwl-${p.id}" class="spark-gwl"></div>
+    </div>
+
+    <div class="drawer-section" style="margin-top:14px">
+      <div class="drawer-section-title">Next 3 Fixtures</div>
+      <div class="fix-list">${fixRows}</div>
+    </div>
+
+    <button class="drawer-hist-btn" onclick="goToHistory(${p.id})">📈 Full GW History →</button>
+  `;
+
+  // Now async-load last 5 GW spark bars
+  try{
+    const data=await fetchWithFallback(`https://fantasy.premierleague.com/api/element-summary/${p.id}/`);
+    const history=(data.history||[]).slice(-5);
+    if(!history.length)return;
+    const maxPts=Math.max(...history.map(h=>h.total_points),1);
+    const barsEl=document.getElementById(`spark-bars-${p.id}`);
+    const ptsEl=document.getElementById(`spark-pts-${p.id}`);
+    const gwlEl=document.getElementById(`spark-gwl-${p.id}`);
+    if(!barsEl)return;
+    const barcls=pts=>pts>=8?'haul':pts>=4?'normal':'blank';
+    const ptscol=pts=>pts>=8?'#00d4aa':pts>=4?'#4f8ef7':'#ff5555';
+    barsEl.innerHTML=history.map(h=>{
+      const h_pct=Math.max(10,Math.round((h.total_points/maxPts)*100));
+      return `<div class="spark-b ${barcls(h.total_points)}" style="height:${h_pct}%"></div>`;
+    }).join('');
+    ptsEl.innerHTML=history.map(h=>`<div class="spark-pt" style="color:${ptscol(h.total_points)}">${h.total_points}</div>`).join('');
+    gwlEl.innerHTML=history.map(h=>`<div class="spark-gl">GW${h.round}</div>`).join('');
+  }catch(e){
+    const barsEl=document.getElementById(`spark-bars-${p.id}`);
+    if(barsEl)barsEl.innerHTML=`<div style="color:var(--text-muted);font-size:0.75rem">Unavailable</div>`;
+  }
+}
+
+function goToHistory(playerId){
+  closeDrawer();
+  switchTab('history',null);
+  if(!fplData)return;
+  const p=fplData.elements.find(e=>e.id===playerId);
+  if(!p)return;
+  const inp=document.getElementById('history-search-input');
+  if(inp)inp.value=p.web_name;
+  setTimeout(()=>loadPlayerHistory(p),120);
+}
+
+
+
+// ══════════════════════════════════════════════════════════════════════════
+// PHASE 7 ── CHIP PLANNER
+// ══════════════════════════════════════════════════════════════════════════
+function renderChipPlanner(){
+  const el=document.getElementById('chipplanner-content');
+  if(!fplData||!fixtureData){el.innerHTML='<div class="info-msg">⚠️ FPL data not loaded yet. Visit another tab first.</div>';return;}
+
+  const chips=[
+    {key:'3xc',  icon:'👑', name:'Triple Captain',  used:false},
+    {key:'bboost',icon:'💺', name:'Bench Boost',    used:false},
+    {key:'freehit',icon:'🎯',name:'Free Hit',        used:false},
+    {key:'wildcard',icon:'🃏',name:'Wildcard',        used:false}
+  ];
+
+  // Score each GW by avg fixture difficulty for top players
+  const startGW=Math.max(gwId,1);
+  const endGW=Math.min(startGW+14,38);
+  const topPlayers=([...fplData.elements]
+    .filter(p=>p.minutes>450)
+    .sort((a,b)=>parseFloat(b.form)-parseFloat(a.form))
+    .slice(0,40));
+
+  const premiums=fplData.elements.filter(p=>p.now_cost>=110&&p.minutes>450);
+
+  // For each GW score: avg FDR of top players, count of doubles/blanks
+  const gwScores=[];
+  for(let gw=startGW;gw<=endGW;gw++){
+    const gwFix=fixtureData.filter(f=>f.event===gw);
+    const teamsWithFixture=new Set([...gwFix.map(f=>f.team_h),...gwFix.map(f=>f.team_a)]);
+    const allTeams=new Set(fplData.teams.map(t=>t.id));
+    const blankedTeams=[...allTeams].filter(t=>!teamsWithFixture.has(t));
+    const doubleTeams=[];
+    const teamFixCount={};
+    gwFix.forEach(f=>{teamFixCount[f.team_h]=(teamFixCount[f.team_h]||0)+1;teamFixCount[f.team_a]=(teamFixCount[f.team_a]||0)+1;});
+    Object.entries(teamFixCount).forEach(([t,c])=>{if(c>=2)doubleTeams.push(parseInt(t));});
+
+    // avg FDR for top40
+    const fdrs=topPlayers.map(p=>{
+      const pFix=gwFix.filter(f=>f.team_h===p.team||f.team_a===p.team);
+      if(!pFix.length)return 5;
+      return pFix.reduce((s,f)=>s+(f.team_h===p.team?f.team_h_difficulty:f.team_a_difficulty),0)/pFix.length;
+    });
+    const avgFDR=fdrs.reduce((a,b)=>a+b,0)/fdrs.length;
+
+    // premium players with easy home game (FDR<=2)
+    const premiumEasyHome=premiums.filter(p=>{
+      return gwFix.some(f=>f.team_h===p.team&&f.team_h_difficulty<=2);
+    }).length;
+
+    // bench-friendly: avg FDR for lower-form players (rank 30-70 by ownership)
+    const benchPool=[...fplData.elements].filter(p=>p.minutes>200).sort((a,b)=>parseFloat(b.selected_by_percent)-parseFloat(a.selected_by_percent)).slice(30,70);
+    const benchFDRs=benchPool.map(p=>{
+      const pFix=gwFix.filter(f=>f.team_h===p.team||f.team_a===p.team);
+      if(!pFix.length)return 5;
+      return pFix.reduce((s,f)=>s+(f.team_h===p.team?f.team_h_difficulty:f.team_a_difficulty),0)/pFix.length;
+    });
+    const benchAvgFDR=benchFDRs.length?benchFDRs.reduce((a,b)=>a+b,0)/benchFDRs.length:3;
+
+    gwScores.push({gw,avgFDR,premiumEasyHome,blanks:blankedTeams.length,doubles:doubleTeams.length,benchAvgFDR});
+  }
+
+  // Best GW for each chip
+  const sorted_tc=[...gwScores].sort((a,b)=>a.avgFDR-b.avgFDR||b.premiumEasyHome-a.premiumEasyHome);
+  const sorted_bb=[...gwScores].sort((a,b)=>a.benchAvgFDR-b.benchAvgFDR);
+  const sorted_fh=[...gwScores].sort((a,b)=>b.doubles-a.doubles||a.blanks-b.blanks);
+  // Wildcard urgency: avg FDR for top 15 players (squad proxy)
+  const squadAvgFDR=gwScores[0]?gwScores.slice(0,5).reduce((s,g)=>s+g.avgFDR,0)/5:3;
+  const wcUrgency=squadAvgFDR>3.2?'high':squadAvgFDR>2.8?'medium':'low';
+
+  const chipData=[
+    {
+      icon:'👑', name:'Triple Captain', key:'3xc',
+      bestGW:sorted_tc[0]?.gw,
+      badge:`Play GW${sorted_tc[0]?.gw}`,
+      reason:`GW${sorted_tc[0]?.gw} has the easiest average fixture difficulty (FDR ${sorted_tc[0]?.avgFDR.toFixed(1)}) for the top 40 in-form players. ${sorted_tc[0]?.premiumEasyHome} premium assets (£11.5m+) have easy home games. Triple your captain here for maximum haul potential.`,
+      topGWs:sorted_tc.slice(0,5)
+    },
+    {
+      icon:'💺', name:'Bench Boost', key:'bboost',
+      bestGW:sorted_bb[0]?.gw,
+      badge:`Play GW${sorted_bb[0]?.gw}`,
+      reason:`GW${sorted_bb[0]?.gw} gives your bench players the easiest fixtures (avg FDR ${sorted_bb[0]?.benchAvgFDR.toFixed(1)}). Bench Boost is most effective when all 15 players have games — avoid blank GWs and target weeks where popular budget options face weak teams.`,
+      topGWs:sorted_bb.slice(0,5)
+    },
+    {
+      icon:'🎯', name:'Free Hit', key:'freehit',
+      bestGW:sorted_fh[0]?.gw,
+      badge:sorted_fh[0]?.doubles>0?`GW${sorted_fh[0]?.gw} — ${sorted_fh[0]?.doubles} doubles`:`GW${sorted_fh[0]?.gw}`,
+      reason:`GW${sorted_fh[0]?.gw} has the most double-gameweek teams (${sorted_fh[0]?.doubles} DGW teams) and fewest blanks (${sorted_fh[0]?.blanks} teams blank). Use Free Hit to field a full squad of DGW players — you keep your original squad for the following week.`,
+      topGWs:sorted_fh.slice(0,5)
+    },
+    {
+      icon:'🃏', name:'Wildcard', key:'wildcard',
+      bestGW:null,
+      badge:wcUrgency==='high'?'🔴 Use Soon':wcUrgency==='medium'?'🟡 Consider Soon':'🟢 Hold',
+      reason:wcUrgency==='high'
+        ?`Your top players face tough upcoming fixtures (avg FDR ${squadAvgFDR.toFixed(1)}). Squad urgency is HIGH — consider wildcarding now to bring in players with the best fixture runs.`
+        :wcUrgency==='medium'
+        ?`Squad fixture difficulty is moderate (avg FDR ${squadAvgFDR.toFixed(1)}). Monitor over next 2 GWs. Consider wildcarding before a tough run or to consolidate ahead of a Double GW.`
+        :`Fixture difficulty is favourable (avg FDR ${squadAvgFDR.toFixed(1)}). Hold your Wildcard — save it for a fixture swing or injury crisis. Best used before GW${sorted_tc[0]?.gw} to maximise it.`,
+      urgency:wcUrgency,
+      topGWs:[]
+    }
+  ];
+
+  // Build ranked GW overview table
+  const gwTableRows=[...gwScores].sort((a,b)=>a.avgFDR-b.avgFDR).slice(0,8).map((g,i)=>{
+    const cls=i===0?'green':i<=2?'#4f8ef7':'var(--text-muted)';
+    return `<tr>
+      <td style="font-weight:700;color:${cls}">GW${g.gw}</td>
+      <td style="color:${g.avgFDR<=2.5?'#00d4aa':g.avgFDR<=3.2?'#f0a500':'#ff5555'};font-weight:700">${g.avgFDR.toFixed(2)}</td>
+      <td style="color:#4f8ef7;font-weight:600">${g.doubles}</td>
+      <td style="color:${g.blanks===0?'#00d4aa':'#ff5555'};font-weight:600">${g.blanks}</td>
+      <td style="color:#a78bfa;font-weight:600">${g.premiumEasyHome}</td>
+    </tr>`;
+  }).join('');
+
+  el.innerHTML=`
+    <div class="chip-grid">
+      ${chipData.map((chip,ci)=>`
+        <div class="chip-card" style="animation-delay:${ci*0.08}s">
+          <div class="chip-icon">${chip.icon}</div>
+          <div class="chip-name">${chip.name}</div>
+          <div class="chip-status">${chip.bestGW?`Recommended: GW${chip.bestGW}`:'Based on current data'}</div>
+          <div class="chip-rec-badge ${chip.urgency==='medium'?'warn':chip.urgency==='low'?'neutral':''}">${chip.badge}</div>
+          <div class="chip-reason">${chip.reason}</div>
+          ${chip.topGWs.length?`
+            <div class="chip-sub-title">Top GW windows</div>
+            <div class="chip-gw-row">
+              ${chip.topGWs.map((g,i)=>`<span class="chip-gw-pill ${i===0?'cgw-best':i<=2?'cgw-good':'cgw-bad'}">GW${g.gw}</span>`).join('')}
+            </div>` : ''}
+        </div>`).join('')}
+    </div>
+
+    <hr class="chip-divider">
+    <div class="chip-sub-title" style="margin-bottom:12px">📊 GW Difficulty Overview — Best 8 Gameweeks</div>
+    <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden">
+      <table class="chip-gw-table">
+        <thead><tr>
+          <th>GW</th><th>Avg FDR</th><th>DGW Teams</th><th>Blanks</th><th>Premium Easy H</th>
+        </tr></thead>
+        <tbody>${gwTableRows}</tbody>
+      </table>
+    </div>
+  `;
+}
+
+// ══════════════════════════════════════════════════════════════════════════
+// PHASE 7 ── PRICE CHANGE PREDICTOR
+// ══════════════════════════════════════════════════════════════════════════
+let pcView='rise';
+let pcRising=[], pcFalling=[];
+let goalImminenceMap=new Map();
+let powerSortDir='desc';
+
+function renderPriceChange(){
+  const el=document.getElementById('pricechange-content');
+  if(!fplData){el.innerHTML='<div class="info-msg">⚠️ FPL data not loaded yet.</div>';return;}
+
+  const players=fplData.elements
+    .filter(p=>p.minutes>0&&parseFloat(p.selected_by_percent)>0)
+    .map(p=>{
+      const own=parseFloat(p.selected_by_percent)||0.1;
+      const netTransfers=(p.transfers_in_event||0)-(p.transfers_out_event||0);
+      const momentum=netTransfers/(own*500);
+      return {...p,netTransfers,momentum,own};
+    });
+
+  // Store in module-level vars so renderPCView() can access them from onclick
+  pcRising=[...players]
+    .filter(p=>p.transfers_in_event>p.transfers_out_event)
+    .sort((a,b)=>b.netTransfers-a.netTransfers)
+    .slice(0,12);
+  pcFalling=[...players]
+    .filter(p=>p.transfers_out_event>p.transfers_in_event)
+    .sort((a,b)=>b.transfers_out_event-a.transfers_out_event)
+    .slice(0,12);
+
+  el.innerHTML=`
+    <div class="how-calc">
+      <div class="how-calc-hdr" onclick="toggleHowCalc(this)">
+        <span>ℹ️ How is price change predicted?</span>
+        <i class="how-calc-arrow">▾</i>
+      </div>
+      <div class="how-calc-body">
+        <ul>
+          <li><strong>Transfer velocity</strong> — Heavy net buying relative to ownership signals a likely price rise</li>
+          <li><strong>FPL rule</strong> — A player rises when net transfers exceed ~1% of total managers owning them</li>
+          <li><strong>Risers</strong> — Sorted by net transfers in (transfers_in − transfers_out) descending</li>
+          <li><strong>Fallers</strong> — Sorted by transfers_out_event descending — most sold players shown first</li>
+          <li><strong>Note</strong> — These are signals, not guarantees. FPL processes prices once per day after 6am BST</li>
+        </ul>
+      </div>
+    </div>
+    <div class="info-msg" style="margin-bottom:18px">
+      📌 Price changes are calculated from live GW transfer velocity. Data updates as transfers happen before the GW deadline.
+    </div>
+    <div class="pc-tabs">
+      <button class="pc-tab ${pcView==='rise'?'active':''}" id="pc-btn-rise"
+        onclick="pcView='rise';renderPCView()">🔺 Risers (${pcRising.length})</button>
+      <button class="pc-tab ${pcView==='fall'?'active':''}" id="pc-btn-fall"
+        onclick="pcView='fall';renderPCView()">🔻 Fallers (${pcFalling.length})</button>
+    </div>
+    <div id="pc-grid-area"></div>`;
+
+  renderPCView();
+}
+
+// TOP-LEVEL — accessible from onclick in DOM
+function renderPCView(){
+  const el=document.getElementById('pc-grid-area');
+  if(!el) return;
+  const isRise=pcView==='rise';
+  const list=isRise?pcRising:pcFalling;
+  const type=isRise?'rise':'fall';
+
+  if(!list.length){
+    el.innerHTML=`<div class="info-msg">No significant ${isRise?'risers':'fallers'} this GW yet — check back closer to the deadline.</div>`;
+    return;
+  }
+
+  const maxMom=list.length?Math.max(...list.map(p=>Math.abs(p.momentum))):1;
+
+  const cards=list.map((p,i)=>{
+    const team=teamOf(p);
+    const ptsCost=p.now_cost>0?(p.total_points/(p.now_cost/10)).toFixed(1):'?';
+    const momPct=Math.round((Math.abs(p.momentum)/maxMom)*100);
+    const netStr=p.netTransfers>0?`+${p.netTransfers.toLocaleString()}`:p.netTransfers.toLocaleString();
+    const inStr=(p.transfers_in_event||0).toLocaleString();
+    const outStr=(p.transfers_out_event||0).toLocaleString();
+    return `<div class="pc-card ${type}" data-pid="${p.id}" style="animation-delay:${i*0.05}s" onclick="openDrawer(${p.id})">
+      <div class="pc-badge ${type}">${type==='rise'?'🔺 Rise Likely':'🔻 Fall Likely'}</div>
+      <div class="pc-player-row">
+        <img class="pc-photo"
+          src="https://resources.premierleague.com/premierleague/photos/players/110x140/p${p.code}.png"
+          onerror="this.src='https://resources.premierleague.com/premierleague/photos/players/110x140/Photo-Missing.png'"
+          alt="${p.web_name}">
+        <div>
+          <div class="pc-name">${p.web_name}</div>
+          <div class="pc-sub">${team?team.name:'?'} · ${posName(p.element_type)} · £${(p.now_cost/10).toFixed(1)}m</div>
+        </div>
+      </div>
+      <div class="pc-stats">
+        <div class="pc-stat"><div class="pc-stat-label">Net Δ</div><div class="pc-stat-val" style="color:${type==='rise'?'#00d4aa':'#ff5555'}">${netStr}</div></div>
+        <div class="pc-stat"><div class="pc-stat-label">Owned</div><div class="pc-stat-val" style="color:#a78bfa">${p.own}%</div></div>
+        <div class="pc-stat"><div class="pc-stat-label">Form</div><div class="pc-stat-val" style="color:#00d4aa">${p.form}</div></div>
+        <div class="pc-stat"><div class="pc-stat-label">Transfers In</div><div class="pc-stat-val" style="color:#00d4aa">${inStr}</div></div>
+        <div class="pc-stat"><div class="pc-stat-label">Transfers Out</div><div class="pc-stat-val" style="color:#ff5555">${outStr}</div></div>
+        <div class="pc-stat"><div class="pc-stat-label">Pts/£m</div><div class="pc-stat-val">${ptsCost}</div></div>
+      </div>
+      <div class="pc-momentum-bar ${type}" style="width:${momPct}%"></div>
+    </div>`;
+  }).join('');
+
+  el.innerHTML=`
+    <div class="pc-section-label">${isRise
+      ?`🔺 ${pcRising.length} player${pcRising.length!==1?'s':''} rising in price this GW`
+      :`🔻 ${pcFalling.length} player${pcFalling.length!==1?'s':''} falling in price this GW`}
+    </div>
+    <div class="pc-grid">${cards}</div>`;
+
+  // Sync active button state
+  document.querySelectorAll('.pc-tab').forEach(b=>b.classList.remove('active'));
+  const activeBtn=document.getElementById(isRise?'pc-btn-rise':'pc-btn-fall');
+  if(activeBtn) activeBtn.classList.add('active');
+}
+
+
+function renderFixtureGrid(){
+  const el=document.getElementById('fixturegrid-content');
+  if(!fplData||!fixtureData){el.innerHTML='<div class="info-msg">⚠️ FPL data not loaded yet. Visit another tab first.</div>';return;}
+
+  const GW_COUNT=8;
+  const gws=[];
+  for(let g=gwId;g<=Math.min(gwId+GW_COUNT-1,38);g++) gws.push(g);
+
+  // Build per-team fixture map
+  const teams=[...fplData.teams];
+  const teamFixMap={};
+  teams.forEach(t=>{teamFixMap[t.id]={}; gws.forEach(g=>{teamFixMap[t.id][g]=[];});});
+  fixtureData.forEach(f=>{
+    if(!gws.includes(f.event))return;
+    if(teamFixMap[f.team_h]) teamFixMap[f.team_h][f.event].push({opp:f.team_a,diff:f.team_h_difficulty,home:true});
+    if(teamFixMap[f.team_a]) teamFixMap[f.team_a][f.event].push({opp:f.team_h,diff:f.team_a_difficulty,home:false});
+  });
+
+  // Avg FDR per team for sorting
+  teams.forEach(t=>{
+    const all=gws.flatMap(g=>teamFixMap[t.id][g]);
+    t._avgFDR=all.length?all.reduce((s,f)=>s+f.diff,0)/all.length:3;
+  });
+  const sorted=[...teams].sort((a,b)=>a._avgFDR-b._avgFDR);
+
+  // My-team filter: teams with picked players
+  const myTeamIds=new Set();
+  if(typeof myTeamPicks!=='undefined'&&myTeamPicks.length){
+    myTeamPicks.forEach(p=>{const pl=fplData.elements.find(e=>e.id===p.element);if(pl)myTeamIds.add(pl.team);});
+  }
+
+  function buildTable(teamList){
+    const rows=teamList.map((t,ri)=>{
+      const cells=gws.map(g=>{
+        const fixes=teamFixMap[t.id][g]||[];
+        if(!fixes.length) return `<td class="fg-cell bgw">BGW</td>`;
+        if(fixes.length>=2){
+          const inner=fixes.map(f=>{
+            const opp=fplData.teams.find(x=>x.id===f.opp);
+            return `<span>${opp?opp.short_name:'?'}${f.home?'(H)':'(A)'}</span>`;
+          }).join('');
+          return `<td class="fg-cell dgw">${inner}</td>`;
+        }
+        const f=fixes[0];
+        const opp=fplData.teams.find(x=>x.id===f.opp);
+        return `<td class="fg-cell fdr${f.diff}">${opp?opp.short_name:'?'}<br><span style="font-size:0.62rem;opacity:0.7">${f.home?'H':'A'}</span></td>`;
+      }).join('');
+      const avgCls=t._avgFDR<=2.5?'green':t._avgFDR<=3.2?'orange':'red';
+      return `<tr class="fg-row${fgHighlighted===t.id?' highlighted':''}" id="fgr-${t.id}">
+        <td class="fg-team-cell" onclick="fgToggleRow(${t.id})">
+          <img src="https://resources.premierleague.com/premierleague/badges/50/t${t.code}.png" onerror="this.style.display='none'" loading="lazy">
+          ${t.name}
+        </td>
+        ${cells}
+        <td class="fg-avg" style="color:var(--${avgCls})">${t._avgFDR.toFixed(1)}</td>
+      </tr>`;
+    }).join('');
+
+    const gwHeaders=gws.map(g=>`<th>GW${g}</th>`).join('');
+    return `<table class="fg-table">
+      <thead><tr>
+        <th>Team</th>${gwHeaders}<th>Avg</th>
+      </tr></thead>
+      <tbody>${rows}</tbody>
+    </table>`;
+  }
+
+  function rerenderTable(){
+    const list=fgMyTeamsOnly&&myTeamIds.size?sorted.filter(t=>myTeamIds.has(t.id)):sorted;
+    document.getElementById('fg-table-wrap').innerHTML=buildTable(list);
+    document.getElementById('fg-my-btn').className='pill'+(fgMyTeamsOnly?' active':'');
+    document.getElementById('fg-all-btn').className='pill'+(!fgMyTeamsOnly?' active':'');
+  }
+
+  el.innerHTML=`
+    <div class="fg-legend">
+      <span style="font-size:0.72rem;color:var(--text-muted);font-weight:700;margin-right:4px">Difficulty:</span>
+      <span class="fg-legend-item"><span class="fg-legend-dot" style="background:#00d4aa"></span>Easy (1–2)</span>
+      <span class="fg-legend-item"><span class="fg-legend-dot" style="background:#f0a500"></span>Medium (3)</span>
+      <span class="fg-legend-item"><span class="fg-legend-dot" style="background:#ff5555"></span>Hard (4–5)</span>
+      <span class="fg-legend-item"><span class="fg-legend-dot" style="background:rgba(255,255,255,0.1)"></span>BGW</span>
+      <span class="fg-legend-item"><span class="fg-legend-dot" style="background:rgba(0,212,170,0.18)"></span>DGW</span>
+    </div>
+    <div class="fg-controls">
+      <button class="pill active" id="fg-all-btn" onclick="fgMyTeamsOnly=false;renderFixtureGrid()">All Teams</button>
+      <button class="pill" id="fg-my-btn" onclick="fgMyTeamsOnly=true;renderFixtureGrid()">${myTeamIds.size?'My Teams ('+myTeamIds.size+')':'My Teams (load My Team tab first)'}</button>
+      <span class="fg-gw-label">GW${gws[0]}–GW${gws[gws.length-1]}</span>
+      <span style="font-size:0.73rem;color:var(--text-muted)">Click a row to highlight · Sorted easiest → hardest avg FDR</span>
+    </div>
+    <div class="fg-wrap" id="fg-table-wrap"></div>
+  `;
+
+  rerenderTable();
+}
+
+function fgToggleRow(teamId){
+  fgHighlighted=fgHighlighted===teamId?null:teamId;
+  document.querySelectorAll('.fg-row').forEach(r=>r.classList.remove('highlighted'));
+  if(fgHighlighted) document.getElementById('fgr-'+fgHighlighted)?.classList.add('highlighted');
+}
+
+// ══════════════════════════════════════════════════════════════════════════
+// PHASE 8 ── PITCH VIEW HELPERS
+// ══════════════════════════════════════════════════════════════════════════
+let myTeamPicks=[];
+let pitchViewMode='pitch'; // 'pitch' | 'list'
+
+function powerClass(power){return power>=8?'power-high':power>=5?'power-mid':'power-low';}
+
+function playerToken(p, isBench){
+  const isCap=p.is_captain, isVice=p.is_vice_captain;
+  const ringCls=[powerClass(p.power), isCap?'cap':isVice?'vice':''].filter(Boolean).join(' ');
+  const badgeHtml=isCap
+    ?`<span class="pt-badge cap-b">C</span>`
+    :isVice?`<span class="pt-badge vice-b">V`+`</span>`:'';
+  const photoSrc=`https://resources.premierleague.com/premierleague/photos/players/110x140/p${p.code}.png`;
+  const initials=(p.web_name||'?').substring(0,2).toUpperCase();
+  const pts=isCap?`${p.total_points*2} pts (2×)`:`${p.total_points} pts`;
+  const benchCls=isBench?'bench-pt':'';
+  return `<div class="pt ${benchCls}" onclick="openDrawer(${p.id})" title="${p.web_name} — ${posName(p.element_type)}">
+    <div class="pt-ring ${ringCls}">
+      ${badgeHtml}
+      <img class="pt-img" src="${photoSrc}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'" alt="${p.web_name}" loading="lazy">
+      <div class="pt-initials" style="display:none">${initials}</div>
+    </div>
+    <div class="pt-name">${p.web_name}</div>
+    <div class="pt-pts">${pts}</div>
+  </div>`;
+}
+
+function buildPitchView(starters, bench){
+  const gks=starters.filter(p=>p.element_type===1);
+  const defs=starters.filter(p=>p.element_type===2);
+  const mids=starters.filter(p=>p.element_type===3);
+  const fwds=starters.filter(p=>p.element_type===4);
+
+  const pitchSVG=`<svg class="pitch-svg" viewBox="0 0 400 260" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
+    <rect width="400" height="260" fill="none"/>
+    <!-- Stripes -->
+    <rect x="0" y="0" width="50" height="260" fill="rgba(0,0,0,0.07)"/>
+    <rect x="100" y="0" width="50" height="260" fill="rgba(0,0,0,0.07)"/>
+    <rect x="200" y="0" width="50" height="260" fill="rgba(0,0,0,0.07)"/>
+    <rect x="300" y="0" width="50" height="260" fill="rgba(0,0,0,0.07)"/>
+    <!-- Outline -->
+    <rect x="6" y="6" width="388" height="248" rx="4" fill="none" stroke="rgba(255,255,255,0.25)" stroke-width="2"/>
+    <!-- Halfway -->
+    <line x1="6" y1="130" x2="394" y2="130" stroke="rgba(255,255,255,0.2)" stroke-width="1.5"/>
+    <!-- Centre circle -->
+    <circle cx="200" cy="130" r="36" fill="none" stroke="rgba(255,255,255,0.2)" stroke-width="1.5"/>
+    <circle cx="200" cy="130" r="2" fill="rgba(255,255,255,0.4)"/>
+    <!-- Top penalty box -->
+    <rect x="106" y="6" width="188" height="56" fill="none" stroke="rgba(255,255,255,0.2)" stroke-width="1.5"/>
+    <rect x="150" y="6" width="100" height="28" fill="none" stroke="rgba(255,255,255,0.15)" stroke-width="1"/>
+    <!-- Bottom penalty box -->
+    <rect x="106" y="198" width="188" height="56" fill="none" stroke="rgba(255,255,255,0.2)" stroke-width="1.5"/>
+    <rect x="150" y="226" width="100" height="28" fill="none" stroke="rgba(255,255,255,0.15)" stroke-width="1"/>
+    <!-- Penalty spots -->
+    <circle cx="200" cy="42" r="2" fill="rgba(255,255,255,0.35)"/>
+    <circle cx="200" cy="218" r="2" fill="rgba(255,255,255,0.35)"/>
+  </svg>`;
+
+  const makeRow=(players)=>`<div class="pitch-row">${players.map(p=>playerToken(p,false)).join('')}</div>`;
+
+  return `
+    <div class="pitch-outer">
+      <div class="pitch-svg-wrap">
+        <div class="pitch-bg">
+          ${pitchSVG}
+        </div>
+        <div class="pitch-rows">
+          ${makeRow(fwds)}
+          ${makeRow(mids)}
+          ${makeRow(defs)}
+          ${makeRow(gks)}
+        </div>
+      </div>
+      <div class="bench-label">Bench</div>
+      <div class="bench-area">${bench.map(p=>playerToken(p,true)).join('')}</div>
+    </div>`;
+}
+
+
+// ══════════════════════════════════════════════════════════════════════════
+// PHASE 9 ── SEASON POINTS CHART
+// ══════════════════════════════════════════════════════════════════════════
+let spChart=null, spMode='pts'; // 'pts' | 'rank' | 'cumulative'
+
+function renderSeasonPts(){
+  const el=document.getElementById('seasonpts-content');
+  const savedId=document.getElementById('team-id-input')?.value?.trim()||'';
+  el.innerHTML=`
+    <div class="sp-input-wrap">
+      <div class="sp-input-label">FPL Team ID</div>
+      <div class="sp-input-row">
+        <div class="sp-id-group">
+          <input class="sp-input" id="sp-team-input" type="number" placeholder="e.g. 1234567" value="${savedId}" min="1">
+        </div>
+        <button class="sp-btn" id="sp-load-btn" onclick="loadSeasonPts()">📊 Load Season</button>
+      </div>
+      <p style="font-size:0.73rem;color:var(--text-muted);margin-top:8px">Same Team ID used in My Team tab</p>
+    </div>
+    <div id="sp-results"></div>
+  `;
+}
+
+async function loadSeasonPts(){
+  const teamId=document.getElementById('sp-team-input').value.trim();
+  if(!teamId) return;
+  const btn=document.getElementById('sp-load-btn');
+  const res=document.getElementById('sp-results');
+  btn.disabled=true; btn.textContent='Loading...';
+  res.innerHTML='<div class="loading"><div class="loading-spinner"></div>Fetching season history...</div>';
+  try{
+    const [hist,entry]=await Promise.all([
+      fetchWithFallback(`https://fantasy.premierleague.com/api/entry/${teamId}/history/`),
+      fetchWithFallback(`https://fantasy.premierleague.com/api/entry/${teamId}/`)
+    ]);
+    const gws=hist.current||[];
+    const chips=hist.chips||[];
+    if(!gws.length){res.innerHTML='<div class="info-msg">No gameweek data yet this season.</div>';return;}
+
+    const chipMap={};
+    chips.forEach(c=>{chipMap[c.event]={name:c.name,icon:c.name==='3xc'?'👑':c.name==='bboost'?'💺':c.name==='freehit'?'🎯':c.name==='wildcard'?'🃏':'⚡'};});
+
+    const pts=gws.map(g=>g.points);
+    const cumPts=gws.map((_,i)=>gws.slice(0,i+1).reduce((s,g)=>s+g.points,0));
+    const ranks=gws.map(g=>g.overall_rank||0);
+    const labels=gws.map(g=>`GW${g.event}`);
+    const best=Math.max(...pts), worst=Math.min(...pts), avg=Math.round(pts.reduce((a,b)=>a+b,0)/pts.length);
+    const bestRank=Math.min(...ranks.filter(r=>r>0)).toLocaleString();
+    const chipsUsed=chips.length;
+    const chipsTotal=4;
+    const managerName=`${entry.player_first_name||''} ${entry.player_last_name||''}`.trim();
+    const teamName=entry.name||'Team';
+
+    res.innerHTML=`
+      <div style="margin-bottom:14px">
+        <div style="font-size:1rem;font-weight:800">${teamName}</div>
+        <div style="font-size:0.78rem;color:var(--text-muted)">${managerName} · GW${gws[0].event}–GW${gws[gws.length-1].event}</div>
+      </div>
+      <div class="sp-stat-bar">
+        <div class="sp-stat"><div class="sp-stat-val green">${best}</div><div class="sp-stat-lbl">Best GW</div></div>
+        <div class="sp-stat"><div class="sp-stat-val" style="color:#ff5555">${worst}</div><div class="sp-stat-lbl">Worst GW</div></div>
+        <div class="sp-stat"><div class="sp-stat-val blue">${avg}</div><div class="sp-stat-lbl">Avg GW</div></div>
+        <div class="sp-stat"><div class="sp-stat-val orange">${bestRank}</div><div class="sp-stat-lbl">Best Rank</div></div>
+        <div class="sp-stat"><div class="sp-stat-val purple">${chipsTotal-chipsUsed} left</div><div class="sp-stat-lbl">Chips</div></div>
+      </div>
+      <div class="sp-toggle-row">
+        <button class="sp-toggle-btn active" id="spt-pts" onclick="spSetMode('pts')">GW Points</button>
+        <button class="sp-toggle-btn" id="spt-cum" onclick="spSetMode('cumulative')">Cumulative</button>
+        <button class="sp-toggle-btn" id="spt-rank" onclick="spSetMode('rank')">Overall Rank</button>
+      </div>
+      <div class="sp-chart-wrap">
+        <canvas id="sp-chart-canvas" height="100"></canvas>
+      </div>
+    `;
+
+    window._spData={gws,pts,cumPts,ranks,labels,chipMap};
+    spDrawChart();
+
+  }catch(err){
+    res.innerHTML=`<div class="error-msg">❌ Could not load season data. Check Team ID.<br><small>${err.message}</small></div>`;
+  }finally{btn.disabled=false;btn.textContent='📊 Load Season';}
+}
+
+function spSetMode(mode){
+  spMode=mode;
+  document.querySelectorAll('.sp-toggle-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('spt-'+mode)?.classList.add('active');
+  spDrawChart();
+}
+
+function spDrawChart(){
+  const {gws,pts,cumPts,ranks,labels,chipMap}=window._spData||{};
+  if(!labels) return;
+  const ctx=document.getElementById('sp-chart-canvas');
+  if(!ctx) return;
+  if(spChart){spChart.destroy();spChart=null;}
+
+  const isRank=spMode==='rank';
+  const isCum=spMode==='cumulative';
+  const data=isRank?ranks:isCum?cumPts:pts;
+  const yLabel=isRank?'Overall Rank':isCum?'Cumulative Points':'GW Points';
+  const lineCol=isRank?'#f0a500':isCum?'#a78bfa':'#00d4aa';
+
+  // Point colours: chip GWs get purple, best GW green, worst red, others normal
+  const pointBg=gws.map((g,i)=>{
+    if(chipMap[g.event]) return '#a78bfa';
+    if(pts[i]===Math.max(...pts)) return '#00d4aa';
+    if(pts[i]===Math.min(...pts)) return '#ff5555';
+    return lineCol;
+  });
+
+  spChart=new Chart(ctx,{
+    type:'line',
+    data:{
+      labels,
+      datasets:[{
+        label:yLabel,
+        data,
+        borderColor:lineCol,
+        backgroundColor:lineCol+'22',
+        fill:true,
+        tension:0.35,
+        pointRadius:5,
+        pointHoverRadius:8,
+        pointBackgroundColor:pointBg,
+        pointBorderColor:'#0b0f1a',
+        pointBorderWidth:2
+      }]
+    },
+    options:{
+      responsive:true,
+      interaction:{mode:'index',intersect:false},
+      scales:{
+        x:{grid:{color:'rgba(255,255,255,0.05)'},ticks:{color:'#6b7280',font:{size:10},maxRotation:0}},
+        y:{
+          reverse:isRank,
+          grid:{color:'rgba(255,255,255,0.05)'},
+          ticks:{color:'#6b7280',font:{size:10},callback:v=>isRank?v.toLocaleString():v}
+        }
+      },
+      plugins:{
+        legend:{display:false},
+        tooltip:{
+          backgroundColor:'#1a2035',
+          borderColor:'rgba(255,255,255,0.1)',
+          borderWidth:1,
+          padding:12,
+          callbacks:{
+            title:items=>{
+              const i=items[0].dataIndex;
+              const g=gws[i];
+              const chip=chipMap[g.event];
+              return `${labels[i]}${chip?' '+chip.icon+' '+chip.name:''}`;
+            },
+            label:items=>{
+              const i=items[0].dataIndex;
+              const g=gws[i];
+              const lines=[
+                `GW Points: ${g.points}`,
+                `Cumulative: ${cumPts[i]}`,
+                `GW Rank: ${(g.rank||0).toLocaleString()}`,
+                `Overall Rank: ${(g.overall_rank||0).toLocaleString()}`,
+                `Transfers: ${g.event_transfers||0} (-${g.event_transfers_cost||0} pts)`
+              ];
+              const chip=chipMap[g.event];
+              if(chip) lines.push(`Chip: ${chip.icon} ${chip.name}`);
+              return lines;
+            }
+          }
+        }
+      }
+    }
+  });
+}
+
+// ══════════════════════════════════════════════════════════════════════════
+// PHASE 9 ── HEAD-TO-HEAD TRACKER
+// ══════════════════════════════════════════════════════════════════════════
+let h2hChart=null;
+
+function renderH2H(){
+  const el=document.getElementById('h2h-content');
+  const savedId=document.getElementById('team-id-input')?.value?.trim()||'';
+  el.innerHTML=`
+    <div class="sp-input-wrap">
+      <div class="sp-input-label">Compare Two Managers</div>
+      <div class="sp-input-row">
+        <div class="sp-id-group">
+          <label style="font-size:0.7rem;color:var(--text-muted)">Your Team ID</label>
+          <input class="sp-input" id="h2h-id1" type="number" placeholder="e.g. 1234567" value="${savedId}" min="1">
+        </div>
+        <div class="sp-id-group">
+          <label style="font-size:0.7rem;color:var(--text-muted)">Rival Team ID</label>
+          <input class="sp-input" id="h2h-id2" type="number" placeholder="e.g. 7654321" min="1">
+        </div>
+        <button class="sp-btn" id="h2h-btn" onclick="loadH2H()">⚔️ Compare</button>
+      </div>
+    </div>
+    <div id="h2h-results"></div>
+  `;
+}
+
+async function loadH2H(){
+  const id1=document.getElementById('h2h-id1').value.trim();
+  const id2=document.getElementById('h2h-id2').value.trim();
+  if(!id1||!id2){return;}
+  const btn=document.getElementById('h2h-btn');
+  const res=document.getElementById('h2h-results');
+  btn.disabled=true; btn.textContent='Loading...';
+  res.innerHTML='<div class="loading"><div class="loading-spinner"></div>Fetching both histories...</div>';
+  try{
+    const [h1,h2,e1,e2]=await Promise.all([
+      fetchWithFallback(`https://fantasy.premierleague.com/api/entry/${id1}/history/`),
+      fetchWithFallback(`https://fantasy.premierleague.com/api/entry/${id2}/history/`),
+      fetchWithFallback(`https://fantasy.premierleague.com/api/entry/${id1}/`),
+      fetchWithFallback(`https://fantasy.premierleague.com/api/entry/${id2}/`)
+    ]);
+    const g1=h1.current||[], g2=h2.current||[];
+    if(!g1.length||!g2.length){res.innerHTML='<div class="info-msg">No data available for one or both managers.</div>';return;}
+
+    const name1=e1.name||'You', name2=e2.name||'Rival';
+    const mgr1=`${e1.player_first_name||''} ${e1.player_last_name||''}`.trim();
+    const mgr2=`${e2.player_first_name||''} ${e2.player_last_name||''}`.trim();
+
+    // Align GWs by event number
+    const gwMap={};
+    g1.forEach(g=>{gwMap[g.event]={e:g.event,p1:g.points,r1:g.overall_rank||0};});
+    g2.forEach(g=>{if(gwMap[g.event])gwMap[g.event].p2=g.points, gwMap[g.event].r2=g.overall_rank||0;});
+    const shared=Object.values(gwMap).filter(g=>g.p1!=null&&g.p2!=null).sort((a,b)=>a.e-b.e);
+    if(!shared.length){res.innerHTML='<div class="info-msg">No overlapping GW data found.</div>';return;}
+
+    // Stats
+    const wins=shared.filter(g=>g.p1>g.p2).length;
+    const losses=shared.filter(g=>g.p1<g.p2).length;
+    const draws=shared.filter(g=>g.p1===g.p2).length;
+    const tot1=g1.reduce((s,g)=>s+g.points,0), tot2=g2.reduce((s,g)=>s+g.points,0);
+    const best1=Math.max(...g1.map(g=>g.points)), best2=Math.max(...g2.map(g=>g.points));
+    const avg1=Math.round(tot1/g1.length), avg2=Math.round(tot2/g2.length);
+    const rank1=(e1.summary_overall_rank||0).toLocaleString(), rank2=(e2.summary_overall_rank||0).toLocaleString();
+    const ptsDiff=tot1-tot2;
+
+    // Streak
+    let streak=0, streakType='';
+    for(let i=shared.length-1;i>=0;i--){
+      const g=shared[i];
+      const res_=g.p1>g.p2?'W':g.p1<g.p2?'L':'D';
+      if(!streakType){streakType=res_;streak=1;}
+      else if(res_===streakType) streak++;
+      else break;
+    }
+
+    // Labels & data for chart
+    const labels=shared.map(g=>`GW${g.e}`);
+    const pts1=shared.map(g=>g.p1), pts2=shared.map(g=>g.p2);
+
+    // Build summary cards
+    function card(title,v1,v2,higherWins){
+      const w1=(higherWins?v1>v2:v1<v2)||(v1===v2?false:higherWins?v1>v2:v1<v2);
+      const w2=(higherWins?v2>v1:v2<v1);
+      return `<div class="h2h-card">
+        <div class="h2h-card-title">${title}</div>
+        <div class="h2h-vs-row">
+          <div class="h2h-val ${w1?'winner':''}">${typeof v1==='number'&&v1>9999?v1.toLocaleString():v1}</div>
+          <div class="h2h-sep">vs</div>
+          <div class="h2h-val ${w2?'winner':''}">${typeof v2==='number'&&v2>9999?v2.toLocaleString():v2}</div>
+        </div>
+        <div style="display:flex;justify-content:space-between;margin-top:6px;font-size:0.68rem;color:var(--text-muted)">
+          <span>${name1}</span><span>${name2}</span>
+        </div>
+      </div>`;
+    }
+
+    const dots=shared.map(g=>{
+      const t=g.p1>g.p2?'win':g.p1<g.p2?'loss':'draw';
+      return `<div class="h2h-dot ${t}" title="GW${g.e}: ${g.p1}–${g.p2}"></div>`;
+    }).join('');
+
+    // Battle table (newest first)
+    const tableRows=[...shared].reverse().map(g=>{
+      const diff=g.p1-g.p2;
+      const ind=g.p1>g.p2?`<span style="color:#00d4aa">◀ Win</span>`:g.p1<g.p2?`<span style="color:#ff5555">Loss ▶</span>`:`<span style="color:#6b7280">Draw</span>`;
+      const diffStr=diff>0?`<span style="color:#00d4aa">+${diff}</span>`:diff<0?`<span style="color:#ff5555">${diff}</span>`:`<span style="color:#6b7280">0</span>`;
+      return `<tr>
+        <td style="text-align:left;color:var(--text-muted);font-size:0.76rem">GW${g.e}</td>
+        <td style="font-weight:800;color:${g.p1>g.p2?'#00d4aa':g.p1<g.p2?'#ff5555':'var(--text)'}">${g.p1}</td>
+        <td>${ind}</td>
+        <td style="font-weight:800;color:${g.p2>g.p1?'#00d4aa':g.p2<g.p1?'#ff5555':'var(--text)'}">${g.p2}</td>
+        <td>${diffStr}</td>
+      </tr>`;
+    }).join('');
+
+    res.innerHTML=`
+      <div style="margin-bottom:16px;display:flex;gap:20px;flex-wrap:wrap">
+        <div><div style="font-size:0.95rem;font-weight:800;color:#00d4aa">${name1}</div><div style="font-size:0.72rem;color:var(--text-muted)">${mgr1}</div></div>
+        <div style="font-size:1.2rem;font-weight:900;color:var(--text-muted);align-self:center">vs</div>
+        <div><div style="font-size:0.95rem;font-weight:800;color:#f0a500">${name2}</div><div style="font-size:0.72rem;color:var(--text-muted)">${mgr2}</div></div>
+      </div>
+
+      <div class="h2h-summary-grid">
+        ${card('Total Points',tot1,tot2,true)}
+        ${card('Best GW',best1,best2,true)}
+        ${card('Avg GW',avg1,avg2,true)}
+        ${card('Overall Rank',rank1,rank2,false)}
+      </div>
+
+      <div class="h2h-record-wrap">
+        <div class="h2h-wdl">
+          <div class="h2h-wdl-stat"><div class="h2h-wdl-val green">${wins}</div><div class="h2h-wdl-lbl">Wins</div></div>
+          <div class="h2h-wdl-stat"><div class="h2h-wdl-val" style="color:#6b7280">${draws}</div><div class="h2h-wdl-lbl">Draws</div></div>
+          <div class="h2h-wdl-stat"><div class="h2h-wdl-val" style="color:#ff5555">${losses}</div><div class="h2h-wdl-lbl">Losses</div></div>
+          <div style="flex:1"></div>
+          <div class="h2h-wdl-stat">
+            <div class="h2h-wdl-val" style="color:${ptsDiff>=0?'#00d4aa':'#ff5555'}">${ptsDiff>=0?'+':''}${ptsDiff}</div>
+            <div class="h2h-wdl-lbl">Pts Diff</div>
+          </div>
+          <div class="h2h-wdl-stat">
+            <span class="h2h-streak ${streakType==='W'?'win':streakType==='L'?'loss':'draw'}">${streak}${streakType} streak</span>
+          </div>
+        </div>
+        <div class="h2h-dots">${dots}</div>
+      </div>
+
+      <div class="sp-chart-wrap">
+        <div class="sp-chart-title">
+          <span>GW Points — <span style="color:#00d4aa">${name1}</span> vs <span style="color:#f0a500">${name2}</span></span>
+        </div>
+        <canvas id="h2h-chart-canvas" height="100"></canvas>
+      </div>
+
+      <div class="h2h-table-wrap">
+        <table class="h2h-table">
+          <thead><tr>
+            <th>GW</th>
+            <th style="color:#00d4aa">${name1}</th>
+            <th>Result</th>
+            <th style="color:#f0a500">${name2}</th>
+            <th>Diff</th>
+          </tr></thead>
+          <tbody>${tableRows}</tbody>
+        </table>
+      </div>
+    `;
+
+    // Draw H2H chart
+    setTimeout(()=>drawH2HChart(labels,pts1,pts2,name1,name2),50);
+
+  }catch(err){
+    res.innerHTML=`<div class="error-msg">❌ Error loading data.<br><small>${err.message}</small></div>`;
+  }finally{btn.disabled=false;btn.textContent='⚔️ Compare';}
+}
+
+function drawH2HChart(labels,pts1,pts2,name1,name2){
+  const ctx=document.getElementById('h2h-chart-canvas');
+  if(!ctx)return;
+  if(h2hChart){h2hChart.destroy();h2hChart=null;}
+  h2hChart=new Chart(ctx,{
+    type:'line',
+    data:{
+      labels,
+      datasets:[
+        {
+          label:name1,
+          data:pts1,
+          borderColor:'#00d4aa',
+          backgroundColor:'rgba(0,212,170,0.08)',
+          fill:false,
+          tension:0.3,
+          pointRadius:4,
+          pointHoverRadius:7,
+          pointBackgroundColor:'#00d4aa',
+          pointBorderColor:'#0b0f1a',
+          pointBorderWidth:2
+        },
+        {
+          label:name2,
+          data:pts2,
+          borderColor:'#f0a500',
+          backgroundColor:'rgba(240,165,0,0.08)',
+          fill:false,
+          tension:0.3,
+          pointRadius:4,
+          pointHoverRadius:7,
+          pointBackgroundColor:'#f0a500',
+          pointBorderColor:'#0b0f1a',
+          pointBorderWidth:2
+        }
+      ]
+    },
+    options:{
+      responsive:true,
+      interaction:{mode:'index',intersect:false},
+      scales:{
+        x:{grid:{color:'rgba(255,255,255,0.05)'},ticks:{color:'#6b7280',font:{size:10},maxRotation:0}},
+        y:{grid:{color:'rgba(255,255,255,0.05)'},ticks:{color:'#6b7280',font:{size:10}}}
+      },
+      plugins:{
+        legend:{
+          display:true,
+          labels:{color:'#e8eaf0',font:{size:11},boxWidth:14}
+        },
+        tooltip:{
+          backgroundColor:'#1a2035',
+          borderColor:'rgba(255,255,255,0.1)',
+          borderWidth:1,
+          padding:12,
+          callbacks:{
+            label:item=>{
+              const diff=pts1[item.dataIndex]-pts2[item.dataIndex];
+              const extra=item.datasetIndex===0&&diff!==0?` (${diff>0?'+':''}${diff} vs rival)`:'';
+              return `${item.dataset.label}: ${item.raw}${extra}`;
+            }
+          }
+        }
+      }
+    }
+  });
+}
+
+
+// ══ TOOLTIP & HOW-CALC HELPERS ════════════════════════════════════════════
+function toggleTip(el){
+  const wrap=el.closest('.tab-tip-wrap');
+  if(!wrap)return;
+  const open=wrap.classList.contains('tip-open');
+  // Close all others
+  document.querySelectorAll('.tab-tip-wrap.tip-open').forEach(w=>w.classList.remove('tip-open'));
+  if(!open) wrap.classList.add('tip-open');
+}
+
+function toggleHowCalc(hdr){
+  const body=hdr.nextElementSibling;
+  const arrow=hdr.querySelector('.how-calc-arrow');
+  const isOpen=body.classList.contains('open');
+  body.classList.toggle('open',!isOpen);
+  if(arrow) arrow.style.transform=isOpen?'':'rotate(180deg)';
+}
+
+// Close tab tips when clicking elsewhere
+document.addEventListener('click',function(e){
+  if(!e.target.closest('.tab-tip-wrap')){
+    document.querySelectorAll('.tab-tip-wrap.tip-open').forEach(w=>w.classList.remove('tip-open'));
+  }
+});
+
+// Close stat tooltips on outside tap (mobile)
+document.addEventListener('click',function(e){
+  if(!e.target.closest('.tooltip-wrap')){
+    document.querySelectorAll('.tooltip-wrap.tip-open').forEach(w=>w.classList.remove('tip-open'));
+  }
+});
+// ══ END TOOLTIP HELPERS ════════════════════════════════════════════════════
+
 </script>
+
+<!-- ══ PLAYER DRAWER ══ -->
+<div id="drawer-overlay" onclick="closeDrawer()" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:900;backdrop-filter:blur(3px);transition:opacity 0.3s"></div>
+<div id="player-drawer" style="position:fixed;top:0;right:-500px;width:min(460px,100vw);height:100vh;background:#0f1524;border-left:1px solid rgba(255,255,255,0.1);z-index:901;overflow-y:auto;transition:right 0.35s cubic-bezier(0.16,1,0.3,1);box-shadow:-16px 0 48px rgba(0,0,0,0.6)">
+  <div id="drawer-content" style="padding-bottom:40px"></div>
+</div>
 </body>
 </html>
