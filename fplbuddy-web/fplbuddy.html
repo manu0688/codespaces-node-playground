@@ -877,11 +877,10 @@
 <script>
 // ── PROXY WITH AUTO-FALLBACK ──────────────────────────────────────────────
 const PROXIES = [
-  url => `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`,
   url => `https://corsproxy.io/?${encodeURIComponent(url)}`,
-  url => `https://thingproxy.freeboard.io/fetch/${url}`,
+  url => `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`,
   url => `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(url)}`,
-  url => `https://corsproxy.io/?url=${encodeURIComponent(url)}`
+  url => `https://thingproxy.freeboard.io/fetch/${url}`
 ];
 let activeProxy = 0;
 
@@ -891,7 +890,7 @@ async function fetchWithFallback(url, asText = false) {
     const idx = (activeProxy + i) % PROXIES.length;
     try {
       const proxied = PROXIES[idx](url);
-      const r = await fetch(proxied, { signal: AbortSignal.timeout(12000), cache: 'no-cache' });
+      const r = await fetch(proxied, { signal: AbortSignal.timeout(7000), cache: 'no-cache' });
       if (!r.ok) throw new Error('HTTP ' + r.status);
       activeProxy = idx; // remember the working one
       const proxyNames = ['corsproxy.io','allorigins.win','cors-anywhere','cors.sh'];
@@ -3016,27 +3015,27 @@ function shMatchName(p, csvName) {
 // ── Fetch one season CSV, parse, filter by player element ID first, then name ──
 async function fetchVaastavSeason(season, p) {
   if (vaastavCache[season.url]) return vaastavCache[season.url];
-  try {
-    const proxy = 'https://corsproxy.io/?' + encodeURIComponent(season.url);
-    const r = await fetch(proxy, { signal: AbortSignal.timeout(8000) });
-    if (!r.ok) throw new Error('HTTP ' + r.status);
-    const text = await r.text();
-    const rows = parseCSV(text);
-    vaastavCache[season.url] = rows;
-    return rows;
-  } catch(e) {
-    // Fallback proxy
+  // Try all proxies in the same order as fetchWithFallback
+  for (let i = 0; i < PROXIES.length; i++) {
     try {
-      const fb = 'https://api.allorigins.win/get?url=' + encodeURIComponent(season.url);
-      const r2 = await fetch(fb, { signal: AbortSignal.timeout(10000) });
-      const d = await r2.json();
-      const rows = parseCSV(d.contents);
+      const proxied = PROXIES[i](season.url);
+      const r = await fetch(proxied, { signal: AbortSignal.timeout(8000) });
+      if (!r.ok) throw new Error('HTTP ' + r.status);
+      let text = await r.text();
+      // allorigins /raw returns plain text; /get wraps in JSON — detect and unwrap
+      if (text.trim().startsWith('{') && text.includes('"contents"')) {
+        try { text = JSON.parse(text).contents; } catch(e) {}
+      }
+      if (!text || text.trim().length < 10) continue;
+      const rows = parseCSV(text);
+      if (rows.length < 5) continue; // bad parse
       vaastavCache[season.url] = rows;
       return rows;
-    } catch(e2) {
-      return null;
+    } catch(e) {
+      // try next proxy
     }
   }
+  return null;
 }
 
 // ── Get all rows for this player across a season ──────────────────────────
@@ -3084,7 +3083,7 @@ function shBuildFixtureDropdown(container, p, summary) {
 function shOnOppChange(sel) {
   if (!shSelectedPlayer || !shSummary) return;
   const output = document.getElementById('sh-phase2-output');
-  if (output) output.innerHTML = '<div class="sh-loading"><div class="sh-spinner"></div><span>Loading historical data…</span></div>';
+  if (output) output.innerHTML = '<div class="sh-loading"><div class="sh-spinner"></div><span>Fetching historical data from 4 seasons… this takes a few seconds the first time.</span></div>';
   shLoadAndRender(sel, shSelectedPlayer, shSummary);
 }
 
