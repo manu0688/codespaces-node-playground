@@ -54,8 +54,41 @@ function shRenderVsBlock(sel, p, summary) {
   const hist = summary.history || [];
   const vsMatches = hist.filter(g => g.opponent_team === oppId);
   const seasonAvg = hist.length ? hist.reduce((s, g) => s + g.total_points, 0) / hist.length : 0;
-  output.innerHTML = shBuildBanner(p, opp, isHome, gw, diff) + (vsMatches.length ? shBuildH2HCard(p, opp, vsMatches, seasonAvg) : '') + shBuildChartBlock(p, opp, vsMatches);
+  output.innerHTML = shBuildBanner(p, opp, isHome, gw, diff) + shBuildInsightBadge(p, opp, vsMatches, seasonAvg) + (vsMatches.length ? shBuildH2HCard(p, opp, vsMatches, seasonAvg) : '') + shBuildChartBlock(p, opp, vsMatches);
   if (vsMatches.length) setTimeout(() => shDrawVsChart(vsMatches, opp, seasonAvg), 50);
+}
+
+function shBuildInsightBadge(p, opp, vsMatches, seasonAvg) {
+  const oppName = opp ? opp.name : 'this team';
+  const oppShort = opp ? opp.short_name : 'them';
+  const n = vsMatches.length;
+
+  if (n === 0) {
+    return `<div class="sh-insight-badge sh-insight-neu"><span class="sh-insight-icon">⚪</span><span>First meeting this season — no head-to-head data yet</span></div>`;
+  }
+
+  const avgVs = vsMatches.reduce((s,g) => s + g.total_points, 0) / n;
+  const homeM = vsMatches.filter(g => g.was_home);
+  const awayM = vsMatches.filter(g => !g.was_home);
+
+  // Home/away only checks take priority over avg check
+  if (homeM.length > 0 && awayM.length === 0) {
+    return `<div class="sh-insight-badge sh-insight-neu"><span class="sh-insight-icon">🏠</span><span>Only played <strong>${oppName}</strong> at home — no away data yet</span></div>`;
+  }
+  if (awayM.length > 0 && homeM.length === 0) {
+    return `<div class="sh-insight-badge sh-insight-neu"><span class="sh-insight-icon">✈️</span><span>Only played <strong>${oppName}</strong> away — no home data yet</span></div>`;
+  }
+
+  // Avg comparison
+  if (seasonAvg > 0 && avgVs >= seasonAvg * 1.5) {
+    return `<div class="sh-insight-badge sh-insight-good"><span class="sh-insight-icon">🟢</span><span>Strong record vs <strong>${oppName}</strong> — averaging <strong>${avgVs.toFixed(1)} pts</strong> in ${n} meeting${n>1?'s':''}</span></div>`;
+  }
+  if (seasonAvg > 0 && avgVs <= seasonAvg * 0.7) {
+    return `<div class="sh-insight-badge sh-insight-bad"><span class="sh-insight-icon">🔴</span><span>Poor record vs <strong>${oppName}</strong> — averaging only <strong>${avgVs.toFixed(1)} pts</strong> in ${n} meeting${n>1?'s':''}</span></div>`;
+  }
+
+  // Neutral / decent record
+  return `<div class="sh-insight-badge sh-insight-neu"><span class="sh-insight-icon">➖</span><span>Neutral record vs <strong>${oppName}</strong> — averaging <strong>${avgVs.toFixed(1)} pts</strong> in ${n} meeting${n>1?'s':''}</span></div>`;
 }
 
 function shBuildBanner(p, opp, isHome, gw, diff) {
@@ -726,6 +759,14 @@ function shDrawVsChart(vsMatches, opp, seasonAvg) {
 .sh-first-time-panel{background:rgba(79,142,247,.07);border:1px solid rgba(79,142,247,.2);border-radius:12px;padding:24px;text-align:center;margin-bottom:16px}
 .sh-scout-link-btn{display:inline-flex;align-items:center;gap:6px;padding:8px 18px;border-radius:9px;margin-top:14px;background:rgba(0,212,170,.13);border:1px solid rgba(0,212,170,.3);color:var(--green);font-size:.82rem;font-weight:700;cursor:pointer;font-family:'Outfit',sans-serif;transition:background .18s}
 .sh-scout-link-btn:hover{background:rgba(0,212,170,.24)}
+
+/* SCOUT HISTORY PHASE 3 — Insight Badge */
+.sh-insight-badge{display:flex;align-items:center;gap:10px;padding:10px 14px;border-radius:10px;margin-bottom:12px;font-size:.83rem;line-height:1.4;border:1px solid transparent}
+.sh-insight-badge strong{font-weight:700}
+.sh-insight-icon{font-size:1rem;flex-shrink:0}
+.sh-insight-good{background:rgba(0,212,170,.08);border-color:rgba(0,212,170,.25);color:var(--text)}
+.sh-insight-bad{background:rgba(255,85,85,.08);border-color:rgba(255,85,85,.22);color:var(--text)}
+.sh-insight-neu{background:rgba(107,114,128,.08);border-color:rgba(107,114,128,.2);color:var(--text)}
 </style>
 </head>
 <body>
