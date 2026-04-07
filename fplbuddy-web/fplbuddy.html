@@ -8,128 +8,6 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.2/dist/chart.umd.min.js"></script>
-<script>
-let shVsChartInst = null;
-
-function shBuildFixtureDropdown(container, p, summary) {
-  if (!fixtureData || !fplData) return;
-  const upcoming = fixtureData
-    .filter(f => !f.finished && f.event !== null && (f.team_h === p.team || f.team_a === p.team))
-    .sort((a, b) => a.event - b.event)
-    .slice(0, 3);
-  if (!upcoming.length) return;
-  const opts = upcoming.map(f => {
-    const isHome = f.team_h === p.team;
-    const oppId = isHome ? f.team_a : f.team_h;
-    const opp = fplData.teams.find(t => t.id === oppId);
-    const diff = isHome ? f.team_h_difficulty : f.team_a_difficulty;
-    const dot = diff <= 2 ? '🟢' : diff === 3 ? '🟡' : '🔴';
-    return `<option value="${oppId}" data-gw="${f.event}" data-home="${isHome}" data-diff="${diff}">${dot}  GW${f.event} — ${opp ? opp.name : '?'} (${isHome ? 'H' : 'A'}) — Difficulty: ${diff}</option>`;
-  }).join('');
-  const wrap = document.createElement('div');
-  wrap.innerHTML = `
-    <div class="sh-section-title" style="margin-top:24px">⚽ Performance vs Upcoming Opponents</div>
-    <div class="sh-fixture-select-wrap">
-      <span class="sh-fixture-label">Select opponent:</span>
-      <select class="sh-fixture-select" id="sh-opp-select" onchange="shOnOppChange(this)">${opts}</select>
-    </div>
-    <div id="sh-phase2-output"></div>`;
-  container.appendChild(wrap);
-  setTimeout(() => { const sel = document.getElementById('sh-opp-select'); if (sel) shRenderVsBlock(sel, p, summary); }, 0);
-}
-
-function shOnOppChange(sel) {
-  if (!shSelectedPlayer || !shSummary) return;
-  shRenderVsBlock(sel, shSelectedPlayer, shSummary);
-}
-
-function shRenderVsBlock(sel, p, summary) {
-  const output = document.getElementById('sh-phase2-output');
-  if (!output) return;
-  const oppId = parseInt(sel.value);
-  const gw = parseInt(sel.selectedOptions[0].dataset.gw);
-  const isHome = sel.selectedOptions[0].dataset.home === 'true';
-  const diff = parseInt(sel.selectedOptions[0].dataset.diff);
-  const opp = fplData.teams.find(t => t.id === oppId);
-  const hist = summary.history || [];
-  const vsMatches = hist.filter(g => g.opponent_team === oppId);
-  const seasonAvg = hist.length ? hist.reduce((s, g) => s + g.total_points, 0) / hist.length : 0;
-  output.innerHTML = shBuildBanner(p, opp, isHome, gw, diff) + shBuildInsightBadge(p, opp, vsMatches, seasonAvg) + (vsMatches.length ? shBuildH2HCard(p, opp, vsMatches, seasonAvg) : '') + shBuildChartBlock(p, opp, vsMatches);
-  if (vsMatches.length) setTimeout(() => shDrawVsChart(vsMatches, opp, seasonAvg), 50);
-}
-
-function shBuildInsightBadge(p, opp, vsMatches, seasonAvg) {
-  const oppName = opp ? opp.name : 'this team';
-  const oppShort = opp ? opp.short_name : 'them';
-  const n = vsMatches.length;
-
-  if (n === 0) {
-    return `<div class="sh-insight-badge sh-insight-neu"><span class="sh-insight-icon">⚪</span><span>First meeting this season — no head-to-head data yet</span></div>`;
-  }
-
-  const avgVs = vsMatches.reduce((s,g) => s + g.total_points, 0) / n;
-  const homeM = vsMatches.filter(g => g.was_home);
-  const awayM = vsMatches.filter(g => !g.was_home);
-
-  // Home/away only checks take priority over avg check
-  if (homeM.length > 0 && awayM.length === 0) {
-    return `<div class="sh-insight-badge sh-insight-neu"><span class="sh-insight-icon">🏠</span><span>Only played <strong>${oppName}</strong> at home — no away data yet</span></div>`;
-  }
-  if (awayM.length > 0 && homeM.length === 0) {
-    return `<div class="sh-insight-badge sh-insight-neu"><span class="sh-insight-icon">✈️</span><span>Only played <strong>${oppName}</strong> away — no home data yet</span></div>`;
-  }
-
-  // Avg comparison
-  if (seasonAvg > 0 && avgVs >= seasonAvg * 1.5) {
-    return `<div class="sh-insight-badge sh-insight-good"><span class="sh-insight-icon">🟢</span><span>Strong record vs <strong>${oppName}</strong> — averaging <strong>${avgVs.toFixed(1)} pts</strong> in ${n} meeting${n>1?'s':''}</span></div>`;
-  }
-  if (seasonAvg > 0 && avgVs <= seasonAvg * 0.7) {
-    return `<div class="sh-insight-badge sh-insight-bad"><span class="sh-insight-icon">🔴</span><span>Poor record vs <strong>${oppName}</strong> — averaging only <strong>${avgVs.toFixed(1)} pts</strong> in ${n} meeting${n>1?'s':''}</span></div>`;
-  }
-
-  // Neutral / decent record
-  return `<div class="sh-insight-badge sh-insight-neu"><span class="sh-insight-icon">➖</span><span>Neutral record vs <strong>${oppName}</strong> — averaging <strong>${avgVs.toFixed(1)} pts</strong> in ${n} meeting${n>1?'s':''}</span></div>`;
-}
-
-function shBuildBanner(p, opp, isHome, gw, diff) {
-  const team = fplData.teams.find(t => t.id === p.team);
-  return `<div class="sh-fixture-banner"><div class="sh-banner-player-side"><img class="sh-banner-thumb" src="https://resources.premierleague.com/premierleague/photos/players/110x140/p${p.code}.png" onerror="this.src='https://resources.premierleague.com/premierleague/photos/players/110x140/Photo-Missing.png'"><div><div class="sh-banner-player-name">${p.web_name}</div><div class="sh-banner-meta-row"><img style="width:18px;height:18px;object-fit:contain" src="https://resources.premierleague.com/premierleague/badges/50/t${team?team.code:''}.png" onerror="this.style.display='none'"><span style="font-size:.72rem;color:var(--text-muted)">${team?team.short_name:'?'}</span></div></div></div><div class="sh-banner-vs">vs</div><div class="sh-banner-opp-side"><div style="text-align:right"><div class="sh-banner-opp-name">${opp?opp.name:'Unknown'}</div><div class="sh-banner-meta-row" style="justify-content:flex-end"><span class="sh-banner-chip ${isHome?'home':'away'}">${isHome?'H':'A'}</span><span class="sh-banner-chip diff-${diff}">FDR ${diff}</span><span class="sh-banner-gw">GW${gw}</span></div></div><img class="sh-banner-badge-img" src="https://resources.premierleague.com/premierleague/badges/50/t${opp?opp.code:''}.png" onerror="this.style.display='none'"></div></div>`;
-}
-
-function shBuildH2HCard(p, opp, vsMatches, seasonAvg) {
-  const totalPts = vsMatches.reduce((s,g)=>s+g.total_points,0);
-  const goals = vsMatches.reduce((s,g)=>s+g.goals_scored,0);
-  const assists = vsMatches.reduce((s,g)=>s+g.assists,0);
-  const avgVs = totalPts/vsMatches.length;
-  const homeM = vsMatches.filter(g=>g.was_home);
-  const awayM = vsMatches.filter(g=>!g.was_home);
-  const homePts = homeM.reduce((s,g)=>s+g.total_points,0);
-  const awayPts = awayM.reduce((s,g)=>s+g.total_points,0);
-  const isGood = avgVs > seasonAvg+0.5, isBad = avgVs < seasonAvg-0.5;
-  const mc = isGood?'good-matchup':isBad?'bad-matchup':'';
-  const bc = isGood?'good':isBad?'bad':'neu';
-  const bt = isGood?'✅ Good Matchup':isBad?'⚠️ Tough Matchup':'➖ Neutral';
-  const on = opp?opp.short_name:'?';
-  return `<div class="sh-h2h-card ${mc}"><div class="sh-h2h-card-title">📊 This season vs ${opp?opp.name:'?'}</div><div class="sh-h2h-matchup-badge ${bc}">${bt}<span style="font-weight:400;opacity:.8">— season avg ${seasonAvg.toFixed(1)} pts/gw</span></div><div class="sh-h2h-grid"><div class="sh-h2h-stat"><div class="sh-h2h-stat-val">${vsMatches.length}</div><div class="sh-h2h-stat-lbl">Matches vs ${on}</div></div><div class="sh-h2h-stat"><div class="sh-h2h-stat-val" style="color:var(--green)">${goals}</div><div class="sh-h2h-stat-lbl">Goals</div></div><div class="sh-h2h-stat"><div class="sh-h2h-stat-val" style="color:#4f8ef7">${assists}</div><div class="sh-h2h-stat-lbl">Assists</div></div><div class="sh-h2h-stat"><div class="sh-h2h-stat-val" style="color:var(--green)">${totalPts}</div><div class="sh-h2h-stat-lbl">Total FPL Pts</div></div><div class="sh-h2h-stat"><div class="sh-h2h-stat-val">${homeM.length?homePts+' pts':'—'}</div><div class="sh-h2h-stat-lbl">Home record</div></div><div class="sh-h2h-stat"><div class="sh-h2h-stat-val">${awayM.length?awayPts+' pts':'—'}</div><div class="sh-h2h-stat-lbl">Away record</div></div><div class="sh-h2h-stat"><div class="sh-h2h-stat-val" style="color:${isGood?'var(--green)':isBad?'#ff5555':'var(--text)'}">${avgVs.toFixed(1)}</div><div class="sh-h2h-stat-lbl">Avg Pts vs ${on}</div></div></div></div>`;
-}
-
-function shBuildChartBlock(p, opp, vsMatches) {
-  if (!vsMatches.length) return `<div class="sh-first-time-panel"><div style="font-size:1.6rem;margin-bottom:8px">🆕</div><div style="font-size:.95rem;font-weight:700;color:var(--text);margin-bottom:6px">First time ${p.web_name} faces ${opp?opp.name:'this team'} this season</div><div style="font-size:.8rem;color:var(--text-muted);margin-bottom:4px">No current season data available vs this opponent.</div><div style="font-size:.78rem;color:var(--text-muted);opacity:.75">Check the Scout tab for fixture ease context.</div><button class="sh-scout-link-btn" onclick="document.querySelector('.tab[onclick*=scout]').click()">🎯 View ${opp?opp.short_name:''} fixture ease in Scout →</button></div>`;
-  return `<div class="sh-vs-chart-wrap"><div class="sh-vs-chart-title">📈 FPL Points vs ${opp?opp.name:'?'} — Current Season</div><canvas id="sh-vs-chart" height="90"></canvas>${vsMatches.length===1?'<div style="font-size:.75rem;color:var(--text-muted);margin-top:8px;text-align:center">Only 1 match vs this opponent this season</div>':''}</div>`;
-}
-
-function shDrawVsChart(vsMatches, opp, seasonAvg) {
-  const canvas = document.getElementById('sh-vs-chart');
-  if (!canvas) return;
-  if (shVsChartInst) { shVsChartInst.destroy(); shVsChartInst = null; }
-  const sorted = [...vsMatches].sort((a,b)=>a.round-b.round);
-  const labels = sorted.map(g=>`GW${g.round} ${g.was_home?'H':'A'} (${g.kickoff_time?new Date(g.kickoff_time).toLocaleDateString('en-GB',{day:'numeric',month:'short'}):'—'})`);
-  const pts = sorted.map(g=>g.total_points);
-  const colors = pts.map(v=>v>=8?'rgba(0,212,170,.85)':v>=3?'rgba(79,142,247,.8)':v>=2?'rgba(107,114,128,.7)':'rgba(255,85,85,.75)');
-  const ttData = sorted.map(g=>{const ot=fplData.teams.find(t=>t.id===g.opponent_team);return{gw:g.round,date:g.kickoff_time?new Date(g.kickoff_time).toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'2-digit'}):'—',home:g.was_home,goals:g.goals_scored,assists:g.assists,bonus:g.bonus,mins:g.minutes,pts:g.total_points,cs:g.clean_sheets,opp:ot?ot.short_name:'?'};});
-  shVsChartInst = new Chart(canvas.getContext('2d'),{type:'bar',data:{labels,datasets:[{label:'FPL Points',data:pts,backgroundColor:colors,borderColor:colors.map(c=>c.replace(/[\d.]+\)$/,'1)')),borderWidth:1,borderRadius:6,borderSkipped:false}]},options:{responsive:true,plugins:{legend:{display:false},tooltip:{backgroundColor:'#1a2035',borderColor:'rgba(255,255,255,.1)',borderWidth:1,padding:12,callbacks:{title:items=>{const d=ttData[items[0].dataIndex];return `GW${d.gw} · ${d.date} · ${d.home?'Home':'Away'} vs ${d.opp}`;},label:items=>{const d=ttData[items.dataIndex];return[` FPL Pts: ${d.pts}`,` Goals: ${d.goals}  Assists: ${d.assists}  Bonus: ${d.bonus}`,` Minutes: ${d.mins}  CS: ${d.cs?'Yes':'No'}`];}}}},scales:{x:{grid:{color:'rgba(255,255,255,.05)'},ticks:{color:'#6b7280',font:{size:10},maxRotation:30}},y:{beginAtZero:true,grid:{color:'rgba(255,255,255,.05)'},ticks:{color:'#6b7280',font:{size:11},stepSize:2},title:{display:true,text:`Season avg: ${seasonAvg.toFixed(1)} pts`,color:'rgba(255,255,255,.35)',font:{size:10}}}}}});
-}
-</script>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     :root {
@@ -3035,9 +2913,174 @@ function shCurrentSeasonTable(hist){
 
 
 // ══════════════════════════════════════════════════════════════════════════
-// SCOUT HISTORY PHASE 2 — Fixture Dropdown, H2H Card, Bar Chart, Banner
+// SCOUT HISTORY PHASE 2 + 3
 // ══════════════════════════════════════════════════════════════════════════
-// ══ END SCOUT HISTORY PHASE 2 ═════════════════════════════════════════════
+
+let shVsChartInst = null;
+
+function shBuildFixtureDropdown(container, p, summary) {
+  if (!fixtureData || !fplData) return;
+  const upcoming = fixtureData
+    .filter(f => !f.finished && f.event !== null && (f.team_h === p.team || f.team_a === p.team))
+    .sort((a, b) => a.event - b.event)
+    .slice(0, 3);
+  if (!upcoming.length) return;
+  const opts = upcoming.map(f => {
+    const isHome = f.team_h === p.team;
+    const oppId = isHome ? f.team_a : f.team_h;
+    const opp = fplData.teams.find(t => t.id === oppId);
+    const diff = isHome ? f.team_h_difficulty : f.team_a_difficulty;
+    const dot = diff <= 2 ? '🟢' : diff === 3 ? '🟡' : '🔴';
+    return `<option value="${oppId}" data-gw="${f.event}" data-home="${isHome}" data-diff="${diff}">${dot} GW${f.event} — ${opp ? opp.name : '?'} (${isHome ? 'H' : 'A'}) — Difficulty: ${diff}</option>`;
+  }).join('');
+  const wrap = document.createElement('div');
+  wrap.innerHTML = `
+    <div class="sh-section-title" style="margin-top:24px">⚽ Performance vs Upcoming Opponents</div>
+    <div class="sh-fixture-select-wrap">
+      <span class="sh-fixture-label">Select opponent:</span>
+      <select class="sh-fixture-select" id="sh-opp-select" onchange="shOnOppChange(this)">${opts}</select>
+    </div>
+    <div id="sh-phase2-output"></div>`;
+  container.appendChild(wrap);
+  setTimeout(() => { const sel = document.getElementById('sh-opp-select'); if (sel) shRenderVsBlock(sel, p, summary); }, 0);
+}
+
+function shOnOppChange(sel) {
+  if (!shSelectedPlayer || !shSummary) return;
+  shRenderVsBlock(sel, shSelectedPlayer, shSummary);
+}
+
+function shRenderVsBlock(sel, p, summary) {
+  const output = document.getElementById('sh-phase2-output');
+  if (!output) return;
+  const oppId = parseInt(sel.value);
+  const gw = parseInt(sel.selectedOptions[0].dataset.gw);
+  const isHome = sel.selectedOptions[0].dataset.home === 'true';
+  const diff = parseInt(sel.selectedOptions[0].dataset.diff);
+  const opp = fplData.teams.find(t => t.id === oppId);
+  const hist = summary.history || [];
+  const vsMatches = hist.filter(g => g.opponent_team === oppId);
+  const seasonAvg = hist.length ? hist.reduce((s, g) => s + g.total_points, 0) / hist.length : 0;
+  output.innerHTML = shBuildFixtureBanner(p, opp, isHome, gw, diff)
+    + shBuildInsightBadge(p, opp, vsMatches, seasonAvg)
+    + (vsMatches.length ? shBuildH2HCard(p, opp, vsMatches, seasonAvg) : '')
+    + shBuildChartBlock(p, opp, vsMatches);
+  if (vsMatches.length) setTimeout(() => shDrawVsChart(vsMatches, opp, seasonAvg), 50);
+}
+
+function shBuildInsightBadge(p, opp, vsMatches, seasonAvg) {
+  const oppName = opp ? opp.name : 'this team';
+  const n = vsMatches.length;
+  if (n === 0) return '<div class="sh-insight-badge sh-insight-neu"><span class="sh-insight-icon">⚪</span><span>First meeting this season — no head-to-head data yet</span></div>';
+  const avgVs = vsMatches.reduce((s,g) => s + g.total_points, 0) / n;
+  const homeM = vsMatches.filter(g => g.was_home);
+  const awayM = vsMatches.filter(g => !g.was_home);
+  if (homeM.length > 0 && awayM.length === 0) return '<div class="sh-insight-badge sh-insight-neu"><span class="sh-insight-icon">🏠</span><span>Only played <strong>' + oppName + '</strong> at home — no away data yet</span></div>';
+  if (awayM.length > 0 && homeM.length === 0) return '<div class="sh-insight-badge sh-insight-neu"><span class="sh-insight-icon">✈️</span><span>Only played <strong>' + oppName + '</strong> away — no home data yet</span></div>';
+  if (seasonAvg > 0 && avgVs >= seasonAvg * 1.5) return '<div class="sh-insight-badge sh-insight-good"><span class="sh-insight-icon">🟢</span><span>Strong record vs <strong>' + oppName + '</strong> — averaging <strong>' + avgVs.toFixed(1) + ' pts</strong> in ' + n + ' meeting' + (n>1?'s':'') + '</span></div>';
+  if (seasonAvg > 0 && avgVs <= seasonAvg * 0.7) return '<div class="sh-insight-badge sh-insight-bad"><span class="sh-insight-icon">🔴</span><span>Poor record vs <strong>' + oppName + '</strong> — averaging only <strong>' + avgVs.toFixed(1) + ' pts</strong> in ' + n + ' meeting' + (n>1?'s':'') + '</span></div>';
+  return '<div class="sh-insight-badge sh-insight-neu"><span class="sh-insight-icon">➖</span><span>Neutral record vs <strong>' + oppName + '</strong> — averaging <strong>' + avgVs.toFixed(1) + ' pts</strong> in ' + n + ' meeting' + (n>1?'s':'') + '</span></div>';
+}
+
+function shBuildFixtureBanner(p, opp, isHome, gw, diff) {
+  const team = fplData.teams.find(t => t.id === p.team);
+  return '<div class="sh-fixture-banner">'
+    + '<div class="sh-banner-player-side">'
+    + '<img class="sh-banner-thumb" src="https://resources.premierleague.com/premierleague/photos/players/110x140/p' + p.code + '.png" onerror="this.src=\'https://resources.premierleague.com/premierleague/photos/players/110x140/Photo-Missing.png\'">'
+    + '<div>'
+    + '<div class="sh-banner-player-name">' + p.web_name + '</div>'
+    + '<div class="sh-banner-meta-row">'
+    + '<img style="width:18px;height:18px;object-fit:contain" src="https://resources.premierleague.com/premierleague/badges/50/t' + (team?team.code:'') + '.png" onerror="this.style.display=\'none\'">'
+    + '<span style="font-size:.72rem;color:var(--text-muted)">' + (team?team.short_name:'?') + '</span>'
+    + '</div></div></div>'
+    + '<div class="sh-banner-vs">vs</div>'
+    + '<div class="sh-banner-opp-side">'
+    + '<div style="text-align:right">'
+    + '<div class="sh-banner-opp-name">' + (opp?opp.name:'Unknown') + '</div>'
+    + '<div class="sh-banner-meta-row" style="justify-content:flex-end">'
+    + '<span class="sh-banner-chip ' + (isHome?'home':'away') + '">' + (isHome?'H':'A') + '</span>'
+    + '<span class="sh-banner-chip diff-' + diff + '">FDR ' + diff + '</span>'
+    + '<span class="sh-banner-gw">GW' + gw + '</span>'
+    + '</div></div>'
+    + '<img class="sh-banner-badge-img" src="https://resources.premierleague.com/premierleague/badges/50/t' + (opp?opp.code:'') + '.png" onerror="this.style.display=\'none\'">'
+    + '</div></div>';
+}
+
+function shBuildH2HCard(p, opp, vsMatches, seasonAvg) {
+  const totalPts = vsMatches.reduce((s,g)=>s+g.total_points,0);
+  const goals = vsMatches.reduce((s,g)=>s+g.goals_scored,0);
+  const assists = vsMatches.reduce((s,g)=>s+g.assists,0);
+  const avgVs = totalPts/vsMatches.length;
+  const homeM = vsMatches.filter(g=>g.was_home);
+  const awayM = vsMatches.filter(g=>!g.was_home);
+  const homePts = homeM.reduce((s,g)=>s+g.total_points,0);
+  const awayPts = awayM.reduce((s,g)=>s+g.total_points,0);
+  const isGood = avgVs > seasonAvg+0.5, isBad = avgVs < seasonAvg-0.5;
+  const mc = isGood?'good-matchup':isBad?'bad-matchup':'';
+  const bc = isGood?'good':isBad?'bad':'neu';
+  const bt = isGood?'✅ Good Matchup':isBad?'⚠️ Tough Matchup':'➖ Neutral';
+  const on = opp?opp.short_name:'?';
+  return '<div class="sh-h2h-card ' + mc + '">'
+    + '<div class="sh-h2h-card-title">📊 This season vs ' + (opp?opp.name:'?') + '</div>'
+    + '<div class="sh-h2h-matchup-badge ' + bc + '">' + bt + ' <span style="font-weight:400;opacity:.8">— season avg ' + seasonAvg.toFixed(1) + ' pts/gw</span></div>'
+    + '<div class="sh-h2h-grid">'
+    + '<div class="sh-h2h-stat"><div class="sh-h2h-stat-val">' + vsMatches.length + '</div><div class="sh-h2h-stat-lbl">Matches vs ' + on + '</div></div>'
+    + '<div class="sh-h2h-stat"><div class="sh-h2h-stat-val" style="color:var(--green)">' + goals + '</div><div class="sh-h2h-stat-lbl">Goals</div></div>'
+    + '<div class="sh-h2h-stat"><div class="sh-h2h-stat-val" style="color:#4f8ef7">' + assists + '</div><div class="sh-h2h-stat-lbl">Assists</div></div>'
+    + '<div class="sh-h2h-stat"><div class="sh-h2h-stat-val" style="color:var(--green)">' + totalPts + '</div><div class="sh-h2h-stat-lbl">Total FPL Pts</div></div>'
+    + '<div class="sh-h2h-stat"><div class="sh-h2h-stat-val">' + (homeM.length?homePts+' pts':'—') + '</div><div class="sh-h2h-stat-lbl">Home record</div></div>'
+    + '<div class="sh-h2h-stat"><div class="sh-h2h-stat-val">' + (awayM.length?awayPts+' pts':'—') + '</div><div class="sh-h2h-stat-lbl">Away record</div></div>'
+    + '<div class="sh-h2h-stat"><div class="sh-h2h-stat-val" style="color:' + (isGood?'var(--green)':isBad?'#ff5555':'var(--text)') + '">' + avgVs.toFixed(1) + '</div><div class="sh-h2h-stat-lbl">Avg Pts vs ' + on + '</div></div>'
+    + '</div></div>';
+}
+
+function shBuildChartBlock(p, opp, vsMatches) {
+  if (!vsMatches.length) return '<div class="sh-first-time-panel">'
+    + '<div style="font-size:1.6rem;margin-bottom:8px">🆕</div>'
+    + '<div style="font-size:.95rem;font-weight:700;color:var(--text);margin-bottom:6px">First time ' + p.web_name + ' faces ' + (opp?opp.name:'this team') + ' this season</div>'
+    + '<div style="font-size:.8rem;color:var(--text-muted)">No current season data available vs this opponent.</div>'
+    + '</div>';
+  return '<div class="sh-vs-chart-wrap">'
+    + '<div class="sh-vs-chart-title">📈 FPL Points vs ' + (opp?opp.name:'?') + ' — Current Season</div>'
+    + '<canvas id="sh-vs-chart" height="90"></canvas>'
+    + (vsMatches.length===1?'<div style="font-size:.75rem;color:var(--text-muted);margin-top:8px;text-align:center">Only 1 match vs this opponent this season</div>':'')
+    + '</div>';
+}
+
+function shDrawVsChart(vsMatches, opp, seasonAvg) {
+  const canvas = document.getElementById('sh-vs-chart');
+  if (!canvas) return;
+  if (shVsChartInst) { shVsChartInst.destroy(); shVsChartInst = null; }
+  const sorted = [...vsMatches].sort((a,b)=>a.round-b.round);
+  const labels = sorted.map(g=>'GW'+g.round+' '+(g.was_home?'H':'A')+' ('+(g.kickoff_time?new Date(g.kickoff_time).toLocaleDateString('en-GB',{day:'numeric',month:'short'}):'—')+')');
+  const pts = sorted.map(g=>g.total_points);
+  const colors = pts.map(v=>v>=8?'rgba(0,212,170,.85)':v>=3?'rgba(79,142,247,.8)':v>=2?'rgba(107,114,128,.7)':'rgba(255,85,85,.75)');
+  const ttData = sorted.map(g=>{
+    const ot=fplData.teams.find(t=>t.id===g.opponent_team);
+    return{gw:g.round,date:g.kickoff_time?new Date(g.kickoff_time).toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'2-digit'}):'—',home:g.was_home,goals:g.goals_scored,assists:g.assists,bonus:g.bonus,mins:g.minutes,pts:g.total_points,cs:g.clean_sheets,opp:ot?ot.short_name:'?'};
+  });
+  shVsChartInst = new Chart(canvas.getContext('2d'),{
+    type:'bar',
+    data:{labels,datasets:[{label:'FPL Points',data:pts,backgroundColor:colors,borderColor:colors.map(c=>c.replace(/[\d.]+\)$/,'1)')),borderWidth:1,borderRadius:6,borderSkipped:false}]},
+    options:{
+      responsive:true,
+      plugins:{
+        legend:{display:false},
+        tooltip:{backgroundColor:'#1a2035',borderColor:'rgba(255,255,255,.1)',borderWidth:1,padding:12,
+          callbacks:{
+            title:function(items){const d=ttData[items[0].dataIndex];return 'GW'+d.gw+' · '+d.date+' · '+(d.home?'Home':'Away')+' vs '+d.opp;},
+            label:function(items){const d=ttData[items.dataIndex];return[' FPL Pts: '+d.pts,' Goals: '+d.goals+'  Assists: '+d.assists+'  Bonus: '+d.bonus,' Minutes: '+d.mins+'  CS: '+(d.cs?'Yes':'No')];}
+          }
+        }
+      },
+      scales:{
+        x:{grid:{color:'rgba(255,255,255,.05)'},ticks:{color:'#6b7280',font:{size:10},maxRotation:30}},
+        y:{beginAtZero:true,grid:{color:'rgba(255,255,255,.05)'},ticks:{color:'#6b7280',font:{size:11},stepSize:2},title:{display:true,text:'Season avg: '+seasonAvg.toFixed(1)+' pts',color:'rgba(255,255,255,.35)',font:{size:10}}}
+      }
+    }
+  });
+}
+// ══ END SCOUT HISTORY PHASE 2 + 3 ════════════════════════════════════════
 
 </script>
 
