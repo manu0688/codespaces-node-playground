@@ -14,15 +14,15 @@ let shVsChartInst = null;
 function shBuildFixtureDropdown(container, p, summary) {
   if (!fixtureData || !fplData) return;
   const upcoming = fixtureData
-    .filter(f => f.event >= gwId && (f.teamh === p.team || f.teama === p.team))
+    .filter(f => !f.finished && f.event !== null && (f.team_h === p.team || f.team_a === p.team))
     .sort((a, b) => a.event - b.event)
     .slice(0, 3);
   if (!upcoming.length) return;
   const opts = upcoming.map(f => {
-    const isHome = f.teamh === p.team;
-    const oppId = isHome ? f.teama : f.teamh;
+    const isHome = f.team_h === p.team;
+    const oppId = isHome ? f.team_a : f.team_h;
     const opp = fplData.teams.find(t => t.id === oppId);
-    const diff = isHome ? f.teamhdifficulty : f.teamadifficulty;
+    const diff = isHome ? f.team_h_difficulty : f.team_a_difficulty;
     const dot = diff <= 2 ? '🟢' : diff === 3 ? '🟡' : '🔴';
     return `<option value="${oppId}" data-gw="${f.event}" data-home="${isHome}" data-diff="${diff}">${dot}  GW${f.event} — ${opp ? opp.name : '?'} (${isHome ? 'H' : 'A'}) — Difficulty: ${diff}</option>`;
   }).join('');
