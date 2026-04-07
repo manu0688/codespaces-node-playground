@@ -2959,27 +2959,32 @@ function shRenderVsBlock(sel, p, summary) {
   const diff = parseInt(sel.selectedOptions[0].dataset.diff);
   const opp = fplData.teams.find(t => t.id === oppId);
   const hist = summary.history || [];
+  const past = (summary.history_past || []).slice().reverse().slice(0, 5);
   const vsMatches = hist.filter(g => g.opponent_team === oppId);
   const seasonAvg = hist.length ? hist.reduce((s, g) => s + g.total_points, 0) / hist.length : 0;
   output.innerHTML = shBuildFixtureBanner(p, opp, isHome, gw, diff)
     + shBuildInsightBadge(p, opp, vsMatches, seasonAvg)
-    + (vsMatches.length ? shBuildH2HCard(p, opp, vsMatches, seasonAvg) : '')
-    + shBuildChartBlock(p, opp, vsMatches);
-  if (vsMatches.length) setTimeout(() => shDrawVsChart(vsMatches, opp, seasonAvg), 50);
+    + shBuildCareerCard(p, opp, vsMatches, past, seasonAvg)
+    + shBuildChartBlock(p, opp, vsMatches, past);
+  if (vsMatches.length || past.length) setTimeout(() => shDrawVsChart(vsMatches, past, opp, seasonAvg), 50);
 }
 
 function shBuildInsightBadge(p, opp, vsMatches, seasonAvg) {
   const oppName = opp ? opp.name : 'this team';
   const n = vsMatches.length;
-  if (n === 0) return '<div class="sh-insight-badge sh-insight-neu"><span class="sh-insight-icon">⚪</span><span>First meeting this season — no head-to-head data yet</span></div>';
+  const pastCount = (shSummary && shSummary.history_past) ? shSummary.history_past.length : 0;
+  if (n === 0) {
+    const ctx = pastCount > 0 ? ' — ' + pastCount + ' previous season' + (pastCount>1?'s':'')+' of overall data shown below' : '';
+    return '<div class="sh-insight-badge sh-insight-neu"><span class="sh-insight-icon">⚪</span><span>No current season meetings vs <strong>' + oppName + '</strong>' + ctx + '</span></div>';
+  }
   const avgVs = vsMatches.reduce((s,g) => s + g.total_points, 0) / n;
   const homeM = vsMatches.filter(g => g.was_home);
   const awayM = vsMatches.filter(g => !g.was_home);
-  if (homeM.length > 0 && awayM.length === 0) return '<div class="sh-insight-badge sh-insight-neu"><span class="sh-insight-icon">🏠</span><span>Only played <strong>' + oppName + '</strong> at home — no away data yet</span></div>';
-  if (awayM.length > 0 && homeM.length === 0) return '<div class="sh-insight-badge sh-insight-neu"><span class="sh-insight-icon">✈️</span><span>Only played <strong>' + oppName + '</strong> away — no home data yet</span></div>';
-  if (seasonAvg > 0 && avgVs >= seasonAvg * 1.5) return '<div class="sh-insight-badge sh-insight-good"><span class="sh-insight-icon">🟢</span><span>Strong record vs <strong>' + oppName + '</strong> — averaging <strong>' + avgVs.toFixed(1) + ' pts</strong> in ' + n + ' meeting' + (n>1?'s':'') + '</span></div>';
-  if (seasonAvg > 0 && avgVs <= seasonAvg * 0.7) return '<div class="sh-insight-badge sh-insight-bad"><span class="sh-insight-icon">🔴</span><span>Poor record vs <strong>' + oppName + '</strong> — averaging only <strong>' + avgVs.toFixed(1) + ' pts</strong> in ' + n + ' meeting' + (n>1?'s':'') + '</span></div>';
-  return '<div class="sh-insight-badge sh-insight-neu"><span class="sh-insight-icon">➖</span><span>Neutral record vs <strong>' + oppName + '</strong> — averaging <strong>' + avgVs.toFixed(1) + ' pts</strong> in ' + n + ' meeting' + (n>1?'s':'') + '</span></div>';
+  if (homeM.length > 0 && awayM.length === 0) return '<div class="sh-insight-badge sh-insight-neu"><span class="sh-insight-icon">🏠</span><span>Played <strong>' + oppName + '</strong> at home only this season (' + n + ' match' + (n>1?'es':'') + ') — avg <strong>' + avgVs.toFixed(1) + ' pts</strong></span></div>';
+  if (awayM.length > 0 && homeM.length === 0) return '<div class="sh-insight-badge sh-insight-neu"><span class="sh-insight-icon">✈️</span><span>Played <strong>' + oppName + '</strong> away only this season (' + n + ' match' + (n>1?'es':'') + ') — avg <strong>' + avgVs.toFixed(1) + ' pts</strong></span></div>';
+  if (seasonAvg > 0 && avgVs >= seasonAvg * 1.5) return '<div class="sh-insight-badge sh-insight-good"><span class="sh-insight-icon">🟢</span><span>Strong current-season record vs <strong>' + oppName + '</strong> — averaging <strong>' + avgVs.toFixed(1) + ' pts</strong> in ' + n + ' meeting' + (n>1?'s':'') + '</span></div>';
+  if (seasonAvg > 0 && avgVs <= seasonAvg * 0.7) return '<div class="sh-insight-badge sh-insight-bad"><span class="sh-insight-icon">🔴</span><span>Poor current-season record vs <strong>' + oppName + '</strong> — averaging only <strong>' + avgVs.toFixed(1) + ' pts</strong> in ' + n + ' meeting' + (n>1?'s':'') + '</span></div>';
+  return '<div class="sh-insight-badge sh-insight-neu"><span class="sh-insight-icon">➖</span><span>Neutral current-season record vs <strong>' + oppName + '</strong> — averaging <strong>' + avgVs.toFixed(1) + ' pts</strong> in ' + n + ' meeting' + (n>1?'s':'') + '</span></div>';
 }
 
 function shBuildFixtureBanner(p, opp, isHome, gw, diff) {
@@ -3006,79 +3011,175 @@ function shBuildFixtureBanner(p, opp, isHome, gw, diff) {
     + '</div></div>';
 }
 
-function shBuildH2HCard(p, opp, vsMatches, seasonAvg) {
-  const totalPts = vsMatches.reduce((s,g)=>s+g.total_points,0);
-  const goals = vsMatches.reduce((s,g)=>s+g.goals_scored,0);
-  const assists = vsMatches.reduce((s,g)=>s+g.assists,0);
-  const avgVs = totalPts/vsMatches.length;
-  const homeM = vsMatches.filter(g=>g.was_home);
-  const awayM = vsMatches.filter(g=>!g.was_home);
-  const homePts = homeM.reduce((s,g)=>s+g.total_points,0);
-  const awayPts = awayM.reduce((s,g)=>s+g.total_points,0);
-  const isGood = avgVs > seasonAvg+0.5, isBad = avgVs < seasonAvg-0.5;
-  const mc = isGood?'good-matchup':isBad?'bad-matchup':'';
-  const bc = isGood?'good':isBad?'bad':'neu';
-  const bt = isGood?'✅ Good Matchup':isBad?'⚠️ Tough Matchup':'➖ Neutral';
-  const on = opp?opp.short_name:'?';
-  return '<div class="sh-h2h-card ' + mc + '">'
-    + '<div class="sh-h2h-card-title">📊 This season vs ' + (opp?opp.name:'?') + '</div>'
-    + '<div class="sh-h2h-matchup-badge ' + bc + '">' + bt + ' <span style="font-weight:400;opacity:.8">— season avg ' + seasonAvg.toFixed(1) + ' pts/gw</span></div>'
-    + '<div class="sh-h2h-grid">'
-    + '<div class="sh-h2h-stat"><div class="sh-h2h-stat-val">' + vsMatches.length + '</div><div class="sh-h2h-stat-lbl">Matches vs ' + on + '</div></div>'
-    + '<div class="sh-h2h-stat"><div class="sh-h2h-stat-val" style="color:var(--green)">' + goals + '</div><div class="sh-h2h-stat-lbl">Goals</div></div>'
-    + '<div class="sh-h2h-stat"><div class="sh-h2h-stat-val" style="color:#4f8ef7">' + assists + '</div><div class="sh-h2h-stat-lbl">Assists</div></div>'
-    + '<div class="sh-h2h-stat"><div class="sh-h2h-stat-val" style="color:var(--green)">' + totalPts + '</div><div class="sh-h2h-stat-lbl">Total FPL Pts</div></div>'
-    + '<div class="sh-h2h-stat"><div class="sh-h2h-stat-val">' + (homeM.length?homePts+' pts':'—') + '</div><div class="sh-h2h-stat-lbl">Home record</div></div>'
-    + '<div class="sh-h2h-stat"><div class="sh-h2h-stat-val">' + (awayM.length?awayPts+' pts':'—') + '</div><div class="sh-h2h-stat-lbl">Away record</div></div>'
-    + '<div class="sh-h2h-stat"><div class="sh-h2h-stat-val" style="color:' + (isGood?'var(--green)':isBad?'#ff5555':'var(--text)') + '">' + avgVs.toFixed(1) + '</div><div class="sh-h2h-stat-lbl">Avg Pts vs ' + on + '</div></div>'
-    + '</div></div>';
+function shBuildCareerCard(p, opp, vsMatches, past, seasonAvg) {
+  const on = opp ? opp.name : '?';
+  const ons = opp ? opp.short_name : '?';
+  // Current season H2H stats
+  let currentBlock = '';
+  if (vsMatches.length) {
+    const totalPts = vsMatches.reduce((s,g)=>s+g.total_points,0);
+    const goals = vsMatches.reduce((s,g)=>s+g.goals_scored,0);
+    const assists = vsMatches.reduce((s,g)=>s+g.assists,0);
+    const avgVs = totalPts / vsMatches.length;
+    const homeM = vsMatches.filter(g=>g.was_home);
+    const awayM = vsMatches.filter(g=>!g.was_home);
+    const homePts = homeM.reduce((s,g)=>s+g.total_points,0);
+    const awayPts = awayM.reduce((s,g)=>s+g.total_points,0);
+    const isGood = avgVs > seasonAvg+0.5, isBad = avgVs < seasonAvg-0.5;
+    const mc = isGood?'good-matchup':isBad?'bad-matchup':'';
+    const bc = isGood?'good':isBad?'bad':'neu';
+    const bt = isGood?'✅ Good Matchup':isBad?'⚠️ Tough Matchup':'➖ Neutral';
+    currentBlock = '<div class="sh-h2h-card ' + mc + '">'
+      + '<div class="sh-h2h-card-title">⚽ 2024/25 Season — vs ' + on + '</div>'
+      + '<div class="sh-h2h-matchup-badge ' + bc + '">' + bt + ' <span style="font-weight:400;opacity:.8">— season avg ' + seasonAvg.toFixed(1) + ' pts/gw</span></div>'
+      + '<div class="sh-h2h-grid">'
+      + '<div class="sh-h2h-stat"><div class="sh-h2h-stat-val">' + vsMatches.length + '</div><div class="sh-h2h-stat-lbl">Matches vs ' + ons + '</div></div>'
+      + '<div class="sh-h2h-stat"><div class="sh-h2h-stat-val" style="color:var(--green)">' + goals + '</div><div class="sh-h2h-stat-lbl">Goals</div></div>'
+      + '<div class="sh-h2h-stat"><div class="sh-h2h-stat-val" style="color:#4f8ef7">' + assists + '</div><div class="sh-h2h-stat-lbl">Assists</div></div>'
+      + '<div class="sh-h2h-stat"><div class="sh-h2h-stat-val" style="color:var(--green)">' + totalPts + '</div><div class="sh-h2h-stat-lbl">Total FPL Pts</div></div>'
+      + '<div class="sh-h2h-stat"><div class="sh-h2h-stat-val">' + (homeM.length ? homePts+' pts' : '—') + '</div><div class="sh-h2h-stat-lbl">Home record</div></div>'
+      + '<div class="sh-h2h-stat"><div class="sh-h2h-stat-val">' + (awayM.length ? awayPts+' pts' : '—') + '</div><div class="sh-h2h-stat-lbl">Away record</div></div>'
+      + '<div class="sh-h2h-stat"><div class="sh-h2h-stat-val" style="color:' + (isGood?'var(--green)':isBad?'#ff5555':'var(--text)') + '">' + avgVs.toFixed(1) + '</div><div class="sh-h2h-stat-lbl">Avg Pts vs ' + ons + '</div></div>'
+      + '</div></div>';
+  }
+  // Past seasons aggregate table
+  let pastBlock = '';
+  if (past.length) {
+    const rows = past.map(s => {
+      const estGws = s.minutes > 0 ? Math.max(1, Math.round(s.minutes / 90)) : 0;
+      const avgPts = estGws > 0 ? (s.total_points / estGws).toFixed(1) : '—';
+      return '<tr>'
+        + '<td class="hi">' + s.season_name + '</td>'
+        + '<td>' + (estGws || '—') + '</td>'
+        + '<td style="color:var(--green)">' + s.goals_scored + '</td>'
+        + '<td style="color:#4f8ef7">' + s.assists + '</td>'
+        + '<td class="hi">' + s.total_points + '</td>'
+        + '<td>' + avgPts + '</td>'
+        + '<td>' + s.minutes + '</td>'
+        + '</tr>';
+    }).join('');
+    pastBlock = '<div class="sh-h2h-card" style="margin-top:14px">'
+      + '<div class="sh-h2h-card-title">📅 Past Seasons — Overall Form (FPL per-opponent data unavailable for previous seasons)</div>'
+      + '<div class="sh-table-wrap" style="margin-top:10px">'
+      + '<table class="sh-table"><thead><tr>'
+      + '<th>Season</th><th>Est. GWs</th><th>Goals</th><th>Assists</th><th>Total Pts</th><th>Avg Pts/GW</th><th>Minutes</th>'
+      + '</tr></thead><tbody>' + rows + '</tbody></table>'
+      + '</div>'
+      + '<div style="font-size:.7rem;color:var(--text-muted);margin-top:8px;padding:0 4px;line-height:1.5">'
+      + '⚠️ The FPL API only provides per-gameweek opponent data for the current season. Past season rows show total season stats — use as form context alongside the current-season matchup above.'
+      + '</div></div>';
+  }
+  return currentBlock + pastBlock;
 }
 
-function shBuildChartBlock(p, opp, vsMatches) {
-  if (!vsMatches.length) return '<div class="sh-first-time-panel">'
+function shBuildChartBlock(p, opp, vsMatches, past) {
+  const hasCurrent = vsMatches.length > 0;
+  const hasPast = past && past.length > 0;
+  if (!hasCurrent && !hasPast) return '<div class="sh-first-time-panel">'
     + '<div style="font-size:1.6rem;margin-bottom:8px">🆕</div>'
     + '<div style="font-size:.95rem;font-weight:700;color:var(--text);margin-bottom:6px">First time ' + p.web_name + ' faces ' + (opp?opp.name:'this team') + ' this season</div>'
     + '<div style="font-size:.8rem;color:var(--text-muted)">No current season data available vs this opponent.</div>'
     + '</div>';
-  return '<div class="sh-vs-chart-wrap">'
-    + '<div class="sh-vs-chart-title">📈 FPL Points vs ' + (opp?opp.name:'?') + ' — Current Season</div>'
-    + '<canvas id="sh-vs-chart" height="90"></canvas>'
-    + (vsMatches.length===1?'<div style="font-size:.75rem;color:var(--text-muted);margin-top:8px;text-align:center">Only 1 match vs this opponent this season</div>':'')
-    + '</div>';
+  let out = '';
+  if (hasCurrent) {
+    out += '<div class="sh-vs-chart-wrap">'
+      + '<div class="sh-vs-chart-title">📊 Points vs ' + (opp?opp.name:'?') + ' — Current Season GW by GW</div>'
+      + '<canvas id="sh-vs-chart" height="90"></canvas>'
+      + (vsMatches.length===1?'<div style="font-size:.75rem;color:var(--text-muted);margin-top:8px;text-align:center">Only 1 match vs this opponent this season</div>':'')
+      + '</div>';
+  }
+  if (hasPast) {
+    out += '<div class="sh-vs-chart-wrap" style="margin-top:14px">'
+      + '<div class="sh-vs-chart-title">📈 Season Avg Pts/GW — Last ' + past.length + ' Seasons (Overall)</div>'
+      + '<canvas id="sh-past-chart" height="80"></canvas>'
+      + '</div>';
+  }
+  return out;
 }
 
-function shDrawVsChart(vsMatches, opp, seasonAvg) {
+let shPastChartInst = null;
+function shDrawVsChart(vsMatches, past, opp, seasonAvg) {
+  // ── Current season GW chart ──
   const canvas = document.getElementById('sh-vs-chart');
-  if (!canvas) return;
-  if (shVsChartInst) { shVsChartInst.destroy(); shVsChartInst = null; }
-  const sorted = [...vsMatches].sort((a,b)=>a.round-b.round);
-  const labels = sorted.map(g=>'GW'+g.round+' '+(g.was_home?'H':'A')+' ('+(g.kickoff_time?new Date(g.kickoff_time).toLocaleDateString('en-GB',{day:'numeric',month:'short'}):'—')+')');
-  const pts = sorted.map(g=>g.total_points);
-  const colors = pts.map(v=>v>=8?'rgba(0,212,170,.85)':v>=3?'rgba(79,142,247,.8)':v>=2?'rgba(107,114,128,.7)':'rgba(255,85,85,.75)');
-  const ttData = sorted.map(g=>{
-    const ot=fplData.teams.find(t=>t.id===g.opponent_team);
-    return{gw:g.round,date:g.kickoff_time?new Date(g.kickoff_time).toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'2-digit'}):'—',home:g.was_home,goals:g.goals_scored,assists:g.assists,bonus:g.bonus,mins:g.minutes,pts:g.total_points,cs:g.clean_sheets,opp:ot?ot.short_name:'?'};
-  });
-  shVsChartInst = new Chart(canvas.getContext('2d'),{
-    type:'bar',
-    data:{labels,datasets:[{label:'FPL Points',data:pts,backgroundColor:colors,borderColor:colors.map(c=>c.replace(/[\d.]+\)$/,'1)')),borderWidth:1,borderRadius:6,borderSkipped:false}]},
-    options:{
-      responsive:true,
-      plugins:{
-        legend:{display:false},
-        tooltip:{backgroundColor:'#1a2035',borderColor:'rgba(255,255,255,.1)',borderWidth:1,padding:12,
-          callbacks:{
-            title:function(items){const d=ttData[items[0].dataIndex];return 'GW'+d.gw+' · '+d.date+' · '+(d.home?'Home':'Away')+' vs '+d.opp;},
-            label:function(items){const d=ttData[items.dataIndex];return[' FPL Pts: '+d.pts,' Goals: '+d.goals+'  Assists: '+d.assists+'  Bonus: '+d.bonus,' Minutes: '+d.mins+'  CS: '+(d.cs?'Yes':'No')];}
+  if (canvas && vsMatches.length) {
+    if (shVsChartInst) { shVsChartInst.destroy(); shVsChartInst = null; }
+    const sorted = [...vsMatches].sort((a,b)=>a.round-b.round);
+    const labels = sorted.map(g=>'GW'+g.round+' '+(g.was_home?'H':'A')+' ('+(g.kickoff_time?new Date(g.kickoff_time).toLocaleDateString('en-GB',{day:'numeric',month:'short'}):'—')+')');
+    const pts = sorted.map(g=>g.total_points);
+    const colors = pts.map(v=>v>=8?'rgba(0,212,170,.85)':v>=3?'rgba(79,142,247,.8)':v>=2?'rgba(107,114,128,.7)':'rgba(255,85,85,.75)');
+    const ttData = sorted.map(g=>{
+      const ot=fplData.teams.find(t=>t.id===g.opponent_team);
+      return{gw:g.round,date:g.kickoff_time?new Date(g.kickoff_time).toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'2-digit'}):'—',home:g.was_home,goals:g.goals_scored,assists:g.assists,bonus:g.bonus,mins:g.minutes,pts:g.total_points,cs:g.clean_sheets,opp:ot?ot.short_name:'?'};
+    });
+    shVsChartInst = new Chart(canvas.getContext('2d'),{
+      type:'bar',
+      data:{labels,datasets:[{label:'FPL Points',data:pts,backgroundColor:colors,borderColor:colors.map(c=>c.replace(/[\d.]+\)$/,'1)')),borderWidth:1,borderRadius:6,borderSkipped:false}]},
+      options:{
+        responsive:true,
+        plugins:{
+          legend:{display:false},
+          tooltip:{backgroundColor:'#1a2035',borderColor:'rgba(255,255,255,.1)',borderWidth:1,padding:12,
+            callbacks:{
+              title:function(items){const d=ttData[items[0].dataIndex];return 'GW'+d.gw+' · '+d.date+' · '+(d.home?'Home':'Away')+' vs '+d.opp;},
+              label:function(items){const d=ttData[items.dataIndex];return[' FPL Pts: '+d.pts,' Goals: '+d.goals+'  Assists: '+d.assists+'  Bonus: '+d.bonus,' Minutes: '+d.mins+'  CS: '+(d.cs?'Yes':'No')];}
+            }
           }
+        },
+        scales:{
+          x:{grid:{color:'rgba(255,255,255,.05)'},ticks:{color:'#6b7280',font:{size:10},maxRotation:30}},
+          y:{beginAtZero:true,grid:{color:'rgba(255,255,255,.05)'},ticks:{color:'#6b7280',font:{size:11},stepSize:2},title:{display:true,text:'Season avg: '+seasonAvg.toFixed(1)+' pts',color:'rgba(255,255,255,.35)',font:{size:10}}}
         }
-      },
-      scales:{
-        x:{grid:{color:'rgba(255,255,255,.05)'},ticks:{color:'#6b7280',font:{size:10},maxRotation:30}},
-        y:{beginAtZero:true,grid:{color:'rgba(255,255,255,.05)'},ticks:{color:'#6b7280',font:{size:11},stepSize:2},title:{display:true,text:'Season avg: '+seasonAvg.toFixed(1)+' pts',color:'rgba(255,255,255,.35)',font:{size:10}}}
       }
-    }
-  });
+    });
+  }
+  // ── Past seasons avg pts/gw bar chart ──
+  const canvas2 = document.getElementById('sh-past-chart');
+  if (canvas2 && past && past.length) {
+    if (shPastChartInst) { shPastChartInst.destroy(); shPastChartInst = null; }
+    const seasons = [...past].reverse(); // chronological
+    const pastLabels = seasons.map(s=>s.season_name);
+    const pastAvg = seasons.map(s=>{
+      const gws = s.minutes > 0 ? Math.max(1, Math.round(s.minutes/90)) : 1;
+      return parseFloat((s.total_points/gws).toFixed(1));
+    });
+    const pastGoals = seasons.map(s=>s.goals_scored);
+    const pastAssists = seasons.map(s=>s.assists);
+    const barColors = pastAvg.map(v=>v>=6?'rgba(0,212,170,.8)':v>=4?'rgba(79,142,247,.75)':'rgba(107,114,128,.6)');
+    shPastChartInst = new Chart(canvas2.getContext('2d'),{
+      type:'bar',
+      data:{
+        labels:pastLabels,
+        datasets:[
+          {label:'Avg Pts/GW',data:pastAvg,backgroundColor:barColors,borderColor:barColors.map(c=>c.replace(/[\d.]+\)$/,'1)')),borderWidth:1,borderRadius:6,borderSkipped:false,yAxisID:'y'},
+          {label:'Goals',data:pastGoals,type:'line',borderColor:'rgba(0,212,170,.9)',backgroundColor:'rgba(0,212,170,.15)',borderWidth:2,pointRadius:4,pointBackgroundColor:'rgba(0,212,170,1)',tension:.3,yAxisID:'y2'},
+          {label:'Assists',data:pastAssists,type:'line',borderColor:'rgba(79,142,247,.9)',backgroundColor:'rgba(79,142,247,.1)',borderWidth:2,pointRadius:4,pointBackgroundColor:'rgba(79,142,247,1)',tension:.3,yAxisID:'y2'}
+        ]
+      },
+      options:{
+        responsive:true,
+        plugins:{
+          legend:{display:true,labels:{color:'#9ca3af',font:{size:11},boxWidth:12}},
+          tooltip:{backgroundColor:'#1a2035',borderColor:'rgba(255,255,255,.1)',borderWidth:1,padding:12,
+            callbacks:{
+              title:function(items){return items[0].label+' Season';},
+              label:function(item){
+                const s=seasons[item.dataIndex];
+                const gws=s.minutes>0?Math.max(1,Math.round(s.minutes/90)):1;
+                if(item.dataset.label==='Avg Pts/GW') return ' Avg Pts/GW: '+item.raw+' ('+s.total_points+' pts, ~'+gws+' GWs)';
+                if(item.dataset.label==='Goals') return ' Goals: '+item.raw;
+                return ' Assists: '+item.raw;
+              }
+            }
+          }
+        },
+        scales:{
+          x:{grid:{color:'rgba(255,255,255,.05)'},ticks:{color:'#6b7280',font:{size:11}}},
+          y:{beginAtZero:true,grid:{color:'rgba(255,255,255,.05)'},ticks:{color:'#6b7280',font:{size:10}},title:{display:true,text:'Avg Pts/GW',color:'rgba(255,255,255,.35)',font:{size:10}},position:'left'},
+          y2:{beginAtZero:true,grid:{display:false},ticks:{color:'#6b7280',font:{size:10}},title:{display:true,text:'Goals / Assists',color:'rgba(255,255,255,.35)',font:{size:10}},position:'right'}
+        }
+      }
+    });
+  }
 }
 // ══ END SCOUT HISTORY PHASE 2 + 3 ════════════════════════════════════════
 
