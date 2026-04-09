@@ -253,8 +253,8 @@
     .pill{padding:5px 12px;border-radius:20px;border:1px solid var(--border);background:transparent;color:var(--text-muted);font-size:0.77rem;font-weight:600;cursor:pointer;transition:all 0.18s;font-family:'Outfit',sans-serif}
     .pill:hover{border-color:var(--green);color:var(--green)}
     .pill.active{background:rgba(0,212,170,0.14);border-color:rgba(0,212,170,0.5);color:#00d4aa}
-    .filter-select{padding:5px 10px;border-radius:8px;border:1px solid var(--border);background:rgba(255,255,255,0.05);color:var(--text);font-size:0.8rem;font-family:'Outfit',sans-serif;cursor:pointer;outline:none}
-    .filter-select:focus{border-color:rgba(0,212,170,0.5)}
+    .filter-select{padding:5px 10px;border-radius:8px;border:1px solid var(--border);background:#0f1520;color:#e2e8f0;font-size:0.8rem;font-family:'Outfit',sans-serif;cursor:pointer;outline:none}
+    .filter-select:focus{border-color:rgba(0,212,170,0.5)} select,select option{background:#0f1520 !important;color:#e2e8f0 !important;}
     .filter-counter{margin-top:10px;font-size:0.75rem;color:var(--text-muted)}
     .card[data-pid]{cursor:pointer}
     .card[data-pid]:hover{border-color:rgba(0,212,170,0.4)!important;transform:translateY(-2px)}
@@ -691,6 +691,11 @@
     .sh-insight-neu { background:rgba(255,255,255,.04); border-color:var(--border); color:var(--text-muted); }
     .sh-insight-icon { font-size:1rem; flex-shrink:0; }
     .sh-vs-chart-title { font-size:.72rem; font-weight:700; text-transform:uppercase; letter-spacing:1.5px; color:var(--text-muted); margin-bottom:12px; }
+
+    .cf-bar{margin-bottom:14px;padding:12px 16px;}
+    .dark-select{background:#0f1520 !important;color:#e2e8f0 !important;border:1px solid var(--border);border-radius:8px;padding:6px 10px;font-size:0.8rem;font-family:'Outfit',sans-serif;cursor:pointer;outline:none;min-width:160px;}
+    .dark-select:focus{border-color:rgba(0,212,170,0.6);}
+    .dark-select option{background:#0f1520;color:#e2e8f0;}
 </style>
 </head>
 <body>
@@ -1027,13 +1032,36 @@ function renderFixtures(allFixtures){
 // ── TOP PLAYERS ───────────────────────────────────────────────────────────
 // ── FILTER STATE ─────────────────────────────────────────────────────────
 let pf_pos='ALL', pf_price=0, pf_sort='form', pf_show=12;
+let pf_team=0, pw_team=0, val_team=0, xg_team=0, diff_team=0, tr_team=0, inj_team=0;
+function buildClubOpts(){
+  if(!fplData)return '';
+  return fplData.teams.slice().sort((a,b)=>a.name.localeCompare(b.name))
+    .map(t=>`<option value="${t.id}">${t.name}</option>`).join('');
+}
+function injectClubFilter(gridId,wrapperId,stateVar,renderFn,extraHTML){
+  if(document.getElementById(wrapperId+'-wrap')){
+    const s=document.getElementById(wrapperId+'-sel');if(s)s.value=window[stateVar]||0;return;
+  }
+  const grid=document.getElementById(gridId);if(!grid)return;
+  const div=document.createElement('div');
+  div.innerHTML=`<div class="filter-bar cf-bar" id="${wrapperId}-wrap"><div class="filter-row" style="gap:12px;flex-wrap:wrap">
+    <div class="filter-group"><span class="filter-label">🏟️ Club</span>
+    <select class="dark-select" id="${wrapperId}-sel" onchange="window['${stateVar}']=parseInt(this.value);${renderFn}()">
+      <option value="0">All Clubs</option>${buildClubOpts()}
+    </select></div>${extraHTML||''}</div></div>`;
+  const frag=document.createDocumentFragment();
+  while(div.firstChild)frag.appendChild(div.firstChild);
+  grid.parentElement.insertBefore(frag,grid);
+}
 
 function renderPlayers(){
   if(!fplData)return;
+  injectClubFilter('player-cards','cf-players','pf_team','renderPlayers');
   const grid=document.getElementById('player-cards');
   const counter=document.getElementById('players-counter');
   let pool=[...fplData.elements].filter(p=>p.minutes>0);
   if(pf_pos!=='ALL') pool=pool.filter(p=>p.element_type===parseInt(pf_pos));
+  if(pf_team>0) pool=pool.filter(p=>p.team===pf_team);
   if(pf_price>0) pool=pool.filter(p=>p.now_cost<=pf_price);
   pool.sort((a,b)=>{
     if(pf_sort==='ptspercost'){
@@ -1058,28 +1086,15 @@ function renderPlayers(){
 // ── POWER RANKINGS ────────────────────────────────────────────────────────
 function renderPower(){
   const grid=document.getElementById('power-cards');
-  const allScored=fplData.elements.filter(p=>p.minutes>450).map(p=>({...p,power:calcPower(p)}));
+  const sortExtra=`<div class="filter-group"><span class="filter-label">Sort</span>
+    <select class="dark-select" id="power-sort-select" onchange="powerSortDir=this.value;renderPower()">
+      <option value="desc">⬇ Highest First</option><option value="asc">⬆ Lowest First</option>
+    </select></div>`;
+  injectClubFilter('power-cards','cf-power','pw_team','renderPower',sortExtra);
+  const ss=document.getElementById('power-sort-select');if(ss)ss.value=powerSortDir;
+  const allScored=fplData.elements.filter(p=>p.minutes>450&&(pw_team===0||p.team===pw_team)).map(p=>({...p,power:calcPower(p)}));
   allScored.sort((a,b)=>powerSortDir==='desc'?b.power-a.power:a.power-b.power);
   const scored=allScored.slice(0,20);
-
-  // Inject sort dropdown into tab header if not already there
-  const hdr=document.getElementById('power-sort-hdr');
-  if(!hdr){
-    const wrap=grid.closest('.tab-content')||grid.parentElement;
-    const ddWrap=document.createElement('div');
-    ddWrap.id='power-sort-hdr';
-    ddWrap.style.cssText='display:flex;justify-content:flex-end;align-items:center;gap:10px;margin-bottom:14px';
-    ddWrap.innerHTML=`<label style="font-size:0.75rem;color:var(--text-muted);font-weight:600">Sort:</label>
-      <select id="power-sort-select" style="background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:5px 10px;font-size:0.8rem;color:var(--text);cursor:pointer;outline:none"
-        onchange="powerSortDir=this.value;renderPower()">
-        <option value="desc" ${powerSortDir==='desc'?'selected':''}>⬇ Highest First</option>
-        <option value="asc"  ${powerSortDir==='asc'?'selected':''}>⬆ Lowest First</option>
-      </select>`;
-    wrap.insertBefore(ddWrap, grid);
-  } else {
-    const sel=document.getElementById('power-sort-select');
-    if(sel) sel.value=powerSortDir;
-  }
   const maxScore=scored[0]?.power||10;grid.innerHTML='';
   scored.forEach((p,i)=>{
     const team=teamOf(p);const c=makeCard(i,p.id);
@@ -1096,8 +1111,9 @@ function renderPower(){
 
 // ── VALUE PICKS ───────────────────────────────────────────────────────────
 function renderValue(){
+  injectClubFilter('value-cards','cf-value','val_team','renderValue');
   const grid=document.getElementById('value-cards');
-  const picks=fplData.elements.filter(p=>p.minutes>450&&p.now_cost>0).map(p=>({...p,ptsCost:p.total_points/(p.now_cost/10),epNext:parseFloat(p.ep_next)||0})).sort((a,b)=>b.ptsCost-a.ptsCost).slice(0,12);
+  const picks=fplData.elements.filter(p=>p.minutes>450&&p.now_cost>0&&(val_team===0||p.team===val_team)).map(p=>({...p,ptsCost:p.total_points/(p.now_cost/10),epNext:parseFloat(p.ep_next)||0})).sort((a,b)=>b.ptsCost-a.ptsCost).slice(0,24);
   grid.innerHTML='';
   picks.forEach((p,i)=>{
     const team=teamOf(p);const c=makeCard(i,p.id);
@@ -1110,9 +1126,11 @@ function renderValue(){
 
 // ── TRANSFERS ─────────────────────────────────────────────────────────────
 function renderTransfers(){
+  injectClubFilter('transfer-cards','cf-transfers','tr_team','renderTransfers');
   const grid=document.getElementById('transfer-cards');
-  const byIn=[...fplData.elements].sort((a,b)=>b.transfers_in_event-a.transfers_in_event).slice(0,6);
-  const byOut=[...fplData.elements].sort((a,b)=>b.transfers_out_event-a.transfers_out_event).slice(0,6);
+  const pool=fplData.elements.filter(p=>tr_team===0||p.team===tr_team);
+  const byIn=[...pool].sort((a,b)=>b.transfers_in_event-a.transfers_in_event).slice(0,6);
+  const byOut=[...pool].sort((a,b)=>b.transfers_out_event-a.transfers_out_event).slice(0,6);
   const combined=[];const seen=new Set();
   byIn.forEach(p=>{if(!seen.has(p.id)){seen.add(p.id);combined.push({...p});}});
   byOut.forEach(p=>{if(!seen.has(p.id)){seen.add(p.id);combined.push({...p});}});
@@ -1129,8 +1147,9 @@ function renderTransfers(){
 
 // ── INJURIES ──────────────────────────────────────────────────────────────
 function renderInjuries(){
+  injectClubFilter('injury-cards','cf-injuries','inj_team','renderInjuries');
   const grid=document.getElementById('injury-cards');
-  const injured=fplData.elements.filter(p=>p.news&&p.news.trim()!=='').sort((a,b)=>(a.chance_of_playing_next_round||100)-(b.chance_of_playing_next_round||100));
+  const injured=fplData.elements.filter(p=>p.news&&p.news.trim()!==''&&(inj_team===0||p.team===inj_team)).sort((a,b)=>(a.chance_of_playing_next_round||100)-(b.chance_of_playing_next_round||100));
   if(!injured.length){grid.innerHTML='<div class="loading" style="color:var(--green)">✅ No injury news this gameweek!</div>';return;}
   grid.innerHTML='';
   injured.slice(0,15).forEach((p,i)=>{
@@ -1150,7 +1169,8 @@ async function renderXG(){
   buildXGCardsFallback(grid);
 }
 function buildXGCardsFallback(grid){
-  const candidates=fplData.elements.filter(p=>p.minutes>360&&(p.element_type===3||p.element_type===4)).sort((a,b)=>(b.goals_scored+b.assists)-(a.goals_scored+a.assists)).slice(0,12);
+  injectClubFilter('xg-cards','cf-xg','xg_team','renderXG');
+  const candidates=fplData.elements.filter(p=>p.minutes>360&&(p.element_type===3||p.element_type===4)&&(xg_team===0||p.team===xg_team)).sort((a,b)=>(b.goals_scored+b.assists)-(a.goals_scored+a.assists)).slice(0,24);
   grid.innerHTML='';
   candidates.forEach((p,i)=>{
     const team=teamOf(p);const c=makeCard(i,p.id);
@@ -1315,10 +1335,11 @@ async function renderDifferentials(){
   const content=document.getElementById('differentials-content');
   content.innerHTML='<div class="loading"><div class="loading-spinner"></div>Scanning for differentials...</div>';
   if(!fplData){content.innerHTML='<div class="error-msg">❌ Data not loaded. Please refresh.</div>';return;}
+  injectClubFilter('differentials-content','cf-diffs','diff_team','renderDifferentials');
   const diffs=fplData.elements
     .filter(p=>{
       const o=parseFloat(p.selected_by_percent||0);
-      return o>0&&o<10&&p.minutes>180;
+      return o>0&&o<10&&p.minutes>180&&(diff_team===0||p.team===diff_team);
     })
     .map(p=>{
       const o=parseFloat(p.selected_by_percent||0.1);
@@ -1333,7 +1354,7 @@ async function renderDifferentials(){
     return;
   }
   const grid=document.createElement('div');
-  grid.className='card-grid';
+  grid.id='diff-cards';grid.className='card-grid';
   diffs.forEach((p,i)=>{
     const team=teamOf(p);
     const c=makeCard(i);
