@@ -696,6 +696,20 @@
     .dark-select{background:#0f1520 !important;color:#e2e8f0 !important;border:1px solid var(--border);border-radius:8px;padding:6px 10px;font-size:0.8rem;font-family:'Outfit',sans-serif;cursor:pointer;outline:none;min-width:160px;}
     .dark-select:focus{border-color:rgba(0,212,170,0.6);}
     .dark-select option{background:#0f1520;color:#e2e8f0;}
+
+    /* ── Club Badge Filter ───────────────────────────────────── */
+    .cf-badge-bar{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:14px 16px;margin-bottom:16px;}
+    .cf-badge-label{font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:1.2px;color:var(--text-muted);margin-bottom:10px;}
+    .cf-badge-grid{display:flex;flex-wrap:wrap;gap:8px;align-items:center;}
+    .club-badge-btn{display:flex;flex-direction:column;align-items:center;gap:3px;background:rgba(255,255,255,.04);border:1.5px solid var(--border);border-radius:10px;padding:7px 9px;cursor:pointer;transition:all .18s ease;min-width:52px;position:relative;}
+    .club-badge-btn:hover{background:rgba(255,255,255,.09);border-color:rgba(0,212,170,.4);transform:translateY(-2px);box-shadow:0 4px 12px rgba(0,0,0,.3);}
+    .club-badge-btn.active{background:rgba(0,212,170,.12);border-color:rgba(0,212,170,.7);box-shadow:0 0 0 2px rgba(0,212,170,.25);}
+    .club-badge-btn.active .club-badge-name{color:var(--green);}
+    .club-badge-btn img{width:28px;height:28px;object-fit:contain;display:block;}
+    .club-badge-name{font-size:.6rem;font-weight:600;color:var(--text-muted);text-align:center;white-space:nowrap;letter-spacing:.3px;}
+    .club-badge-all{min-width:46px;}
+    .club-badge-all-icon{width:28px;height:28px;display:flex;align-items:center;justify-content:center;font-size:.62rem;font-weight:800;color:var(--green);background:rgba(0,212,170,.15);border-radius:6px;letter-spacing:.5px;}
+    .cf-extra-row{margin-top:12px;padding-top:12px;border-top:1px solid var(--border);display:flex;gap:12px;flex-wrap:wrap;align-items:center;}
 </style>
 </head>
 <body>
@@ -1032,23 +1046,37 @@ function renderFixtures(allFixtures){
 // ── TOP PLAYERS ───────────────────────────────────────────────────────────
 // ── FILTER STATE ─────────────────────────────────────────────────────────
 let pf_pos='ALL', pf_price=0, pf_sort='form', pf_show=12;
-let pf_team=0, pw_team=0, val_team=0, xg_team=0, diff_team=0, tr_team=0, inj_team=0;
-function buildClubOpts(){
-  if(!fplData)return '';
-  return fplData.teams.slice().sort((a,b)=>a.name.localeCompare(b.name))
-    .map(t=>`<option value="${t.id}">${t.name}</option>`).join('');
-}
+var pf_team=0, pw_team=0, val_team=0, xg_team=0, diff_team=0, tr_team=0, inj_team=0;
 function injectClubFilter(gridId,wrapperId,stateVar,renderFn,extraHTML){
   if(document.getElementById(wrapperId+'-wrap')){
-    const s=document.getElementById(wrapperId+'-sel');if(s)s.value=window[stateVar]||0;return;
+    // sync active badge
+    document.querySelectorAll('#'+wrapperId+'-wrap .club-badge-btn').forEach(b=>{
+      b.classList.toggle('active', parseInt(b.dataset.tid)===(window[stateVar]||0));
+    });
+    return;
   }
   const grid=document.getElementById(gridId);if(!grid)return;
+  const sorted=fplData.teams.slice().sort((a,b)=>a.name.localeCompare(b.name));
+  const badges=sorted.map(t=>{
+    const isActive=(window[stateVar]||0)===t.id;
+    return `<button class="club-badge-btn${isActive?' active':''}" data-tid="${t.id}"
+      title="${t.name}" onclick="window['${stateVar}']=(window['${stateVar}']===parseInt(this.dataset.tid)?0:parseInt(this.dataset.tid));${renderFn}()">
+      <img src="https://resources.premierleague.com/premierleague/badges/50/t${t.code}.png"
+        onerror="this.style.display='none'" alt="${t.short_name}" loading="lazy">
+      <span class="club-badge-name">${t.short_name}</span>
+    </button>`;
+  }).join('');
+  const allBtn=`<button class="club-badge-btn club-badge-all${(window[stateVar]||0)===0?' active':''}" data-tid="0"
+    title="All Clubs" onclick="window['${stateVar}']=0;${renderFn}()">
+    <span class="club-badge-all-icon">ALL</span>
+    <span class="club-badge-name">All</span>
+  </button>`;
   const div=document.createElement('div');
-  div.innerHTML=`<div class="filter-bar cf-bar" id="${wrapperId}-wrap"><div class="filter-row" style="gap:12px;flex-wrap:wrap">
-    <div class="filter-group"><span class="filter-label">🏟️ Club</span>
-    <select class="dark-select" id="${wrapperId}-sel" onchange="window['${stateVar}']=parseInt(this.value);${renderFn}()">
-      <option value="0">All Clubs</option>${buildClubOpts()}
-    </select></div>${extraHTML||''}</div></div>`;
+  div.innerHTML=`<div class="cf-badge-bar" id="${wrapperId}-wrap">
+    <div class="cf-badge-label">🏟️ Filter by Club</div>
+    <div class="cf-badge-grid">${allBtn}${badges}</div>
+    ${extraHTML?`<div class="cf-extra-row">${extraHTML}</div>`:''}
+  </div>`;
   const frag=document.createDocumentFragment();
   while(div.firstChild)frag.appendChild(div.firstChild);
   grid.parentElement.insertBefore(frag,grid);
@@ -1086,11 +1114,11 @@ function renderPlayers(){
 // ── POWER RANKINGS ────────────────────────────────────────────────────────
 function renderPower(){
   const grid=document.getElementById('power-cards');
-  const sortExtra=`<div class="filter-group"><span class="filter-label">Sort</span>
+  injectClubFilter('power-cards','cf-power','pw_team','renderPower',
+    `<span class="filter-label" style="font-size:.75rem;color:var(--text-muted);font-weight:600">Sort:</span>
     <select class="dark-select" id="power-sort-select" onchange="powerSortDir=this.value;renderPower()">
       <option value="desc">⬇ Highest First</option><option value="asc">⬆ Lowest First</option>
-    </select></div>`;
-  injectClubFilter('power-cards','cf-power','pw_team','renderPower',sortExtra);
+    </select>`);
   const ss=document.getElementById('power-sort-select');if(ss)ss.value=powerSortDir;
   const allScored=fplData.elements.filter(p=>p.minutes>450&&(pw_team===0||p.team===pw_team)).map(p=>({...p,power:calcPower(p)}));
   allScored.sort((a,b)=>powerSortDir==='desc'?b.power-a.power:a.power-b.power);
