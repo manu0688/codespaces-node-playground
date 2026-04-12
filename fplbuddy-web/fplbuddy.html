@@ -710,6 +710,13 @@
     .club-badge-all{min-width:46px;}
     .club-badge-all-icon{width:28px;height:28px;display:flex;align-items:center;justify-content:center;font-size:.62rem;font-weight:800;color:var(--green);background:rgba(0,212,170,.15);border-radius:6px;letter-spacing:.5px;}
     .cf-extra-row{margin-top:12px;padding-top:12px;border-top:1px solid var(--border);display:flex;gap:12px;flex-wrap:wrap;align-items:center;}
+
+    .rt-bar{display:flex;align-items:center;gap:10px;padding:6px 20px 8px;border-bottom:1px solid var(--border);background:var(--surface);flex-wrap:wrap;}
+    .rt-refresh-btn{background:rgba(0,212,170,.08);border:1px solid rgba(0,212,170,.3);border-radius:20px;padding:4px 14px;font-size:.68rem;color:var(--green);cursor:pointer;font-family:'Outfit',sans-serif;transition:all .18s ease;}
+    .rt-refresh-btn:hover{background:rgba(0,212,170,.2);border-color:var(--green);}
+    .rt-refresh-btn:disabled{opacity:.5;cursor:default;}
+    #last-updated-badge{display:none;align-items:center;gap:5px;font-size:.65rem;background:rgba(0,212,170,.08);color:var(--green);border:1px solid rgba(0,212,170,.2);border-radius:20px;padding:3px 10px;}
+    .rt-hint{font-size:.6rem;color:var(--text-muted);margin-left:auto;}
 </style>
 </head>
 <body>
@@ -721,77 +728,35 @@
 <div class="container">
   <div id="gw-info"></div>
   <div class="tabs-wrap">
-    <button class="tab active" onclick="switchTab('fixtures',event)">📅 Fixture Runs</button>
-    <span class="tab-tip-wrap"><button class="tab" onclick="switchTab('players',event)">⚡ Top Players</button><i class="tab-tip-icon" onclick="toggleTip(this)" onmouseenter="this.parentElement.classList.add('tip-open')" onmouseleave="this.parentElement.classList.remove('tip-open')">ⓘ<span class="tab-tip-box">Best players right now — filter by form, price, position and sort method of your choice</span></i></span>
-    <span class="tab-tip-wrap"><button class="tab" onclick="switchTab('power',event)">🏆 Power Rankings</button><i class="tab-tip-icon" onclick="toggleTip(this)" onmouseenter="this.parentElement.classList.add('tip-open')" onmouseleave="this.parentElement.classList.remove('tip-open')">ⓘ<span class="tab-tip-box">Composite score: Form 22% + Pts/Game 18% + Pts/£m 15% + Fixture Ease 16% + Goal Imminence 18% + Minutes 7% + Transfer Momentum 4%</span></i></span>
-    <span class="tab-tip-wrap"><button class="tab" onclick="switchTab('value',event)">💸 Value Picks</button><i class="tab-tip-icon" onclick="toggleTip(this)" onmouseenter="this.parentElement.classList.add('tip-open')" onmouseleave="this.parentElement.classList.remove('tip-open')">ⓘ<span class="tab-tip-box">Best points-per-million players. Total season points divided by current price</span></i></span>
-    <span class="tab-tip-wrap"><button class="tab" onclick="switchTab('transfers',event)">🔄 Transfers</button><i class="tab-tip-icon" onclick="toggleTip(this)" onmouseenter="this.parentElement.classList.add('tip-open')" onmouseleave="this.parentElement.classList.remove('tip-open')">ⓘ<span class="tab-tip-box">Who managers are buying and selling most this gameweek</span></i></span>
-    <span class="tab-tip-wrap"><button class="tab" onclick="switchTab('injuries',event)">🩹 Injuries</button><i class="tab-tip-icon" onclick="toggleTip(this)" onmouseenter="this.parentElement.classList.add('tip-open')" onmouseleave="this.parentElement.classList.remove('tip-open')">ⓘ<span class="tab-tip-box">Players with active injury or suspension news and their chance of playing next GW</span></i></span>
-    <span class="tab-tip-wrap"><button class="tab" onclick="switchTab('xg',event)">📊 xG Stats</button><i class="tab-tip-icon" onclick="toggleTip(this)" onmouseenter="this.parentElement.classList.add('tip-open')" onmouseleave="this.parentElement.classList.remove('tip-open')">ⓘ<span class="tab-tip-box">Expected Goals (xG) and Expected Assists (xA) — chances created vs actual returns</span></i></span>
-    <span class="tab-tip-wrap"><button class="tab" onclick="switchTab('livegw',event)">🔴 Live GW</button><i class="tab-tip-icon" onclick="toggleTip(this)" onmouseenter="this.parentElement.classList.add('tip-open')" onmouseleave="this.parentElement.classList.remove('tip-open')">ⓘ<span class="tab-tip-box">Real-time points for the current gameweek pulled from the FPL live endpoint</span></i></span>
-    <span class="tab-tip-wrap"><button class="tab" onclick="switchTab('scout',event)">🎯 Scout</button><i class="tab-tip-icon" onclick="toggleTip(this)" onmouseenter="this.parentElement.classList.add('tip-open')" onmouseleave="this.parentElement.classList.remove('tip-open')">ⓘ<span class="tab-tip-box">Bubble chart plotting form vs fixture ease. Top-right corner = ideal transfer targets</span></i></span>
-    <span class="tab-tip-wrap"><button class="tab" onclick="switchTab('scouthistory',event)">🔬 Scout History</button><i class="tab-tip-icon" onclick="toggleTip(this)" onmouseenter="this.parentElement.classList.add('tip-open')" onmouseleave="this.parentElement.classList.remove('tip-open')">ⓘ<span class="tab-tip-box">Deep-dive player analysis — current season match log, past season totals, profile banner</span></i></span>
-    <span class="tab-tip-wrap"><button class="tab" onclick="switchTab('myteam',event)">👤 My Team</button><i class="tab-tip-icon" onclick="toggleTip(this)" onmouseenter="this.parentElement.classList.add('tip-open')" onmouseleave="this.parentElement.classList.remove('tip-open')">ⓘ<span class="tab-tip-box">Enter your FPL team ID to analyse your squad, see captain picks and a visual pitch view</span></i></span>
+    <button class="tab active" data-tab="fixtures" onclick="switchTab('fixtures',event)">📅 Fixture Runs</button>
+    <span class="tab-tip-wrap"><i class="tab-tip-icon" onclick="toggleTip(this)" onmouseenter="this.parentElement.classList.add('tip-open')" onmouseleave="this.parentElement.classList.remove('tip-open')">ⓘ<span class="tab-tip-box">Best players right now — filter by form, price, position and sort method of your choice</span></i></span>
+    <span class="tab-tip-wrap"><button class="tab" data-tab="power" onclick="switchTab('power',event)">🏆 Power Rankings</button><i class="tab-tip-icon" onclick="toggleTip(this)" onmouseenter="this.parentElement.classList.add('tip-open')" onmouseleave="this.parentElement.classList.remove('tip-open')">ⓘ<span class="tab-tip-box">Composite score: Form 22% + Pts/Game 18% + Pts/£m 15% + Fixture Ease 16% + Goal Imminence 18% + Minutes 7% + Transfer Momentum 4%</span></i></span>
+    <span class="tab-tip-wrap"><button class="tab" data-tab="value" onclick="switchTab('value',event)">💸 Value Picks</button><i class="tab-tip-icon" onclick="toggleTip(this)" onmouseenter="this.parentElement.classList.add('tip-open')" onmouseleave="this.parentElement.classList.remove('tip-open')">ⓘ<span class="tab-tip-box">Best points-per-million players. Total season points divided by current price</span></i></span>
+    <span class="tab-tip-wrap"><button class="tab" data-tab="transfers" onclick="switchTab('transfers',event)">🔄 Transfers</button><i class="tab-tip-icon" onclick="toggleTip(this)" onmouseenter="this.parentElement.classList.add('tip-open')" onmouseleave="this.parentElement.classList.remove('tip-open')">ⓘ<span class="tab-tip-box">Who managers are buying and selling most this gameweek</span></i></span>
+    <span class="tab-tip-wrap"><button class="tab" data-tab="injuries" onclick="switchTab('injuries',event)">🩹 Injuries</button><i class="tab-tip-icon" onclick="toggleTip(this)" onmouseenter="this.parentElement.classList.add('tip-open')" onmouseleave="this.parentElement.classList.remove('tip-open')">ⓘ<span class="tab-tip-box">Players with active injury or suspension news and their chance of playing next GW</span></i></span>
+    <span class="tab-tip-wrap"><button class="tab" data-tab="xg" onclick="switchTab('xg',event)">📊 xG Stats</button><i class="tab-tip-icon" onclick="toggleTip(this)" onmouseenter="this.parentElement.classList.add('tip-open')" onmouseleave="this.parentElement.classList.remove('tip-open')">ⓘ<span class="tab-tip-box">Expected Goals (xG) and Expected Assists (xA) — chances created vs actual returns</span></i></span>
+    <span class="tab-tip-wrap"><button class="tab" data-tab="livegw" onclick="switchTab('livegw',event)">🔴 Live GW</button><i class="tab-tip-icon" onclick="toggleTip(this)" onmouseenter="this.parentElement.classList.add('tip-open')" onmouseleave="this.parentElement.classList.remove('tip-open')">ⓘ<span class="tab-tip-box">Real-time points for the current gameweek pulled from the FPL live endpoint</span></i></span>
+    <span class="tab-tip-wrap"><button class="tab" data-tab="scout" onclick="switchTab('scout',event)">🎯 Scout</button><i class="tab-tip-icon" onclick="toggleTip(this)" onmouseenter="this.parentElement.classList.add('tip-open')" onmouseleave="this.parentElement.classList.remove('tip-open')">ⓘ<span class="tab-tip-box">Bubble chart plotting form vs fixture ease. Top-right corner = ideal transfer targets</span></i></span>
+    <span class="tab-tip-wrap"><button class="tab" data-tab="scouthistory" onclick="switchTab('scouthistory',event)">🔬 Scout History</button><i class="tab-tip-icon" onclick="toggleTip(this)" onmouseenter="this.parentElement.classList.add('tip-open')" onmouseleave="this.parentElement.classList.remove('tip-open')">ⓘ<span class="tab-tip-box">Deep-dive player analysis — current season match log, past season totals, profile banner</span></i></span>
+    <span class="tab-tip-wrap"><button class="tab" data-tab="myteam" onclick="switchTab('myteam',event)">👤 My Team</button><i class="tab-tip-icon" onclick="toggleTip(this)" onmouseenter="this.parentElement.classList.add('tip-open')" onmouseleave="this.parentElement.classList.remove('tip-open')">ⓘ<span class="tab-tip-box">Enter your FPL team ID to analyse your squad, see captain picks and a visual pitch view</span></i></span>
     <span class="tab-tip-wrap"><button class="tab" onclick="switchTab('ai-chat',event)">🤖 AI Chat</button><i class="tab-tip-icon" onclick="toggleTip(this)" onmouseenter="this.parentElement.classList.add('tip-open')" onmouseleave="this.parentElement.classList.remove('tip-open')">ⓘ<span class="tab-tip-box">GPT-powered FPL assistant. Ask anything about transfers, captains or your squad</span></i></span>
-    <span class="tab-tip-wrap"><button class="tab" onclick="switchTab('differentials',event)">🔍 Differentials</button><i class="tab-tip-icon" onclick="toggleTip(this)" onmouseenter="this.parentElement.classList.add('tip-open')" onmouseleave="this.parentElement.classList.remove('tip-open')">ⓘ<span class="tab-tip-box">Players owned by less than 10% of managers but with high power scores</span></i></span>
-    <span class="tab-tip-wrap"><button class="tab" onclick="switchTab('history',event)">📈 GW History</button><i class="tab-tip-icon" onclick="toggleTip(this)" onmouseenter="this.parentElement.classList.add('tip-open')" onmouseleave="this.parentElement.classList.remove('tip-open')">ⓘ<span class="tab-tip-box">Search any player to see their GW-by-GW points as a line chart with full stat table</span></i></span>
-    <span class="tab-tip-wrap"><button class="tab" onclick="switchTab('minileague',event)">🏆 Mini League</button><i class="tab-tip-icon" onclick="toggleTip(this)" onmouseenter="this.parentElement.classList.add('tip-open')" onmouseleave="this.parentElement.classList.remove('tip-open')">ⓘ<span class="tab-tip-box">Enter a league ID to see live standings, rank movements and points gaps</span></i></span>
-    <span class="tab-tip-wrap"><button class="tab" onclick="switchTab('fixturegrid',event)">🗓️ Fixture Grid</button><i class="tab-tip-icon" onclick="toggleTip(this)" onmouseenter="this.parentElement.classList.add('tip-open')" onmouseleave="this.parentElement.classList.remove('tip-open')">ⓘ<span class="tab-tip-box">Full 20-team × 8-GW colour-coded fixture ticker, sorted easiest to hardest</span></i></span>
-    <span class="tab-tip-wrap"><button class="tab" onclick="switchTab('chipplanner',event)">🃏 Chip Planner</button><i class="tab-tip-icon" onclick="toggleTip(this)" onmouseenter="this.parentElement.classList.add('tip-open')" onmouseleave="this.parentElement.classList.remove('tip-open')">ⓘ<span class="tab-tip-box">Recommends the best remaining GW to play each of your 4 chips based on fixture data</span></i></span>
-    <span class="tab-tip-wrap"><button class="tab" onclick="switchTab('pricechange',event)">💰 Price Changes</button><i class="tab-tip-icon" onclick="toggleTip(this)" onmouseenter="this.parentElement.classList.add('tip-open')" onmouseleave="this.parentElement.classList.remove('tip-open')">ⓘ<span class="tab-tip-box">Players most likely to rise or fall based on transfer velocity this GW</span></i></span>
-    <span class="tab-tip-wrap"><button class="tab" onclick="switchTab('seasonpts',event)">📊 Season Points</button><i class="tab-tip-icon" onclick="toggleTip(this)" onmouseenter="this.parentElement.classList.add('tip-open')" onmouseleave="this.parentElement.classList.remove('tip-open')">ⓘ<span class="tab-tip-box">Your GW-by-GW points chart with cumulative total, rank trend and chips played</span></i></span>
-    <span class="tab-tip-wrap"><button class="tab" onclick="switchTab('h2h',event)">⚔️ Head-to-Head</button><i class="tab-tip-icon" onclick="toggleTip(this)" onmouseenter="this.parentElement.classList.add('tip-open')" onmouseleave="this.parentElement.classList.remove('tip-open')">ⓘ<span class="tab-tip-box">Compare your FPL season vs a rival — W/D/L record, pts diff and GW battle table</span></i></span>
+    <span class="tab-tip-wrap"><button class="tab" data-tab="differentials" onclick="switchTab('differentials',event)">🔍 Differentials</button><i class="tab-tip-icon" onclick="toggleTip(this)" onmouseenter="this.parentElement.classList.add('tip-open')" onmouseleave="this.parentElement.classList.remove('tip-open')">ⓘ<span class="tab-tip-box">Players owned by less than 10% of managers but with high power scores</span></i></span>
+    <span class="tab-tip-wrap"><button class="tab" data-tab="history" onclick="switchTab('history',event)">📈 GW History</button><i class="tab-tip-icon" onclick="toggleTip(this)" onmouseenter="this.parentElement.classList.add('tip-open')" onmouseleave="this.parentElement.classList.remove('tip-open')">ⓘ<span class="tab-tip-box">Search any player to see their GW-by-GW points as a line chart with full stat table</span></i></span>
+    <span class="tab-tip-wrap"><button class="tab" data-tab="minileague" onclick="switchTab('minileague',event)">🏆 Mini League</button><i class="tab-tip-icon" onclick="toggleTip(this)" onmouseenter="this.parentElement.classList.add('tip-open')" onmouseleave="this.parentElement.classList.remove('tip-open')">ⓘ<span class="tab-tip-box">Enter a league ID to see live standings, rank movements and points gaps</span></i></span>
+    <span class="tab-tip-wrap"><button class="tab" data-tab="fixturegrid" onclick="switchTab('fixturegrid',event)">🗓️ Fixture Grid</button><i class="tab-tip-icon" onclick="toggleTip(this)" onmouseenter="this.parentElement.classList.add('tip-open')" onmouseleave="this.parentElement.classList.remove('tip-open')">ⓘ<span class="tab-tip-box">Full 20-team × 8-GW colour-coded fixture ticker, sorted easiest to hardest</span></i></span>
+    <span class="tab-tip-wrap"><button class="tab" data-tab="chipplanner" onclick="switchTab('chipplanner',event)">🃏 Chip Planner</button><i class="tab-tip-icon" onclick="toggleTip(this)" onmouseenter="this.parentElement.classList.add('tip-open')" onmouseleave="this.parentElement.classList.remove('tip-open')">ⓘ<span class="tab-tip-box">Recommends the best remaining GW to play each of your 4 chips based on fixture data</span></i></span>
+    <span class="tab-tip-wrap"><button class="tab" data-tab="pricechange" onclick="switchTab('pricechange',event)">💰 Price Changes</button><i class="tab-tip-icon" onclick="toggleTip(this)" onmouseenter="this.parentElement.classList.add('tip-open')" onmouseleave="this.parentElement.classList.remove('tip-open')">ⓘ<span class="tab-tip-box">Players most likely to rise or fall based on transfer velocity this GW</span></i></span>
+    <span class="tab-tip-wrap"><button class="tab" data-tab="seasonpts" onclick="switchTab('seasonpts',event)">📊 Season Points</button><i class="tab-tip-icon" onclick="toggleTip(this)" onmouseenter="this.parentElement.classList.add('tip-open')" onmouseleave="this.parentElement.classList.remove('tip-open')">ⓘ<span class="tab-tip-box">Your GW-by-GW points chart with cumulative total, rank trend and chips played</span></i></span>
+    <span class="tab-tip-wrap"><button class="tab" data-tab="h2h" onclick="switchTab('h2h',event)">⚔️ Head-to-Head</button><i class="tab-tip-icon" onclick="toggleTip(this)" onmouseenter="this.parentElement.classList.add('tip-open')" onmouseleave="this.parentElement.classList.remove('tip-open')">ⓘ<span class="tab-tip-box">Compare your FPL season vs a rival — W/D/L record, pts diff and GW battle table</span></i></span>
+  </div>
+  <div class="rt-bar">
+    <span id="last-updated-badge">🔄&nbsp;<span id="last-updated-text">just now</span></span>
+    <button class="rt-refresh-btn" onclick="forceRefreshData()">↺ Refresh Data</button>
+    <span class="rt-hint">Auto-refreshes every 90s during live GW</span>
   </div>
   <p class="section-title" id="section-label">Fixture Runs — Next 5 Gameweeks</p>
 
   <div id="fixtures-section"><div id="proxy-status-bar"></div><div class="card-grid" id="fixture-cards"><div class="loading"><div class="loading-spinner"></div>Fetching live FPL data...</div></div></div>
-  <div id="players-section" style="display:none">
-    <div class="filter-bar">
-      <div class="filter-row">
-        <div class="filter-group">
-          <span class="filter-label">Position</span>
-          <div class="pill-group" id="pos-pills">
-            <button class="pill active" data-pos="ALL">All</button>
-            <button class="pill" data-pos="1">GKP</button>
-            <button class="pill" data-pos="2">DEF</button>
-            <button class="pill" data-pos="3">MID</button>
-            <button class="pill" data-pos="4">FWD</button>
-          </div>
-        </div>
-        <div class="filter-group">
-          <span class="filter-label">Sort By</span>
-          <select class="filter-select" id="sort-select">
-            <option value="form">Form</option>
-            <option value="total_points">Total Pts</option>
-            <option value="points_per_game">Pts/Game</option>
-            <option value="ptspercost">Pts/£m</option>
-            <option value="now_cost">Price ↑</option>
-            <option value="selected_by_percent">Ownership %</option>
-          </select>
-        </div>
-        <div class="filter-group">
-          <span class="filter-label">Max Price</span>
-          <div class="pill-group" id="price-pills">
-            <button class="pill active" data-price="0">Any</button>
-            <button class="pill" data-price="50">≤£5m</button>
-            <button class="pill" data-price="65">≤£6.5m</button>
-            <button class="pill" data-price="80">≤£8m</button>
-            <button class="pill" data-price="100">≤£10m</button>
-          </div>
-        </div>
-        <div class="filter-group">
-          <span class="filter-label">Show</span>
-          <select class="filter-select" id="show-select">
-            <option value="12">Top 12</option>
-            <option value="24">Top 24</option>
-            <option value="0">All</option>
-          </select>
-        </div>
-      </div>
-      <div class="filter-counter" id="players-counter">Loading...</div>
-    </div>
-    <div class="card-grid" id="player-cards"></div>
-  </div>
   <div id="power-section" style="display:none"><div class="card-grid" id="power-cards"></div></div>
   <div id="value-section" style="display:none"><div class="card-grid" id="value-cards"></div></div>
   <div id="transfers-section" style="display:none"><div class="card-grid" id="transfer-cards"></div></div>
@@ -903,32 +868,86 @@ const PROXIES = [
 ];
 let activeProxy = 0;
 
-async function fetchWithFallback(url, asText = false) {
+// ── Smart cache: 5min bootstrap, 60s live ──────────────────
+const _dc={};
+function _cGet(u){const e=_dc[u];if(!e)return null;const ttl=u.includes('/live/')?60000:300000;return(Date.now()-e.ts<ttl)?e.d:null;}
+function _cSet(u,d){_dc[u]={d,ts:Date.now()};}
+function _cBust(){Object.keys(_dc).forEach(k=>delete _dc[k]);}
+function _cBustLive(){Object.keys(_dc).filter(k=>k.includes('/live/')).forEach(k=>delete _dc[k]);}
+let _lastFetch=0,_tsInt=null;
+function _stampNow(){
+  _lastFetch=Date.now();
+  const badge=document.getElementById('last-updated-badge');
+  const txt=document.getElementById('last-updated-text');
+  if(badge)badge.style.display='inline-flex';
+  if(txt)txt.textContent='just now';
+  clearInterval(_tsInt);
+  _tsInt=setInterval(()=>{
+    const t=document.getElementById('last-updated-text');
+    if(!t||!_lastFetch)return;
+    const m=Math.floor((Date.now()-_lastFetch)/60000);
+    t.textContent=m<1?'just now':m===1?'1 min ago':m+' mins ago';
+  },30000);
+}
+async function fetchWithFallback(url, asText=false, bust=false) {
+  if(!asText&&!bust){const c=_cGet(url);if(c)return c;}
   let lastErr;
-  for (let i = 0; i < PROXIES.length; i++) {
-    const idx = (activeProxy + i) % PROXIES.length;
-    try {
-      const proxied = PROXIES[idx](url);
-      const r = await fetch(proxied, { signal: AbortSignal.timeout(7000), cache: 'no-cache' });
-      if (!r.ok) throw new Error('HTTP ' + r.status);
-      activeProxy = idx; // remember the working one
-      const proxyNames = ['corsproxy.io','allorigins.win','cors-anywhere','cors.sh'];
-      const bar = document.getElementById('proxy-status-bar');
-      if (bar) bar.innerHTML = i > 0 ? `<div class="proxy-status">✅ Connected via ${proxyNames[idx]}</div>` : '';
-      if (asText) return r.text();
-      const text = await r.text();
-      try { return JSON.parse(text); }
-      catch(pe) { throw new Error('JSON parse error: ' + text.slice(0,80)); }
-    } catch (e) { lastErr = e; }
+  for(let i=0;i<PROXIES.length;i++){
+    const idx=(activeProxy+i)%PROXIES.length;
+    try{
+      const r=await fetch(PROXIES[idx](url),{signal:AbortSignal.timeout(8000)});
+      if(!r.ok)throw new Error('HTTP '+r.status);
+      activeProxy=idx;
+      const bar=document.getElementById('proxy-status-bar');
+      const names=['corsproxy.io','allorigins.win','codetabs','thingproxy'];
+      if(bar)bar.innerHTML=i>0?`<div class="proxy-status">✅ Via ${names[idx]||'proxy'}</div>`:'';
+      if(asText)return r.text();
+      const text=await r.text();
+      try{const d=JSON.parse(text);if(!bust)_cSet(url,d);_stampNow();return d;}
+      catch(pe){throw new Error('JSON: '+text.slice(0,60));}
+    }catch(e){lastErr=e;}
   }
-  throw new Error('All proxies failed. Try refreshing. ' + lastErr?.message);
+  throw new Error('All proxies failed. '+lastErr?.message);
+}
+function _rerenderTab(t){
+  try{
+    if(t==='power')renderPower();
+    else if(t==='value')renderValue();
+    else if(t==='transfers')renderTransfers();
+    else if(t==='injuries')renderInjuries();
+    else if(t==='xg')renderXG();
+    else if(t==='differentials')renderDifferentials();
+    else if(t==='livegw')renderLiveGW();
+    else if(t==='fixturegrid'&&typeof renderFixtureGrid==='function')renderFixtureGrid();
+    else if(t==='pricechange'&&typeof renderPriceChanges==='function')renderPriceChanges();
+    else if(t==='seasonpts'&&typeof renderSeasonPoints==='function')renderSeasonPoints();
+  }catch(e){}
+}
+async function forceRefreshData(){
+  _cBust();
+  const btn=document.querySelector('.rt-refresh-btn');
+  if(btn){btn.textContent='↺ Refreshing…';btn.disabled=true;btn.style.opacity='.5';}
+  try{
+    await loadData();
+    _rerenderTab(document.querySelector('.tab.active')?.getAttribute('data-tab')||'power');
+  }catch(e){console.warn('Refresh err',e);}
+  if(btn){btn.textContent='↺ Refresh';btn.disabled=false;btn.style.opacity='1';}
+}
+let _arTimer=null;
+function _startAutoRefresh(){
+  if(_arTimer)return;
+  _arTimer=setInterval(async()=>{
+    if(!fplData||!fplData.events?.find(e=>e.is_current))return;
+    _cBustLive();
+    try{await loadData();_rerenderTab(document.querySelector('.tab.active')?.getAttribute('data-tab')||'power');}catch(e){}
+  },90000);
 }
 
 const FPL_BOOTSTRAP = 'https://fantasy.premierleague.com/api/bootstrap-static/';
 const FPL_FIXTURES  = 'https://fantasy.premierleague.com/api/fixtures/';
 
 let fplData=null, fixtureData=null, gwId=0, understatPlayers=null, openaiKey='';
-let renderedTabs = new Set(['fixtures']);
+let renderedTabs = new Set(['fixtures','power']);
 let scoutChart=null, scoutPos='ALL';
 
 // ── HELPERS ───────────────────────────────────────────────────────────────
@@ -954,13 +973,14 @@ function switchTab(tab, e) {
   ['fixtures','players','power','value','transfers','injuries','xg','livegw','scout','scouthistory','myteam','ai-chat','differentials','history','minileague','fixturegrid','chipplanner','pricechange','seasonpts','h2h'].forEach(id=>{
     const el=document.getElementById(id+'-section');if(el)el.style.display='none';
   });
-  const labels={fixtures:'Best Fixture Runs — Next 5 Gameweeks',players:'Top Players By Form',power:'Power Rankings — Composite FPL Score',value:'Value Picks — Best Points Per Million',transfers:'Transfer Trends — This Gameweek',injuries:'Injury Tracker — Availability & News',xg:'Underlying Stats — xG & xA',livegw:'Live Gameweek — Real-Time Points',scout:'Scout — Form vs Fixture Bubble Chart',scouthistory:'Scout History — Player vs Opponent Analysis',myteam:'My Team — Analyser & Captain Picker','ai-chat':'AI-Powered FPL Assistant','differentials':'Differentials — Hidden Gems Under 10% Ownership','history':'Player History — GW Points Chart & Stats','minileague':'Mini-League — Standings & Leaderboard','fixturegrid':'Full Fixture Grid — Season Difficulty Ticker','chipplanner':'Chip Planner — Best GWs to Play Your Chips','pricechange':'Price Change Predictor — Who\'s Rising & Falling','seasonpts':'Season Points — GW-by-GW Performance Chart','h2h':'Head-to-Head — Compare vs Another Manager'};
+  const labels={fixtures:'Best Fixture Runs — Next 5 Gameweeks',power:'Power Rankings — Composite FPL Score',value:'Value Picks — Best Points Per Million',transfers:'Transfer Trends — This Gameweek',injuries:'Injury Tracker — Availability & News',xg:'Underlying Stats — xG & xA',livegw:'Live Gameweek — Real-Time Points',scout:'Scout — Form vs Fixture Bubble Chart',scouthistory:'Scout History — Player vs Opponent Analysis',myteam:'My Team — Analyser & Captain Picker','ai-chat':'AI-Powered FPL Assistant','differentials':'Differentials — Hidden Gems Under 10% Ownership','history':'Player History — GW Points Chart & Stats','minileague':'Mini-League — Standings & Leaderboard','fixturegrid':'Full Fixture Grid — Season Difficulty Ticker','chipplanner':'Chip Planner — Best GWs to Play Your Chips','pricechange':'Price Change Predictor — Who\'s Rising & Falling','seasonpts':'Season Points — GW-by-GW Performance Chart','h2h':'Head-to-Head — Compare vs Another Manager'};
   document.getElementById('section-label').textContent = labels[tab]||tab;
   const sec = document.getElementById(tab+'-section');if(sec)sec.style.display='block';
+  const _rA=['power','value','transfers','injuries','xg','differentials','pricechange','seasonpts'];
+  if(_rA.includes(tab)&&fplData&&renderedTabs.has(tab)){_rerenderTab(tab);return;}
   if(fplData && !renderedTabs.has(tab)){
     renderedTabs.add(tab);
-    if(tab==='players')renderPlayers();
-    else if(tab==='power')renderPower();
+    if(tab==='power')renderPower();
     else if(tab==='value')renderValue();
     else if(tab==='transfers')renderTransfers();
     else if(tab==='injuries')renderInjuries();
@@ -1702,38 +1722,7 @@ async function loadMiniLeague(){
 // ══════════════════════════════════════════════════════════════
 // PHASE 6 ── FILTER BAR EVENT WIRING
 // ══════════════════════════════════════════════════════════════
-document.addEventListener('DOMContentLoaded',()=>{
-  // Position pills
-  document.getElementById('pos-pills')?.addEventListener('click',e=>{
-    const btn=e.target.closest('.pill');
-    if(!btn)return;
-    document.querySelectorAll('#pos-pills .pill').forEach(p=>p.classList.remove('active'));
-    btn.classList.add('active');
-    pf_pos=btn.dataset.pos;
-    if(fplData)renderPlayers();
-  });
-  // Price pills
-  document.getElementById('price-pills')?.addEventListener('click',e=>{
-    const btn=e.target.closest('.pill');
-    if(!btn)return;
-    document.querySelectorAll('#price-pills .pill').forEach(p=>p.classList.remove('active'));
-    btn.classList.add('active');
-    pf_price=parseInt(btn.dataset.price);
-    if(fplData)renderPlayers();
-  });
-  // Sort select
-  document.getElementById('sort-select')?.addEventListener('change',e=>{
-    pf_sort=e.target.value;
-    if(fplData)renderPlayers();
-  });
-  // Show select
-  document.getElementById('show-select')?.addEventListener('change',e=>{
-    pf_show=parseInt(e.target.value);
-    if(fplData)renderPlayers();
-  });
-  // Escape closes drawer
-  document.addEventListener('keydown',e=>{if(e.key==='Escape')closeDrawer();});
-});
+document.addEventListener('DOMContentLoaded',()=>{ document.addEventListener('keydown',e=>{if(e.key==='Escape')closeDrawer();}); });
 
 // ══════════════════════════════════════════════════════════════
 // PHASE 6 ── PLAYER DRAWER
