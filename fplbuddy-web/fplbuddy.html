@@ -3370,10 +3370,14 @@ function shDrawTrendChart(currentVs, pastSeasonData, opp, seasonAvg) {
             title: items => trendSeasons[items[0].dataIndex].name+' — '+trendSeasons[items[0].dataIndex].n+' match'+(trendSeasons[items[0].dataIndex].n>1?'es':''),
             label: item => {
               const s=trendSeasons[item.dataIndex];
-              if(item.dataset.label==='Avg Pts/GW vs opp') return ' Avg Pts/GW: '+s.avg;
-              if(item.dataset.label==='Goals') return ' Goals: '+s.goals;
-              return ' Assists: '+s.assists;
-            }
+              if(item.dataset.label==='Avg Pts/GW vs opp') return [
+                ' Avg Pts/GW: '+s.avg,
+                ' ⚽ Goals: '+s.goals,
+                ' 🅰️ Assists: '+s.assists
+              ];
+              return null;
+            },
+            filter: item => item.dataset.label==='Avg Pts/GW vs opp'
           }
         }
       },
