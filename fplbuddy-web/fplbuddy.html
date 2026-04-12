@@ -3002,6 +3002,10 @@ let shPastChartInst = null;
 
 // ── Vaastav season CSV URLs (2020-21 → 2023-24) ──────────────────────────
 const VAASTAV_SEASONS = [
+  { name: '2016/17', url: 'https://raw.githubusercontent.com/vaastav/Fantasy-Premier-League/master/data/2016-17/gws/merged_gw.csv' },
+  { name: '2017/18', url: 'https://raw.githubusercontent.com/vaastav/Fantasy-Premier-League/master/data/2017-18/gws/merged_gw.csv' },
+  { name: '2018/19', url: 'https://raw.githubusercontent.com/vaastav/Fantasy-Premier-League/master/data/2018-19/gws/merged_gw.csv' },
+  { name: '2019/20', url: 'https://raw.githubusercontent.com/vaastav/Fantasy-Premier-League/master/data/2019-20/gws/merged_gw.csv' },
   { name: '2020/21', url: 'https://raw.githubusercontent.com/vaastav/Fantasy-Premier-League/master/data/2020-21/gws/merged_gw.csv' },
   { name: '2021/22', url: 'https://raw.githubusercontent.com/vaastav/Fantasy-Premier-League/master/data/2021-22/gws/merged_gw.csv' },
   { name: '2022/23', url: 'https://raw.githubusercontent.com/vaastav/Fantasy-Premier-League/master/data/2022-23/gws/merged_gw.csv' },
@@ -3121,11 +3125,11 @@ function shBuildFixtureDropdown(container, p, summary) {
 function shOnOppChange(sel) {
   if (!shSelectedPlayer || !shSummary) return;
   const output = document.getElementById('sh-phase2-output');
-  if (output) output.innerHTML = '<div class="sh-loading"><div class="sh-spinner"></div><span>Fetching historical data from 4 seasons… this takes a few seconds the first time.</span></div>';
+  if (output) output.innerHTML = '<div class="sh-loading"><div class="sh-spinner"></div><span>Fetching historical data from up to 8 seasons (2016/17–2024/25)…</span></div>';
   shLoadAndRender(sel, shSelectedPlayer, shSummary);
 }
 
-// ── Main loader: fetch all 4 past seasons then render ────────────────────
+// ── Main loader: fetch all seasons, show ONLY the trend chart ─────────────
 async function shLoadAndRender(sel, p, summary) {
   const oppId = parseInt(sel.value);
   const gw = parseInt(sel.selectedOptions[0].dataset.gw);
@@ -3133,34 +3137,31 @@ async function shLoadAndRender(sel, p, summary) {
   const diff = parseInt(sel.selectedOptions[0].dataset.diff);
   const opp = fplData.teams.find(t => t.id === oppId);
 
-  // Current season from FPL API
   const hist = summary.history || [];
   const currentVs = hist.filter(g => g.opponent_team === oppId);
   const seasonAvg = hist.length ? hist.reduce((s, g) => s + g.total_points, 0) / hist.length : 0;
 
-  // Past seasons from Vaastav CSVs — fetch all in parallel
   const pastSeasonData = await Promise.all(
     VAASTAV_SEASONS.map(async (season) => {
       const rows = await fetchVaastavSeason(season, p);
       const playerRows = filterPlayerRows(rows, p);
       const vsRows = playerRows.filter(r => parseInt(r.opponent_team) === oppId);
-      const allRows = playerRows; // for season avg
-      return { season: season.name, vsRows, allRows, failed: rows === null };
+      const allRows = playerRows;
+      return { season: season.name, url: season.url, vsRows, allRows, failed: rows === null };
     })
   );
 
   const output = document.getElementById('sh-phase2-output');
   if (!output) return;
 
-  // Build HTML
-  let html = shBuildFixtureBannerHTML(p, opp, isHome, gw, diff);
-  html += shBuildInsightBadgeHTML(p, opp, currentVs, pastSeasonData, seasonAvg);
-  html += shBuildH2HTabsHTML(p, opp, currentVs, pastSeasonData, seasonAvg);
-  html += shBuildChartsHTML(p, opp, currentVs, pastSeasonData, seasonAvg);
+  const oppName = opp ? opp.name : 'Opponent';
+  output.innerHTML = '<div class="sh-chart-block" style="margin-top:0">'
+    + '<div class="sh-chart-title" style="margin-bottom:14px">📈 SEASON AVG PTS/GW VS '
+    + oppName.toUpperCase() + ' — FULL HISTORY TREND</div>'
+    + '<div style="position:relative;height:280px"><canvas id="sh-trend-chart"></canvas></div>'
+    + '</div>';
 
-  output.innerHTML = html;
-
-  setTimeout(() => shDrawAllCharts(currentVs, pastSeasonData, opp, seasonAvg), 60);
+  setTimeout(() => shDrawTrendChart(currentVs, pastSeasonData, opp, seasonAvg), 60);
 }
 
 // ── Fixture Banner ────────────────────────────────────────────────────────
@@ -3317,124 +3318,74 @@ function shBuildChartsHTML(p, opp, currentVs, pastSeasonData, seasonAvg) {
 }
 
 // ── Draw all charts ───────────────────────────────────────────────────────
-function shDrawAllCharts(currentVs, pastSeasonData, opp, seasonAvg) {
-  // ── Chart 1: GW-by-GW pts vs opponent across all seasons ──
-  const canvas1 = document.getElementById('sh-vs-chart');
-  if (canvas1) {
-    if (shVsChartInst) { shVsChartInst.destroy(); shVsChartInst = null; }
-    // Collect all matches across seasons (oldest first)
-    const allMatches = [];
-    [...pastSeasonData].reverse().forEach(s => {
-      s.vsRows.forEach(r => allMatches.push({
-        label: s.season + ' GW' + (r.GW || r.round),
-        pts: parseInt(r.total_points || 0),
-        goals: parseInt(r.goals_scored || 0),
-        assists: parseInt(r.assists || 0),
-        bonus: parseInt(r.bonus || 0),
-        mins: parseInt(r.minutes || 0),
-        home: r.was_home === 'True' || r.was_home === '1' || r.was_home === 'true',
-        season: s.season
-      }));
-    });
-    currentVs.forEach(g => allMatches.push({
-      label: '2024/25 GW' + g.round,
-      pts: g.total_points, goals: g.goals_scored, assists: g.assists,
-      bonus: g.bonus, mins: g.minutes, home: g.was_home, season: '2024/25'
-    }));
-
-    if (allMatches.length) {
-      const labels = allMatches.map(m => m.label);
-      const pts = allMatches.map(m => m.pts);
-      const colors = pts.map(v => v >= 8 ? 'rgba(0,212,170,.85)' : v >= 3 ? 'rgba(79,142,247,.8)' : v >= 2 ? 'rgba(107,114,128,.7)' : 'rgba(255,85,85,.75)');
-      shVsChartInst = new Chart(canvas1.getContext('2d'), {
-        type: 'bar',
-        data: { labels, datasets: [{ label: 'FPL Pts', data: pts, backgroundColor: colors, borderColor: colors.map(c => c.replace(/[\d.]+\)$/, '1)')), borderWidth: 1, borderRadius: 5, borderSkipped: false }] },
-        options: {
-          responsive: true,
-          plugins: {
-            legend: { display: false },
-            tooltip: {
-              backgroundColor: '#1a2035', borderColor: 'rgba(255,255,255,.1)', borderWidth: 1, padding: 12,
-              callbacks: {
-                title: items => allMatches[items[0].dataIndex].label + ' (' + (allMatches[items[0].dataIndex].home ? 'Home' : 'Away') + ')',
-                label: item => {
-                  const m = allMatches[item.dataIndex];
-                  return [' FPL Pts: ' + m.pts, ' Goals: ' + m.goals + '  Assists: ' + m.assists + '  Bonus: ' + m.bonus, ' Minutes: ' + m.mins];
-                }
-              }
+function shDrawTrendChart(currentVs, pastSeasonData, opp, seasonAvg) {
+  if (shPastChartInst) { shPastChartInst.destroy(); shPastChartInst = null; }
+  const trendSeasons = [];
+  [...pastSeasonData].forEach(s => {
+    if (!s.failed && s.vsRows.length > 0) {
+      const pts     = s.vsRows.reduce((a,r) => a + parseInt(r.total_points||0), 0);
+      const goals   = s.vsRows.reduce((a,r) => a + parseInt(r.goals_scored||0), 0);
+      const assists = s.vsRows.reduce((a,r) => a + parseInt(r.assists||0), 0);
+      trendSeasons.push({ name: s.season, avg: parseFloat((pts/s.vsRows.length).toFixed(1)), goals, assists, n: s.vsRows.length });
+    }
+  });
+  if (currentVs.length > 0) {
+    const pts     = currentVs.reduce((a,g) => a + g.total_points, 0);
+    const goals   = currentVs.reduce((a,g) => a + g.goals_scored, 0);
+    const assists = currentVs.reduce((a,g) => a + g.assists, 0);
+    trendSeasons.push({ name: '2024/25', avg: parseFloat((pts/currentVs.length).toFixed(1)), goals, assists, n: currentVs.length });
+  }
+  const canvas = document.getElementById('sh-trend-chart');
+  if (!canvas) return;
+  if (trendSeasons.length === 0) {
+    canvas.parentElement.innerHTML = '<div style="text-align:center;padding:40px;color:var(--text-muted);font-size:.85rem">No historical meetings found vs '+(opp?opp.name:'this team')+' in dataset (2016/17–2024/25).</div>';
+    return;
+  }
+  const tAvg     = trendSeasons.map(s => s.avg);
+  const tGoals   = trendSeasons.map(s => s.goals);
+  const tAssists = trendSeasons.map(s => s.assists);
+  const barColors = tAvg.map(v => v >= seasonAvg*1.3 ? 'rgba(0,212,170,.75)' : v <= seasonAvg*0.7 ? 'rgba(255,85,85,.7)' : 'rgba(79,142,247,.7)');
+  shPastChartInst = new Chart(canvas.getContext('2d'), {
+    type: 'bar',
+    data: {
+      labels: trendSeasons.map(s => s.name+' ('+s.n+' match'+(s.n>1?'es':'')+')'),
+      datasets: [
+        { label: 'Avg Pts/GW vs opp', data: tAvg, backgroundColor: barColors,
+          borderColor: barColors.map(c=>c.replace(/[\d.]+\)$/,'1)')), borderWidth:1, borderRadius:5, yAxisID:'y' },
+        { label: 'Goals', data: tGoals, type:'line', borderColor:'rgba(0,212,170,.9)',
+          backgroundColor:'rgba(0,212,170,.1)', borderWidth:2, pointRadius:5,
+          pointBackgroundColor:'rgba(0,212,170,1)', tension:.35, yAxisID:'y2' },
+        { label: 'Assists', data: tAssists, type:'line', borderColor:'rgba(79,142,247,.9)',
+          backgroundColor:'rgba(79,142,247,.1)', borderWidth:2, pointRadius:5,
+          pointBackgroundColor:'rgba(79,142,247,1)', tension:.35, yAxisID:'y2' }
+      ]
+    },
+    options: {
+      responsive:true, maintainAspectRatio:false,
+      plugins: {
+        legend:{ display:true, labels:{ color:'#9ca3af', font:{size:11}, boxWidth:12 } },
+        tooltip:{
+          backgroundColor:'#1a2035', borderColor:'rgba(255,255,255,.1)', borderWidth:1, padding:12,
+          callbacks:{
+            title: items => trendSeasons[items[0].dataIndex].name+' — '+trendSeasons[items[0].dataIndex].n+' match'+(trendSeasons[items[0].dataIndex].n>1?'es':''),
+            label: item => {
+              const s=trendSeasons[item.dataIndex];
+              if(item.dataset.label==='Avg Pts/GW vs opp') return ' Avg Pts/GW: '+s.avg;
+              if(item.dataset.label==='Goals') return ' Goals: '+s.goals;
+              return ' Assists: '+s.assists;
             }
-          },
-          scales: {
-            x: { grid: { color: 'rgba(255,255,255,.04)' }, ticks: { color: '#6b7280', font: { size: 9 }, maxRotation: 45 } },
-            y: { beginAtZero: true, grid: { color: 'rgba(255,255,255,.05)' }, ticks: { color: '#6b7280', font: { size: 10 }, stepSize: 2 },
-              title: { display: true, text: 'Season avg: ' + seasonAvg.toFixed(1) + ' pts', color: 'rgba(255,255,255,.3)', font: { size: 9 } } }
           }
         }
-      });
-    }
-  }
-
-  // ── Chart 2: Per-season avg vs this opponent trend line ──
-  const canvas2 = document.getElementById('sh-trend-chart');
-  if (canvas2) {
-    if (shPastChartInst) { shPastChartInst.destroy(); shPastChartInst = null; }
-    const trendSeasons = [];
-    [...pastSeasonData].reverse().forEach(s => {
-      if (!s.failed && s.vsRows.length > 0) {
-        const pts = s.vsRows.reduce((a, r) => a + parseInt(r.total_points || 0), 0);
-        const goals = s.vsRows.reduce((a, r) => a + parseInt(r.goals_scored || 0), 0);
-        const assists = s.vsRows.reduce((a, r) => a + parseInt(r.assists || 0), 0);
-        trendSeasons.push({ name: s.season, avg: parseFloat((pts / s.vsRows.length).toFixed(1)), goals, assists, n: s.vsRows.length });
+      },
+      scales:{
+        x:{ grid:{color:'rgba(255,255,255,.04)'}, ticks:{color:'#6b7280',font:{size:10},maxRotation:30} },
+        y:{ beginAtZero:true, grid:{color:'rgba(255,255,255,.05)'}, ticks:{color:'#6b7280',font:{size:10}},
+            title:{display:true,text:'Avg Pts/GW',color:'rgba(255,255,255,.3)',font:{size:9}}, position:'left' },
+        y2:{ beginAtZero:true, grid:{display:false}, ticks:{color:'#6b7280',font:{size:10}},
+             title:{display:true,text:'Goals / Assists',color:'rgba(255,255,255,.3)',font:{size:9}}, position:'right' }
       }
-    });
-    if (currentVs.length > 0) {
-      const pts = currentVs.reduce((a, g) => a + g.total_points, 0);
-      const goals = currentVs.reduce((a, g) => a + g.goals_scored, 0);
-      const assists = currentVs.reduce((a, g) => a + g.assists, 0);
-      trendSeasons.push({ name: '2024/25', avg: parseFloat((pts / currentVs.length).toFixed(1)), goals, assists, n: currentVs.length });
     }
-    if (trendSeasons.length >= 2) {
-      const tLabels = trendSeasons.map(s => s.name + ' (' + s.n + ' match' + (s.n > 1 ? 'es' : '') + ')');
-      const tAvg = trendSeasons.map(s => s.avg);
-      const tGoals = trendSeasons.map(s => s.goals);
-      const tAssists = trendSeasons.map(s => s.assists);
-      const barColors = tAvg.map(v => v >= seasonAvg * 1.3 ? 'rgba(0,212,170,.75)' : v <= seasonAvg * 0.7 ? 'rgba(255,85,85,.7)' : 'rgba(79,142,247,.7)');
-      shPastChartInst = new Chart(canvas2.getContext('2d'), {
-        type: 'bar',
-        data: {
-          labels: tLabels,
-          datasets: [
-            { label: 'Avg Pts/GW vs opp', data: tAvg, backgroundColor: barColors, borderColor: barColors.map(c => c.replace(/[\d.]+\)$/, '1)')), borderWidth: 1, borderRadius: 5, yAxisID: 'y' },
-            { label: 'Goals', data: tGoals, type: 'line', borderColor: 'rgba(0,212,170,.9)', backgroundColor: 'rgba(0,212,170,.1)', borderWidth: 2, pointRadius: 5, pointBackgroundColor: 'rgba(0,212,170,1)', tension: .35, yAxisID: 'y2' },
-            { label: 'Assists', data: tAssists, type: 'line', borderColor: 'rgba(79,142,247,.9)', backgroundColor: 'rgba(79,142,247,.1)', borderWidth: 2, pointRadius: 5, pointBackgroundColor: 'rgba(79,142,247,1)', tension: .35, yAxisID: 'y2' }
-          ]
-        },
-        options: {
-          responsive: true,
-          plugins: {
-            legend: { display: true, labels: { color: '#9ca3af', font: { size: 11 }, boxWidth: 12 } },
-            tooltip: {
-              backgroundColor: '#1a2035', borderColor: 'rgba(255,255,255,.1)', borderWidth: 1, padding: 12,
-              callbacks: {
-                title: items => trendSeasons[items[0].dataIndex].name + ' — ' + trendSeasons[items[0].dataIndex].n + ' match' + (trendSeasons[items[0].dataIndex].n > 1 ? 'es' : ''),
-                label: item => {
-                  const s = trendSeasons[item.dataIndex];
-                  if (item.dataset.label === 'Avg Pts/GW vs opp') return ' Avg Pts/GW vs opponent: ' + s.avg;
-                  if (item.dataset.label === 'Goals') return ' Goals: ' + s.goals;
-                  return ' Assists: ' + s.assists;
-                }
-              }
-            }
-          },
-          scales: {
-            x: { grid: { color: 'rgba(255,255,255,.04)' }, ticks: { color: '#6b7280', font: { size: 10 } } },
-            y: { beginAtZero: true, grid: { color: 'rgba(255,255,255,.05)' }, ticks: { color: '#6b7280', font: { size: 10 } }, title: { display: true, text: 'Avg Pts/GW', color: 'rgba(255,255,255,.3)', font: { size: 9 } }, position: 'left' },
-            y2: { beginAtZero: true, grid: { display: false }, ticks: { color: '#6b7280', font: { size: 10 } }, title: { display: true, text: 'Goals / Assists', color: 'rgba(255,255,255,.3)', font: { size: 9 } }, position: 'right' }
-          }
-        }
-      });
-    }
-  }
+  });
 }
 // ══ END SCOUT HISTORY PHASE 2 + 3 ════════════════════════════════════════
 
