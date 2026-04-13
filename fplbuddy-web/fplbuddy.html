@@ -1431,7 +1431,7 @@ async function init(){
     const events=bootstrap.events;
     const nextGW=events.find(e=>e.is_next)||events.find(e=>e.is_current)||events[0];
     const currentGW=events.find(e=>e.is_current)||nextGW;
-    gwId=currentGW.id;
+    gwId=nextGW.id; /* FIX: gwId matches header GW (nextGW) so fixture runs align with displayed gameweek */
     document.getElementById('last-updated').textContent='Live · GW'+gwId;
     const dlDate=nextGW.deadline_time?new Date(nextGW.deadline_time):null;
     const dlStr=dlDate?dlDate.toLocaleDateString('en-GB',{weekday:'short',day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'}):'See FPL app';
