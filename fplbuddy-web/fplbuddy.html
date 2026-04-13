@@ -719,7 +719,7 @@
     .rt-hint{font-size:.6rem;color:var(--text-muted);margin-left:auto;}
 
     /* ── Momentum ─────────────────────────────────────────────── */
-    .mom-pill{display:inline-flex;align-items:center;gap:3px;padding:2px 7px;border-radius:999px;font-size:.62rem;font-weight:700;letter-spacing:.3px;white-space:nowrap;border:1px solid rgba(255,255,255,.12);opacity:.92;pointer-events:none;user-select:none;line-height:1.5}
+    .mom-pill{display:inline-flex;align-items:center;gap:3px;padding:2px 7px;border-radius:999px;font-size:.62rem;font-weight:700;letter-spacing:.3px;white-space:nowrap;border:1px solid rgba(255,255,255,.12);opacity:.92;cursor:pointer;user-select:none;line-height:1.5}
     .mom-arrow{font-size:.6rem;opacity:.75}
     .mom-section-title{font-size:.65rem;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--text-muted);margin-bottom:14px;padding-bottom:6px;border-bottom:1px solid var(--border)}
     .mom-rank-list{display:flex;flex-direction:column;gap:8px}
@@ -746,6 +746,39 @@
     .mom-legend{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px}
     .mom-legend-item{display:flex;align-items:center;gap:4px;font-size:.62rem;color:var(--text-muted)}
     .mom-legend-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+
+    /* ── Momentum Breakdown Modal ─────────────────────────────── */
+    #mom-modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.72);z-index:9999;display:none;align-items:center;justify-content:center;padding:16px;backdrop-filter:blur(4px)}
+    #mom-modal-overlay.open{display:flex}
+    #mom-modal{background:#1a1a2e;border:1px solid rgba(255,255,255,.12);border-radius:16px;width:100%;max-width:420px;padding:0;overflow:hidden;box-shadow:0 24px 60px rgba(0,0,0,.7);animation:momSlideIn .2s ease}
+    @keyframes momSlideIn{from{opacity:0;transform:translateY(12px) scale(.97)}to{opacity:1;transform:none}}
+    #mom-modal-header{display:flex;align-items:center;gap:10px;padding:16px 18px 12px;border-bottom:1px solid rgba(255,255,255,.08)}
+    #mom-modal-badge{width:32px;height:32px;object-fit:contain}
+    #mom-modal-title{flex:1;font-size:.95rem;font-weight:800;color:#f0f0f0}
+    #mom-modal-close{background:rgba(255,255,255,.07);border:none;border-radius:8px;width:30px;height:30px;color:#aaa;cursor:pointer;font-size:1rem;display:flex;align-items:center;justify-content:center;transition:background .15s}
+    #mom-modal-close:hover{background:rgba(255,255,255,.14);color:#fff}
+    #mom-modal-score-row{display:flex;align-items:center;gap:12px;padding:14px 18px 10px}
+    #mom-modal-big-score{font-size:2.6rem;font-weight:900;line-height:1}
+    #mom-modal-label-col{display:flex;flex-direction:column;gap:3px}
+    #mom-modal-label{font-size:.78rem;font-weight:700;letter-spacing:.4px}
+    #mom-modal-sublabel{font-size:.65rem;color:#888}
+    #mom-modal-bar-row{padding:0 18px 14px}
+    #mom-modal-full-bar{height:8px;border-radius:999px;background:rgba(255,255,255,.07);overflow:hidden}
+    #mom-modal-full-bar-fill{height:100%;border-radius:999px;transition:width .5s ease}
+    #mom-modal-table-wrap{padding:0 18px 18px}
+    .mom-modal-table{width:100%;border-collapse:collapse;font-size:.78rem}
+    .mom-modal-table th{text-align:left;padding:7px 8px;color:#777;font-size:.65rem;font-weight:700;text-transform:uppercase;letter-spacing:.5px;border-bottom:1px solid rgba(255,255,255,.07)}
+    .mom-modal-table td{padding:8px 8px;color:#d0d0d0;border-bottom:1px solid rgba(255,255,255,.04);vertical-align:middle}
+    .mom-modal-table tr:last-child td{border-bottom:none}
+    .mom-modal-table tr:hover td{background:rgba(255,255,255,.03)}
+    .mom-tbl-comp{font-weight:700;color:#f0f0f0;white-space:nowrap}
+    .mom-tbl-wt{color:#777;font-size:.72rem}
+    .mom-tbl-score{font-weight:800;font-size:.88rem}
+    .mom-tbl-rating{display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;border-radius:6px;font-size:.72rem;font-weight:800;background:rgba(255,255,255,.07);color:#ccc}
+    .mom-tbl-bar-cell{width:80px}
+    .mom-tbl-bar-wrap{height:5px;background:rgba(255,255,255,.07);border-radius:999px;overflow:hidden}
+    .mom-tbl-bar-fill{height:100%;border-radius:999px}
+    #mom-modal-footer{padding:10px 18px 14px;border-top:1px solid rgba(255,255,255,.06);font-size:.62rem;color:#555;text-align:center}
 </style>
 </head>
 <body>
@@ -3610,7 +3643,7 @@ function momPillHTML(teamId) {
   if (!m) return '';
   const arrow = momTrendArrow(m.score);
   const sc = m.scale;
-  return `<span class="mom-pill" style="background:${sc.color}22;color:${sc.color};border-color:${sc.color}44" title="Momentum: ${m.score}/100 — ${sc.label}">MOM ${m.score}${arrow ? ' <span class=\'mom-arrow\'>' + arrow + '</span>' : ''}</span>`;
+  return '<button class="mom-pill" style="background:'+sc.color+'22;color:'+sc.color+';border-color:'+sc.color+'44;cursor:pointer" title="Click to see Momentum breakdown" onclick="momOpenModal('+teamId+')">MOM '+m.score+(arrow ? ' <span class=\'mom-arrow\'>'+arrow+'</span>' : '')+'</button>';
 }
 
 // ── renderMomentum ───────────────────────────────────────────
@@ -3651,7 +3684,7 @@ function renderMomentum() {
       <div style="flex:1;min-width:0">
         <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
           <span class="mom-rank-name">${item.team.name}</span>
-          <span class="mom-pill" style="background:${sc.color}22;color:${sc.color};border-color:${sc.color}44">MOM ${item.score}${arrow ? ' <span class="mom-arrow">'+arrow+'</span>' : ''}</span>
+          <span class="mom-pill" style="background:${sc.color}22;color:${sc.color};border-color:${sc.color}44;cursor:pointer" onclick="momOpenModal(${item.team.id})" title="Click to see breakdown">MOM ${item.score}${arrow ? ' <span class="mom-arrow">'+arrow+'</span>' : ''}</button
           <span class="mom-rank-label" style="color:${sc.color}">${sc.label}</span>
         </div>
         <div style="margin-top:6px;display:flex;align-items:center;gap:8px">
@@ -3697,6 +3730,84 @@ function momToggleBreakdown(btn) {
   const open = row.classList.toggle('open');
   btn.textContent = (open ? '▼ Hide' : '▶ Show') + ' breakdown';
 }
+
+// ── Momentum Modal ───────────────────────────────────────────
+function momOpenModal(teamId) {
+  if (!fplData) return;
+  const m = calcMomentum(teamId);
+  const team = fplData.teams.find(t => t.id === teamId);
+  if (!m || !team) return;
+
+  const sc = m.scale;
+  const overlay = document.getElementById('mom-modal-overlay');
+
+  // Header
+  document.getElementById('mom-modal-badge').src =
+    `https://resources.premierleague.com/premierleague/badges/50/t${team.code}.png`;
+  document.getElementById('mom-modal-badge').alt = team.name;
+  document.getElementById('mom-modal-title').textContent = team.name + ' — Momentum';
+
+  // Big score
+  const bigScore = document.getElementById('mom-modal-big-score');
+  bigScore.textContent = m.score;
+  bigScore.style.color = sc.color;
+
+  document.getElementById('mom-modal-label').textContent = sc.label;
+  document.getElementById('mom-modal-label').style.color = sc.color;
+
+  // Full bar
+  const fill = document.getElementById('mom-modal-full-bar-fill');
+  fill.style.width = '0%';
+  fill.style.background = sc.color;
+  setTimeout(() => { fill.style.width = m.score + '%'; }, 60);
+
+  // Component table rows
+  // Rating out of 10: scale component score (0-100) by weight importance
+  // Weight tiers: 35%→max 10pts, 20%→max 7pts, 15%→max 5pts, 10%→max 4pts
+  const components = [
+    { key:'R', label:'Results',          weight:'35%', wt:0.35, score:m.components.R, maxRating:10, desc:'Recent form — wins/draws/losses weighted by recency' },
+    { key:'X', label:'xG Trend',         weight:'20%', wt:0.20, score:m.components.X, maxRating:7,  desc:'Attack strength & goals per game vs league' },
+    { key:'G', label:'Goal Difference',  weight:'15%', wt:0.15, score:m.components.G, maxRating:5,  desc:'Goals scored minus conceded per game' },
+    { key:'S', label:'Shot Dominance',   weight:'10%', wt:0.10, score:m.components.S, maxRating:4,  desc:'Attack pressure relative to all clubs' },
+    { key:'D', label:'Defensive Control',weight:'10%', wt:0.10, score:m.components.D, maxRating:4,  desc:'Clean sheet rate + low concede rate' },
+    { key:'C', label:'Context',          weight:'10%', wt:0.10, score:m.components.C, maxRating:4,  desc:'Overall club strength + form combination' },
+  ];
+
+  const tbody = document.getElementById('mom-modal-tbody');
+  tbody.innerHTML = components.map(c => {
+    // Rating = how many points this component contributes to the final score (out of maxRating)
+    const contribution = (c.score / 100) * c.wt * 100; // weighted pts contribution 0-wt*100
+    const rawRating = (c.score / 100) * c.maxRating;
+    const rating = Math.round(Math.max(1, Math.min(c.maxRating, rawRating)));
+    const ratingColor = rating >= Math.ceil(c.maxRating * 0.7) ? '#4DBD74'
+                      : rating >= Math.ceil(c.maxRating * 0.4) ? '#F2C14E'
+                      : '#E46A1C';
+    const barColor = momGetScale(c.score).color;
+    return `<tr title="${c.desc}">
+      <td><span class="mom-tbl-comp">${c.label}</span></td>
+      <td><span class="mom-tbl-wt">${c.weight}</span></td>
+      <td><span class="mom-tbl-score" style="color:${barColor}">${c.score}</span></td>
+      <td><span class="mom-tbl-rating" style="background:${ratingColor}22;color:${ratingColor};border:1px solid ${ratingColor}44">${rating}/${c.maxRating}</span></td>
+      <td class="mom-tbl-bar-cell">
+        <div class="mom-tbl-bar-wrap">
+          <div class="mom-tbl-bar-fill" style="width:${c.score}%;background:${barColor}"></div>
+        </div>
+      </td>
+    </tr>`;
+  }).join('');
+
+  overlay.classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function momCloseModal() {
+  document.getElementById('mom-modal-overlay').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+document.addEventListener('keydown', e => { if(e.key==='Escape') momCloseModal(); });
+// ── END Momentum Modal ───────────────────────────────────────
+
 // ══ END MOMENTUM ENGINE ══════════════════════════════════════
 </script>
 
@@ -3704,6 +3815,42 @@ function momToggleBreakdown(btn) {
 <div id="drawer-overlay" onclick="closeDrawer()" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:900;backdrop-filter:blur(3px);transition:opacity 0.3s"></div>
 <div id="player-drawer" style="position:fixed;top:0;right:-500px;width:min(460px,100vw);height:100vh;background:#0f1524;border-left:1px solid rgba(255,255,255,0.1);z-index:901;overflow-y:auto;transition:right 0.35s cubic-bezier(0.16,1,0.3,1);box-shadow:-16px 0 48px rgba(0,0,0,0.6)">
   <div id="drawer-content" style="padding-bottom:40px"></div>
+</div>
+
+<!-- ══ MOMENTUM BREAKDOWN MODAL ══════════════════════════════ -->
+<div id="mom-modal-overlay" onclick="if(event.target===this)momCloseModal()">
+  <div id="mom-modal">
+    <div id="mom-modal-header">
+      <img id="mom-modal-badge" src="" alt="" onerror="this.style.display='none'">
+      <div id="mom-modal-title">Momentum Breakdown</div>
+      <button id="mom-modal-close" onclick="momCloseModal()" aria-label="Close">✕</button>
+    </div>
+    <div id="mom-modal-score-row">
+      <div id="mom-modal-big-score">—</div>
+      <div id="mom-modal-label-col">
+        <div id="mom-modal-label">—</div>
+        <div id="mom-modal-sublabel">Momentum Score / 100</div>
+      </div>
+    </div>
+    <div id="mom-modal-bar-row">
+      <div id="mom-modal-full-bar"><div id="mom-modal-full-bar-fill"></div></div>
+    </div>
+    <div id="mom-modal-table-wrap">
+      <table class="mom-modal-table">
+        <thead>
+          <tr>
+            <th>Component</th>
+            <th>Weight</th>
+            <th>Score</th>
+            <th>Rating</th>
+            <th class="mom-tbl-bar-cell"></th>
+          </tr>
+        </thead>
+        <tbody id="mom-modal-tbody"></tbody>
+      </table>
+    </div>
+    <div id="mom-modal-footer">Based on current season stats vs all 20 PL clubs · Last 5 GW form</div>
+  </div>
 </div>
 </body>
 </html>
