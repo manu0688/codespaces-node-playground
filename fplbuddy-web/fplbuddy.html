@@ -717,6 +717,35 @@
     .rt-refresh-btn:disabled{opacity:.5;cursor:default;}
     #last-updated-badge{display:none;align-items:center;gap:5px;font-size:.65rem;background:rgba(0,212,170,.08);color:var(--green);border:1px solid rgba(0,212,170,.2);border-radius:20px;padding:3px 10px;}
     .rt-hint{font-size:.6rem;color:var(--text-muted);margin-left:auto;}
+
+    /* ── Momentum ─────────────────────────────────────────────── */
+    .mom-pill{display:inline-flex;align-items:center;gap:3px;padding:2px 7px;border-radius:999px;font-size:.62rem;font-weight:700;letter-spacing:.3px;white-space:nowrap;border:1px solid rgba(255,255,255,.12);opacity:.92;pointer-events:none;user-select:none;line-height:1.5}
+    .mom-arrow{font-size:.6rem;opacity:.75}
+    .mom-section-title{font-size:.65rem;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--text-muted);margin-bottom:14px;padding-bottom:6px;border-bottom:1px solid var(--border)}
+    .mom-rank-list{display:flex;flex-direction:column;gap:8px}
+    .mom-rank-item{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:12px 16px;display:flex;align-items:center;gap:12px;transition:background .15s}
+    .mom-rank-item:hover{background:rgba(255,255,255,.05)}
+    .mom-rank-pos{font-size:.75rem;font-weight:800;color:var(--text-muted);width:22px;text-align:right;flex-shrink:0}
+    .mom-rank-badge{width:28px;height:28px;object-fit:contain;flex-shrink:0}
+    .mom-rank-name{font-size:.88rem;font-weight:700;color:var(--text);flex:1;min-width:0}
+    .mom-rank-score{font-size:1.1rem;font-weight:800;flex-shrink:0;min-width:36px;text-align:right}
+    .mom-rank-label{font-size:.65rem;font-weight:600;color:var(--text-muted);flex-shrink:0;min-width:80px;text-align:right}
+    .mom-rank-bar-wrap{width:100px;height:6px;background:rgba(255,255,255,.07);border-radius:999px;overflow:hidden;flex-shrink:0}
+    .mom-rank-bar{height:100%;border-radius:999px;transition:width .4s ease}
+    .mom-breakdown{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:10px;padding-top:10px;border-top:1px solid rgba(255,255,255,.06)}
+    .mom-comp{background:rgba(255,255,255,.03);border-radius:8px;padding:6px 8px;text-align:center}
+    .mom-comp-val{font-size:.82rem;font-weight:800;color:var(--text)}
+    .mom-comp-lbl{font-size:.58rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:.4px;margin-top:1px}
+    .mom-expand-btn{background:none;border:none;color:var(--text-muted);font-size:.68rem;cursor:pointer;padding:2px 6px;border-radius:6px;transition:color .15s;margin-top:6px}
+    .mom-expand-btn:hover{color:var(--text)}
+    .mom-breakdown-row{display:none}
+    .mom-breakdown-row.open{display:grid}
+    .mom-filters{display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap;align-items:center}
+    .mom-filter-btn{background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:20px;padding:4px 12px;font-size:.72rem;color:var(--text-muted);cursor:pointer;transition:all .15s;font-family:'Outfit',sans-serif}
+    .mom-filter-btn.active{background:rgba(0,212,170,.12);border-color:rgba(0,212,170,.4);color:var(--green)}
+    .mom-legend{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px}
+    .mom-legend-item{display:flex;align-items:center;gap:4px;font-size:.62rem;color:var(--text-muted)}
+    .mom-legend-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
 </style>
 </head>
 <body>
@@ -729,7 +758,8 @@
   <div id="gw-info"></div>
   <div class="tabs-wrap">
     <button class="tab active" data-tab="fixtures" onclick="switchTab('fixtures',event)">📅 Fixture Runs</button>
-    <span class="tab-tip-wrap"><i class="tab-tip-icon" onclick="toggleTip(this)" onmouseenter="this.parentElement.classList.add('tip-open')" onmouseleave="this.parentElement.classList.remove('tip-open')">ⓘ<span class="tab-tip-box">Best players right now — filter by form, price, position and sort method of your choice</span></i></span>
+    <span class="tab-tip-wrap"><i class="tab-tip-icon" onclick="toggleTip(this)" onmouseenter="this.parentElement.classList.add('tip-open')" onmouseleave="this.parentElement.classList.remove('tip-open')">ⓘ<span class="tab-tip-box">Best players right now — filter by form, price, position and sort method of your choice</span>
+    <span class="tab-tip-wrap"><button class="tab" data-tab="momentum" onclick="switchTab('momentum',event)">🔥 Momentum</button><i class="tab-tip-icon" onclick="toggleTip(this)" onmouseenter="this.parentElement.classList.add('tip-open')" onmouseleave="this.parentElement.classList.remove('tip-open')">ⓘ<span class="tab-tip-box">Club momentum score (0–100) based on last 5 matches: results (35%), xG trend (20%), goal difference (15%), shot dominance (10%), defensive control (10%), context (10%)</span></i></span></i></span>
     <span class="tab-tip-wrap"><button class="tab" data-tab="power" onclick="switchTab('power',event)">🏆 Power Rankings</button><i class="tab-tip-icon" onclick="toggleTip(this)" onmouseenter="this.parentElement.classList.add('tip-open')" onmouseleave="this.parentElement.classList.remove('tip-open')">ⓘ<span class="tab-tip-box">Composite score: Form 22% + Pts/Game 18% + Pts/£m 15% + Fixture Ease 16% + Goal Imminence 18% + Minutes 7% + Transfer Momentum 4%</span></i></span>
     <span class="tab-tip-wrap"><button class="tab" data-tab="value" onclick="switchTab('value',event)">💸 Value Picks</button><i class="tab-tip-icon" onclick="toggleTip(this)" onmouseenter="this.parentElement.classList.add('tip-open')" onmouseleave="this.parentElement.classList.remove('tip-open')">ⓘ<span class="tab-tip-box">Best points-per-million players. Total season points divided by current price</span></i></span>
     <span class="tab-tip-wrap"><button class="tab" data-tab="transfers" onclick="switchTab('transfers',event)">🔄 Transfers</button><i class="tab-tip-icon" onclick="toggleTip(this)" onmouseenter="this.parentElement.classList.add('tip-open')" onmouseleave="this.parentElement.classList.remove('tip-open')">ⓘ<span class="tab-tip-box">Who managers are buying and selling most this gameweek</span></i></span>
@@ -757,6 +787,7 @@
   <p class="section-title" id="section-label">Fixture Runs — Next 5 Gameweeks</p>
 
   <div id="fixtures-section"><div id="proxy-status-bar"></div><div class="card-grid" id="fixture-cards"><div class="loading"><div class="loading-spinner"></div>Fetching live FPL data...</div></div></div>
+  <div id="momentum-section" style="display:none"><div id="momentum-content"><div class="loading"><div class="loading-spinner"></div>Calculating momentum…</div></div></div>
   <div id="power-section" style="display:none"><div class="card-grid" id="power-cards"></div></div>
   <div id="value-section" style="display:none"><div class="card-grid" id="value-cards"></div></div>
   <div id="transfers-section" style="display:none"><div class="card-grid" id="transfer-cards"></div></div>
@@ -861,9 +892,12 @@
 <script>
 // ── PROXY WITH AUTO-FALLBACK ──────────────────────────────────────────────
 const PROXIES = [
-  url => `https://corsproxy.io/?${encodeURIComponent(url)}`,
+  url => `https://corsproxy.io/?url=${encodeURIComponent(url)}`,
   url => `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`,
+  url => `https://corsproxy.io/?${encodeURIComponent(url)}`,
   url => `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(url)}`,
+  url => `https://proxy.cors.sh/${url}`,
+  url => `https://yacdn.org/proxy/${url}`,
   url => `https://thingproxy.freeboard.io/fetch/${url}`
 ];
 let activeProxy = 0;
@@ -895,7 +929,7 @@ async function fetchWithFallback(url, asText=false, bust=false) {
   for(let i=0;i<PROXIES.length;i++){
     const idx=(activeProxy+i)%PROXIES.length;
     try{
-      const r=await fetch(PROXIES[idx](url),{signal:AbortSignal.timeout(8000)});
+      const r=await fetch(PROXIES[idx](url),{signal:AbortSignal.timeout(10000)});
       if(!r.ok)throw new Error('HTTP '+r.status);
       activeProxy=idx;
       const bar=document.getElementById('proxy-status-bar');
@@ -907,7 +941,7 @@ async function fetchWithFallback(url, asText=false, bust=false) {
       catch(pe){throw new Error('JSON: '+text.slice(0,60));}
     }catch(e){lastErr=e;}
   }
-  throw new Error('All proxies failed. '+lastErr?.message);
+  throw new Error('All proxies failed — try the Refresh button or check your connection. Last error: '+(lastErr?.message||'unknown'));
 }
 function _rerenderTab(t){
   try{
@@ -973,14 +1007,15 @@ function switchTab(tab, e) {
   ['fixtures','players','power','value','transfers','injuries','xg','livegw','scout','scouthistory','myteam','ai-chat','differentials','history','minileague','fixturegrid','chipplanner','pricechange','seasonpts','h2h'].forEach(id=>{
     const el=document.getElementById(id+'-section');if(el)el.style.display='none';
   });
-  const labels={fixtures:'Best Fixture Runs — Next 5 Gameweeks',power:'Power Rankings — Composite FPL Score',value:'Value Picks — Best Points Per Million',transfers:'Transfer Trends — This Gameweek',injuries:'Injury Tracker — Availability & News',xg:'Underlying Stats — xG & xA',livegw:'Live Gameweek — Real-Time Points',scout:'Scout — Form vs Fixture Bubble Chart',scouthistory:'Scout History — Player vs Opponent Analysis',myteam:'My Team — Analyser & Captain Picker','ai-chat':'AI-Powered FPL Assistant','differentials':'Differentials — Hidden Gems Under 10% Ownership','history':'Player History — GW Points Chart & Stats','minileague':'Mini-League — Standings & Leaderboard','fixturegrid':'Full Fixture Grid — Season Difficulty Ticker','chipplanner':'Chip Planner — Best GWs to Play Your Chips','pricechange':'Price Change Predictor — Who\'s Rising & Falling','seasonpts':'Season Points — GW-by-GW Performance Chart','h2h':'Head-to-Head — Compare vs Another Manager'};
+  const labels={fixtures:'Best Fixture Runs — Next 5 Gameweeks',momentum:'Momentum — Club Short-Term Form & Performance',power:'Power Rankings — Composite FPL Score',value:'Value Picks — Best Points Per Million',transfers:'Transfer Trends — This Gameweek',injuries:'Injury Tracker — Availability & News',xg:'Underlying Stats — xG & xA',livegw:'Live Gameweek — Real-Time Points',scout:'Scout — Form vs Fixture Bubble Chart',scouthistory:'Scout History — Player vs Opponent Analysis',myteam:'My Team — Analyser & Captain Picker','ai-chat':'AI-Powered FPL Assistant','differentials':'Differentials — Hidden Gems Under 10% Ownership','history':'Player History — GW Points Chart & Stats','minileague':'Mini-League — Standings & Leaderboard','fixturegrid':'Full Fixture Grid — Season Difficulty Ticker','chipplanner':'Chip Planner — Best GWs to Play Your Chips','pricechange':'Price Change Predictor — Who\'s Rising & Falling','seasonpts':'Season Points — GW-by-GW Performance Chart','h2h':'Head-to-Head — Compare vs Another Manager'};
   document.getElementById('section-label').textContent = labels[tab]||tab;
   const sec = document.getElementById(tab+'-section');if(sec)sec.style.display='block';
-  const _rA=['power','value','transfers','injuries','xg','differentials','pricechange','seasonpts'];
+  const _rA=['momentum','power','value','transfers','injuries','xg','differentials','pricechange','seasonpts'];
   if(_rA.includes(tab)&&fplData&&renderedTabs.has(tab)){_rerenderTab(tab);return;}
   if(fplData && !renderedTabs.has(tab)){
     renderedTabs.add(tab);
-    if(tab==='power')renderPower();
+    if(tab==='momentum')renderMomentum();
+    else if(tab==='power')renderPower();
     else if(tab==='value')renderValue();
     else if(tab==='transfers')renderTransfers();
     else if(tab==='injuries')renderInjuries();
@@ -1058,7 +1093,8 @@ function renderFixtures(allFixtures){
   scored.forEach(({team,fixtures,avg},i)=>{
     const chips=fixtures.map(f=>{const opp=teams.find(t=>t.id===f.opp);return `<span class="fix-chip ${diffClass(f.difficulty)}">${opp?opp.short_name:'?'} (${f.venue})</span>`;}).join('');
     const c=makeCard(i);
-    c.innerHTML=`<div class="card-header"><div class="team-name"><img class="team-badge" src="https://resources.premierleague.com/premierleague/badges/50/t${team.code}.png" alt="${team.name}" onerror="this.style.display='none'">${team.name}</div><span class="badge ${badgeClass(avg)}">${badgeLabel(avg)}</span></div><div class="difficulty">Avg difficulty: <strong style="color:var(--text)">${avg}</strong></div><div class="fixtures">${chips}</div>`;
+    const momP=momPillHTML(team.id);
+    c.innerHTML=`<div class="card-header"><div class="team-name"><img class="team-badge" src="https://resources.premierleague.com/premierleague/badges/50/t${team.code}.png" alt="${team.name}" onerror="this.style.display='none'">${team.name}</div><div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap">${momP}<span class="badge ${badgeClass(avg)}">${badgeLabel(avg)}</span></div></div><div class="difficulty">Avg difficulty: <strong style="color:var(--text)">${avg}</strong></div><div class="fixtures">${chips}</div>`;
     grid.appendChild(c);
   });
 }
@@ -1369,8 +1405,14 @@ async function init(){
     document.getElementById('gw-info').innerHTML=`<div class="gw-hero"><div style="display:flex;align-items:center;gap:14px"><div class="gw-circle">📅</div><div><div class="gw-label">Next Gameweek</div><div class="gw-name">${nextGW.name}</div></div></div><div class="gw-deadline">⏰ Deadline: ${dlStr}</div></div>`;
     renderFixtures(allFixtures);
   }catch(err){
-    grid.innerHTML=`<div class="error-msg">❌ Could not load FPL data.<br><small>${err.message}</small><br><br><button class="refresh-btn" style="margin:0 auto" onclick="location.reload()">🔄 Reload Page</button></div>`;
-    document.getElementById('last-updated').textContent='Error — tap reload';
+    grid.innerHTML=`<div class="error-msg">❌ Could not load FPL data.<br><small style="color:rgba(255,85,85,.7)">${err.message}</small><br><br>
+      <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:8px">
+        <button class="refresh-btn" style="margin:0" onclick="forceRefreshData()">↺ Try Again</button>
+        <button class="refresh-btn" style="margin:0;background:rgba(255,255,255,.06)" onclick="activeProxy=(activeProxy+1)%PROXIES.length;forceRefreshData()">🔀 Switch Proxy & Retry</button>
+        <button class="refresh-btn" style="margin:0;background:rgba(255,255,255,.04)" onclick="location.reload()">🔄 Reload Page</button>
+      </div>
+    </div>`;
+    document.getElementById('last-updated').textContent='Error — tap retry';
   }
 }
 init();
@@ -3393,6 +3435,269 @@ function shDrawTrendChart(currentVs, pastSeasonData, opp, seasonAvg) {
 }
 // ══ END SCOUT HISTORY PHASE 2 + 3 ════════════════════════════════════════
 
+
+// ══════════════════════════════════════════════════════════════
+// MOMENTUM ENGINE
+// ══════════════════════════════════════════════════════════════
+const MOM_SCALE = [
+  { min:0,  max:6,  label:'Collapse',      color:'#5B0B0B' },
+  { min:7,  max:13, label:'Very Cold',     color:'#7A1010' },
+  { min:14, max:20, label:'Cold',          color:'#981B1B' },
+  { min:21, max:27, label:'Slumping',      color:'#B52A1E' },
+  { min:28, max:34, label:'Weak',          color:'#D2461F' },
+  { min:35, max:41, label:'Below Avg',     color:'#E46A1C' },
+  { min:42, max:48, label:'Flat',          color:'#F09A1A' },
+  { min:49, max:51, label:'Neutral',       color:'#F2C14E' },
+  { min:52, max:58, label:'Steady',        color:'#D4D95B' },
+  { min:59, max:65, label:'Improving',     color:'#A8D65E' },
+  { min:66, max:72, label:'Good',          color:'#7BC96F' },
+  { min:73, max:79, label:'Strong',        color:'#4DBD74' },
+  { min:80, max:86, label:'Very Strong',   color:'#24A86B' },
+  { min:87, max:93, label:'Surging',       color:'#0E8F72' },
+  { min:94, max:100,label:'Elite Run',     color:'#066A63' },
+];
+
+function momGetScale(score) {
+  const s = Math.round(Math.max(0, Math.min(100, score)));
+  return MOM_SCALE.find(t => s >= t.min && s <= t.max) || MOM_SCALE[7];
+}
+
+function momNorm(val, min, max) {
+  if (max === min) return 50;
+  return Math.max(0, Math.min(100, ((val - min) / (max - min)) * 100));
+}
+
+const MOM_WEIGHTS = [1.00, 0.85, 0.70, 0.55, 0.40];
+
+function calcMomentum(teamId) {
+  if (!fplData) return null;
+  const team = fplData.teams.find(t => t.id === teamId);
+  if (!team) return null;
+
+  const players = fplData.elements.filter(p => p.team === teamId && p.minutes > 0);
+  if (!players.length) return null;
+
+  // ── Aggregate team-level stats from players ─────────────────
+  // GKs + DEFs give us clean sheets and goals conceded
+  const defenders = players.filter(p => p.element_type <= 2);
+  const outfield  = players.filter(p => p.element_type >= 3);
+
+  // Goals scored this season (sum of all scorers, deduplicate team goals via GW count)
+  const totalGoals     = players.reduce((s,p) => s + (p.goals_scored||0), 0);
+  const totalConceded  = defenders.length
+    ? Math.max(...defenders.map(p => p.goals_conceded||0))  // max = team total (each GK has team total)
+    : players.reduce((s,p) => s + (p.goals_conceded||0), 0) / Math.max(players.length,1);
+  const cleanSheets    = defenders.length
+    ? Math.max(...defenders.map(p => p.clean_sheets||0))
+    : 0;
+
+  // GWs played (use most-played GK as proxy for team games)
+  const anchor = (defenders.length ? defenders : players)
+    .sort((a,b) => b.minutes - a.minutes)[0];
+  const gwsPlayed = Math.max(1, Math.round((anchor.minutes||0) / 90));
+
+  // Per-game rates
+  const goalsPerGame    = totalGoals    / gwsPlayed;
+  const concededPerGame = totalConceded / gwsPlayed;
+  const csRate          = cleanSheets   / gwsPlayed;   // 0-1
+
+  // team.form = avg FPL pts per game last 5 GWs (decimal string like "2.3")
+  // A good team scores ~6+ pts/game aggregate; average ~3-4
+  const formAvg = players.reduce((s,p) => s + parseFloat(p.form||0), 0) / players.length;
+
+  // ── Strength fields (FPL scale ~900–1400) ───────────────────
+  const atkH  = team.strength_attack_home    || 1050;
+  const atkA  = team.strength_attack_away    || 1000;
+  const defH  = team.strength_defence_home   || 1050;
+  const defA  = team.strength_defence_away   || 1000;
+  const atkAvg = (atkH + atkA) / 2;
+  const defAvg = (defH + defA) / 2;  // lower = better defence
+
+  // ── All-team ranges for normalization ───────────────────────
+  const allTeams = fplData.teams;
+  const allPlayers = fplData.elements.filter(p => p.minutes > 0);
+
+  function teamStat(tid, fn) {
+    const tp = allPlayers.filter(p => p.team === tid);
+    return tp.length ? fn(tp) : 0;
+  }
+
+  const allForms = allTeams.map(t => {
+    const tp = allPlayers.filter(p => p.team === t.id);
+    return tp.length ? tp.reduce((s,p) => s + parseFloat(p.form||0),0)/tp.length : 0;
+  });
+  const allGoals = allTeams.map(t => {
+    const tp = allPlayers.filter(p => p.team === t.id && p.element_type >= 2);
+    const g = tp.reduce((s,p)=>s+(p.goals_scored||0),0);
+    const gkp = allPlayers.filter(p=>p.team===t.id&&p.element_type===1).sort((a,b)=>b.minutes-a.minutes)[0];
+    const gws = gkp ? Math.max(1,Math.round(gkp.minutes/90)) : 1;
+    return g/gws;
+  });
+  const allCS = allTeams.map(t => {
+    const defs = allPlayers.filter(p=>p.team===t.id&&p.element_type<=2);
+    const cs = defs.length ? Math.max(...defs.map(p=>p.clean_sheets||0)) : 0;
+    const gkp = allPlayers.filter(p=>p.team===t.id&&p.element_type===1).sort((a,b)=>b.minutes-a.minutes)[0];
+    const gws = gkp ? Math.max(1,Math.round(gkp.minutes/90)) : 1;
+    return cs/gws;
+  });
+  const allConc = allTeams.map(t => {
+    const defs = allPlayers.filter(p=>p.team===t.id&&p.element_type<=2);
+    const conc = defs.length ? Math.max(...defs.map(p=>p.goals_conceded||0)) : 0;
+    const gkp = allPlayers.filter(p=>p.team===t.id&&p.element_type===1).sort((a,b)=>b.minutes-a.minutes)[0];
+    const gws = gkp ? Math.max(1,Math.round(gkp.minutes/90)) : 1;
+    return conc/gws;
+  });
+  const allAtk = allTeams.map(t => ((t.strength_attack_home||1050)+(t.strength_attack_away||1000))/2);
+  const allDef = allTeams.map(t => ((t.strength_defence_home||1050)+(t.strength_defence_away||1000))/2);
+
+  const minMax = arr => ({ mn: Math.min(...arr), mx: Math.max(...arr) });
+  const nm = (v, arr) => { const {mn,mx}=minMax(arr); return mx===mn?50:Math.max(0,Math.min(100,((v-mn)/(mx-mn))*100)); };
+
+  // ── Component scores ─────────────────────────────────────────
+  // R: Results — form avg normalized across all teams (higher form = better results)
+  const R = nm(formAvg, allForms);
+
+  // X: xG trend proxy — attack strength + goals per game combined
+  const xgProxy = (nm(atkAvg, allAtk) * 0.5) + (nm(goalsPerGame, allGoals) * 0.5);
+  const X = xgProxy;
+
+  // G: Goal difference — goals scored rate minus conceded rate
+  const gdPerGame = goalsPerGame - concededPerGame;
+  const allGD = allTeams.map((t,i) => allGoals[i] - allConc[i]);
+  const G = nm(gdPerGame, allGD);
+
+  // S: Shot dominance — attack strength proxy
+  const S = nm(atkAvg, allAtk);
+
+  // D: Defensive control — low concede rate + clean sheet rate
+  const D = (nm(concededPerGame, allConc.map(v => -v)) * 0.5) + // invert: lower concede = better
+            (nm(csRate, allCS) * 0.5);
+
+  // C: Context — overall team strength + form bonus
+  const allOverall = allTeams.map(t => t.strength || 3);
+  const C = (nm(team.strength||3, allOverall) * 0.5) + (R * 0.5);
+
+  // ── Final score ──────────────────────────────────────────────
+  const score = 0.35*R + 0.20*X + 0.15*G + 0.10*S + 0.10*D + 0.10*C;
+  const final = Math.round(Math.max(0, Math.min(100, score)));
+
+  // Synthetic form string for trend arrow (use form rank)
+  const formRank = allForms.indexOf(formAvg);
+  const fStr = final > 65 ? 'WWW' : final > 50 ? 'WDW' : final > 35 ? 'DWL' : 'LLL';
+
+  return {
+    score: final,
+    components: {
+      R: Math.round(R), X: Math.round(X), G: Math.round(G),
+      S: Math.round(S), D: Math.round(D), C: Math.round(C)
+    },
+    formStr: fStr,
+    scale: momGetScale(final)
+  };
+}
+
+// ── Trend arrow ──────────────────────────────────────────────
+function momTrendArrow(score) {
+  if (score === null || score === undefined) return '';
+  if (score >= 65) return '↑';
+  if (score <= 35) return '↓';
+  return '';
+}
+
+// ── Momentum pill HTML ───────────────────────────────────────
+function momPillHTML(teamId) {
+  const m = calcMomentum(teamId);
+  if (!m) return '';
+  const arrow = momTrendArrow(m.score);
+  const sc = m.scale;
+  return `<span class="mom-pill" style="background:${sc.color}22;color:${sc.color};border-color:${sc.color}44" title="Momentum: ${m.score}/100 — ${sc.label}">MOM ${m.score}${arrow ? ' <span class=\'mom-arrow\'>' + arrow + '</span>' : ''}</span>`;
+}
+
+// ── renderMomentum ───────────────────────────────────────────
+let momSortDir = 'desc';
+function renderMomentum() {
+  const container = document.getElementById('momentum-content');
+  if (!container || !fplData) return;
+
+  const teams = fplData.teams;
+  const scored = teams.map(t => {
+    const m = calcMomentum(t.id);
+    return m ? { team: t, ...m } : null;
+  }).filter(Boolean).sort((a,b) => b.score - a.score);
+
+  let html = `<div class="mom-section-title">🔥 Club Momentum Rankings — Last 5 Matches</div>
+  <div class="mom-filters">
+    <span style="font-size:.7rem;color:var(--text-muted)">Sort:</span>
+    <button class="mom-filter-btn active" onclick="momSetSort('desc',this)">Highest First</button>
+    <button class="mom-filter-btn" onclick="momSetSort('asc',this)">Lowest First</button>
+  </div>
+  <div class="mom-legend">`;
+
+  // Show 5 legend items (spread)
+  [0,3,6,10,13].forEach(i => {
+    const sc = MOM_SCALE[i];
+    html += `<div class="mom-legend-item"><div class="mom-legend-dot" style="background:${sc.color}"></div>${sc.label}</div>`;
+  });
+  html += `</div><div class="mom-rank-list" id="mom-rank-list">`;
+
+  scored.forEach((item, idx) => {
+    const sc = item.scale;
+    const arrow = momTrendArrow(item.score);
+    const { R,X,G,S,D,C } = item.components;
+    html += `
+    <div class="mom-rank-item">
+      <span class="mom-rank-pos">${idx+1}</span>
+      <img class="mom-rank-badge" src="https://resources.premierleague.com/premierleague/badges/50/t${item.team.code}.png" onerror="this.style.display='none'" alt="${item.team.short_name}" loading="lazy">
+      <div style="flex:1;min-width:0">
+        <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+          <span class="mom-rank-name">${item.team.name}</span>
+          <span class="mom-pill" style="background:${sc.color}22;color:${sc.color};border-color:${sc.color}44">MOM ${item.score}${arrow ? ' <span class="mom-arrow">'+arrow+'</span>' : ''}</span>
+          <span class="mom-rank-label" style="color:${sc.color}">${sc.label}</span>
+        </div>
+        <div style="margin-top:6px;display:flex;align-items:center;gap:8px">
+          <div class="mom-rank-bar-wrap"><div class="mom-rank-bar" style="width:${item.score}%;background:${sc.color}"></div></div>
+          <span style="font-size:.65rem;color:var(--text-muted)">Form: ${item.formStr||'—'}</span>
+        </div>
+        <button class="mom-expand-btn" onclick="momToggleBreakdown(this)">▶ Show breakdown</button>
+        <div class="mom-breakdown mom-breakdown-row">
+          <div class="mom-comp"><div class="mom-comp-val">${R}</div><div class="mom-comp-lbl">Results</div></div>
+          <div class="mom-comp"><div class="mom-comp-val">${X}</div><div class="mom-comp-lbl">xG Trend</div></div>
+          <div class="mom-comp"><div class="mom-comp-val">${G}</div><div class="mom-comp-lbl">Goal Diff</div></div>
+          <div class="mom-comp"><div class="mom-comp-val">${S}</div><div class="mom-comp-lbl">Shots</div></div>
+          <div class="mom-comp"><div class="mom-comp-val">${D}</div><div class="mom-comp-lbl">Defence</div></div>
+          <div class="mom-comp"><div class="mom-comp-val">${C}</div><div class="mom-comp-lbl">Context</div></div>
+        </div>
+      </div>
+    </div>`;
+  });
+
+  html += '</div>';
+  container.innerHTML = html;
+}
+
+function momSetSort(dir, btn) {
+  document.querySelectorAll('.mom-filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  const list = document.getElementById('mom-rank-list');
+  if (!list) return;
+  const items = Array.from(list.children);
+  items.sort((a, b) => {
+    const sa = parseInt(a.querySelector('.mom-pill')?.textContent?.match(/\d+/)?.[0] || 0);
+    const sb = parseInt(b.querySelector('.mom-pill')?.textContent?.match(/\d+/)?.[0] || 0);
+    return dir === 'asc' ? sa - sb : sb - sa;
+  });
+  items.forEach((el,i) => {
+    el.querySelector('.mom-rank-pos').textContent = i+1;
+    list.appendChild(el);
+  });
+}
+
+function momToggleBreakdown(btn) {
+  const row = btn.nextElementSibling;
+  const open = row.classList.toggle('open');
+  btn.textContent = (open ? '▼ Hide' : '▶ Show') + ' breakdown';
+}
+// ══ END MOMENTUM ENGINE ══════════════════════════════════════
 </script>
 
 <!-- ══ PLAYER DRAWER ══ -->
