@@ -1431,7 +1431,7 @@ async function init(){
     const events=bootstrap.events;
     const nextGW=events.find(e=>e.is_next)||events.find(e=>e.is_current)||events[0];
     const currentGW=events.find(e=>e.is_current)||nextGW;
-    gwId=nextGW.id; /* FIX: gwId matches header GW (nextGW) so fixture runs align with displayed gameweek */
+    gwId=nextGW.id;
     document.getElementById('last-updated').textContent='Live · GW'+gwId;
     const dlDate=nextGW.deadline_time?new Date(nextGW.deadline_time):null;
     const dlStr=dlDate?dlDate.toLocaleDateString('en-GB',{weekday:'short',day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'}):'See FPL app';
@@ -3643,7 +3643,7 @@ function momPillHTML(teamId) {
   if (!m) return '';
   const arrow = momTrendArrow(m.score);
   const sc = m.scale;
-  return '<button class="mom-pill" style="background:'+sc.color+'22;color:'+sc.color+';border-color:'+sc.color+'44;cursor:pointer" title="Click to see Momentum breakdown" onclick="momOpenModal('+teamId+')">MOM '+m.score+(arrow ? ' <span class=\'mom-arrow\'>'+arrow+'</span>' : '')+'</button>';
+  return '<button class="mom-pill" style="background:'+sc.color+'22;color:'+sc.color+';border-color:'+sc.color+'44;cursor:pointer" title="Click to see Momentum breakdown" onclick="momOpenModal('+teamId+')">'+sc.label+'</button>';
 }
 
 // ── renderMomentum ───────────────────────────────────────────
@@ -3678,14 +3678,14 @@ function renderMomentum() {
     const arrow = momTrendArrow(item.score);
     const { R,X,G,S,D,C } = item.components;
     html += `
-    <div class="mom-rank-item">
+    <div class="mom-rank-item" data-score="${item.score}">
       <span class="mom-rank-pos">${idx+1}</span>
       <img class="mom-rank-badge" src="https://resources.premierleague.com/premierleague/badges/50/t${item.team.code}.png" onerror="this.style.display='none'" alt="${item.team.short_name}" loading="lazy">
       <div style="flex:1;min-width:0">
         <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
           <span class="mom-rank-name">${item.team.name}</span>
-          <span class="mom-pill" style="background:${sc.color}22;color:${sc.color};border-color:${sc.color}44;cursor:pointer" onclick="momOpenModal(${item.team.id})" title="Click to see breakdown">MOM ${item.score}${arrow ? ' <span class="mom-arrow">'+arrow+'</span>' : ''}</button
-          <span class="mom-rank-label" style="color:${sc.color}">${sc.label}</span>
+          <span class="mom-pill" style="background:${sc.color}22;color:${sc.color};border-color:${sc.color}44;cursor:pointer" onclick="momOpenModal(${item.team.id})" title="Click to see breakdown">${item.scale ? item.scale.label : ""}
+          
         </div>
         <div style="margin-top:6px;display:flex;align-items:center;gap:8px">
           <div class="mom-rank-bar-wrap"><div class="mom-rank-bar" style="width:${item.score}%;background:${sc.color}"></div></div>
@@ -3715,8 +3715,8 @@ function momSetSort(dir, btn) {
   if (!list) return;
   const items = Array.from(list.children);
   items.sort((a, b) => {
-    const sa = parseInt(a.querySelector('.mom-pill')?.textContent?.match(/\d+/)?.[0] || 0);
-    const sb = parseInt(b.querySelector('.mom-pill')?.textContent?.match(/\d+/)?.[0] || 0);
+    const sa = parseFloat(a.dataset?.score || 0);
+    const sb = parseFloat(b.dataset?.score || 0);
     return dir === 'asc' ? sa - sb : sb - sa;
   });
   items.forEach((el,i) => {
