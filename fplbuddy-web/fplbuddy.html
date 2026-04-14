@@ -959,24 +959,28 @@ function _stampNow(){
 }
 async function fetchWithFallback(url, asText=false, bust=false) {
   if(!asText&&!bust){const c=_cGet(url);if(c)return c;}
-  let lastErr;
-  for(let i=0;i<PROXIES.length;i++){
-    const idx=(activeProxy+i)%PROXIES.length;
-    try{
-      const r=await fetch(PROXIES[idx](url),{signal:AbortSignal.timeout(10000)});
-      if(!r.ok)throw new Error('HTTP '+r.status);
-      activeProxy=idx;
-      const bar=document.getElementById('proxy-status-bar');
-      const names=['corsproxy.io','allorigins.win','codetabs','thingproxy'];
-      if(bar)bar.innerHTML=i>0?`<div class="proxy-status">✅ Via ${names[idx]||'proxy'}</div>`:'';
-      if(asText)return r.text();
-      const text=await r.text();
-      try{const d=JSON.parse(text);if(!bust)_cSet(url,d);_stampNow();return d;}
-      catch(pe){throw new Error('JSON: '+text.slice(0,60));}
-    }catch(e){lastErr=e;}
+  // Race all proxies in parallel — first success wins
+  const tryProxy = async (proxyFn, name) => {
+    const r = await fetch(proxyFn(url), {signal: AbortSignal.timeout(8000)});
+    if(!r.ok) throw new Error('HTTP '+r.status+' via '+name);
+    const text = await r.text();
+    if(asText) return text;
+    try { return JSON.parse(text); } catch(e) { throw new Error('JSON parse fail via '+name); }
+  };
+  const proxyNames = ['corsproxy.io','allorigins.win','corsproxy.io(2)','codetabs','cors.sh','yacdn','thingproxy'];
+  const results = await Promise.allSettled(PROXIES.map((p,i) => tryProxy(p, proxyNames[i]||'proxy'+i)));
+  const winner = results.find(r => r.status === 'fulfilled');
+  if(winner) {
+    const data = winner.value;
+    if(!asText && !bust) _cSet(url, data);
+    _stampNow();
+    const bar = document.getElementById('proxy-status-bar');
+    if(bar) bar.innerHTML = '';
+    return data;
   }
-  throw new Error('All proxies failed — try the Refresh button or check your connection. Last error: '+(lastErr?.message||'unknown'));
+  throw new Error('All proxies failed — check your connection or try the Refresh button. (' + results.map(r=>r.reason?.message||'?').join(' | ') + ')');
 }
+
 function _rerenderTab(t){
   try{
     if(t==='power')renderPower();
@@ -1044,7 +1048,7 @@ function switchTab(tab, e) {
   const labels={fixtures:'Best Fixture Runs — Next 5 Gameweeks',momentum:'Momentum — Club Short-Term Form & Performance',power:'Power Rankings — Composite FPL Score',value:'Value Picks — Best Points Per Million',transfers:'Transfer Trends — This Gameweek',injuries:'Injury Tracker — Availability & News',xg:'Underlying Stats — xG & xA',livegw:'Live Gameweek — Real-Time Points',scout:'Scout — Form vs Fixture Bubble Chart',scouthistory:'Scout History — Player vs Opponent Analysis',myteam:'My Team — Analyser & Captain Picker','ai-chat':'AI-Powered FPL Assistant','differentials':'Differentials — Hidden Gems Under 10% Ownership','history':'Player History — GW Points Chart & Stats','minileague':'Mini-League — Standings & Leaderboard','fixturegrid':'Full Fixture Grid — Season Difficulty Ticker','chipplanner':'Chip Planner — Best GWs to Play Your Chips','pricechange':'Price Change Predictor — Who\'s Rising & Falling','seasonpts':'Season Points — GW-by-GW Performance Chart','h2h':'Head-to-Head — Compare vs Another Manager'};
   document.getElementById('section-label').textContent = labels[tab]||tab;
   const sec = document.getElementById(tab+'-section');if(sec)sec.style.display='block';
-  const _rA=['momentum','power','value','transfers','injuries','xg','differentials','pricechange','seasonpts'];
+  const _rA=['momentum','power','value','transfers','injuries','xg','differentials','pricechange','seasonpts','fixturegrid'];
   if(_rA.includes(tab)&&fplData&&renderedTabs.has(tab)){_rerenderTab(tab);return;}
   if(fplData && !renderedTabs.has(tab)){
     renderedTabs.add(tab);
@@ -1422,12 +1426,18 @@ async function sendMessage(){if(!openaiKey){alert('Please connect your OpenAI AP
 // ── INIT ──────────────────────────────────────────────────────────────────
 async function init(){
   const grid=document.getElementById('fixture-cards');
+  // Hard timeout: if still loading after 15s, show error instead of spinning forever
+  const _spinTimer = setTimeout(()=>{
+    if(grid && grid.querySelector('.loading')){
+      grid.innerHTML='<div class="error-msg">⏱️ Loading timed out — FPL API may be slow or proxies are blocked.<br><small>Try clicking <b>Refresh Data</b> or open this file directly in your browser.</small><br><br><button onclick="location.reload()" style="margin-top:8px;padding:7px 18px;border-radius:8px;background:rgba(0,212,170,0.15);border:1px solid rgba(0,212,170,0.4);color:#00d4aa;font-size:0.85rem;cursor:pointer;font-family:Outfit,sans-serif">🔄 Retry</button></div>';
+    }
+  }, 15000);
   try{
     const [bootstrap,allFixtures]=await Promise.all([
       fetchWithFallback(FPL_BOOTSTRAP),
       fetchWithFallback(FPL_FIXTURES)
     ]);
-    fplData=bootstrap;fixtureData=allFixtures;
+    clearTimeout(_spinTimer);fplData=bootstrap;fixtureData=allFixtures;
     buildImminenceMap(fplData.elements);
     const events=bootstrap.events;
     const nextGW=events.find(e=>e.is_next)||events.find(e=>e.is_current)||events[0];
@@ -1441,6 +1451,7 @@ async function init(){
   if(_dlBadge){_dlBadge.textContent=`⏰ ${nextGW.name} · Deadline: ${dlStr}`;_dlBadge.style.display='inline';}
     renderFixtures(allFixtures);
   }catch(err){
+    clearTimeout(_spinTimer);
     grid.innerHTML=`<div class="error-msg">❌ Could not load FPL data.<br><small style="color:rgba(255,85,85,.7)">${err.message}</small><br><br>
       <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:8px">
         <button class="refresh-btn" style="margin:0" onclick="forceRefreshData()">↺ Try Again</button>
@@ -2224,97 +2235,68 @@ function renderPCView(){
 
 function renderFixtureGrid(){
   const el=document.getElementById('fixturegrid-content');
-  if(!fplData||!fixtureData){el.innerHTML='<div class="info-msg">⚠️ FPL data not loaded yet. Visit another tab first.</div>';return;}
-
+  if(!fplData||!fixtureData){el.innerHTML='<div class="info-msg">⚠️ Data not loaded yet — please wait or click Refresh.</div>';return;}
   const GW_COUNT=8;
   const gws=[];
   for(let g=gwId;g<=Math.min(gwId+GW_COUNT-1,38);g++) gws.push(g);
-
-  // Build per-team fixture map
   const teams=[...fplData.teams];
   const teamFixMap={};
-  teams.forEach(t=>{teamFixMap[t.id]={}; gws.forEach(g=>{teamFixMap[t.id][g]=[];});});
+  teams.forEach(t=>{teamFixMap[t.id]={};gws.forEach(g=>{teamFixMap[t.id][g]=[];});});
   fixtureData.forEach(f=>{
-    if(!gws.includes(f.event))return;
-    if(teamFixMap[f.team_h]) teamFixMap[f.team_h][f.event].push({opp:f.team_a,diff:f.team_h_difficulty,home:true});
-    if(teamFixMap[f.team_a]) teamFixMap[f.team_a][f.event].push({opp:f.team_h,diff:f.team_a_difficulty,home:false});
+    if(!f.event||!gws.includes(f.event))return;
+    if(teamFixMap[f.team_h])teamFixMap[f.team_h][f.event].push({opp:f.team_a,diff:f.team_h_difficulty,home:true});
+    if(teamFixMap[f.team_a])teamFixMap[f.team_a][f.event].push({opp:f.team_h,diff:f.team_a_difficulty,home:false});
   });
-
-  // Avg FDR per team for sorting
   teams.forEach(t=>{
     const all=gws.flatMap(g=>teamFixMap[t.id][g]);
     t._avgFDR=all.length?all.reduce((s,f)=>s+f.diff,0)/all.length:3;
   });
   const sorted=[...teams].sort((a,b)=>a._avgFDR-b._avgFDR);
-
-  // My-team filter: teams with picked players
   const myTeamIds=new Set();
-  if(typeof myTeamPicks!=='undefined'&&myTeamPicks.length){
+  if(typeof myTeamPicks!=='undefined'&&myTeamPicks&&myTeamPicks.length){
     myTeamPicks.forEach(p=>{const pl=fplData.elements.find(e=>e.id===p.element);if(pl)myTeamIds.add(pl.team);});
   }
-
   function buildTable(teamList){
-    const rows=teamList.map((t,ri)=>{
+    const rows=teamList.map(t=>{
       const cells=gws.map(g=>{
         const fixes=teamFixMap[t.id][g]||[];
-        if(!fixes.length) return `<td class="fg-cell bgw">BGW</td>`;
+        if(!fixes.length)return '<td class="fg-cell bgw">BGW</td>';
         if(fixes.length>=2){
-          const inner=fixes.map(f=>{
-            const opp=fplData.teams.find(x=>x.id===f.opp);
-            return `<span>${opp?opp.short_name:'?'}${f.home?'(H)':'(A)'}</span>`;
-          }).join('');
-          return `<td class="fg-cell dgw">${inner}</td>`;
+          const inner=fixes.map(f=>{const opp=fplData.teams.find(x=>x.id===f.opp);return '<span>'+(opp?opp.short_name:'?')+(f.home?' H':' A')+'</span>';}).join('');
+          return '<td class="fg-cell dgw">'+inner+'</td>';
         }
-        const f=fixes[0];
-        const opp=fplData.teams.find(x=>x.id===f.opp);
-        return `<td class="fg-cell fdr${f.diff}">${opp?opp.short_name:'?'}<br><span style="font-size:0.62rem;opacity:0.7">${f.home?'H':'A'}</span></td>`;
+        const f=fixes[0];const opp=fplData.teams.find(x=>x.id===f.opp);
+        return '<td class="fg-cell fdr'+f.diff+'">'+(opp?opp.short_name:'?')+'<br><span style="font-size:0.62rem;opacity:0.7">'+(f.home?'H':'A')+'</span></td>';
       }).join('');
       const avgCls=t._avgFDR<=2.5?'green':t._avgFDR<=3.2?'orange':'red';
-      return `<tr class="fg-row${fgHighlighted===t.id?' highlighted':''}" id="fgr-${t.id}">
-        <td class="fg-team-cell" onclick="fgToggleRow(${t.id})">
-          <img src="https://resources.premierleague.com/premierleague/badges/50/t${t.code}.png" onerror="this.style.display='none'" loading="lazy">
-          ${t.name}
-        </td>
-        ${cells}
-        <td class="fg-avg" style="color:var(--${avgCls})">${t._avgFDR.toFixed(1)}</td>
-      </tr>`;
+      const highlighted=(typeof fgHighlighted!=='undefined'&&fgHighlighted===t.id)?' highlighted':'';
+      return '<tr class="fg-row'+highlighted+'" id="fgr-'+t.id+'">'
+        +'<td class="fg-team-cell" onclick="fgToggleRow('+t.id+')">'
+        +'<img src="https://resources.premierleague.com/premierleague/badges/50/t'+t.code+'.png" onerror="this.style.display='none'" loading="lazy" width="18" height="18" style="vertical-align:middle;margin-right:6px">'
+        +t.name+'</td>'+cells
+        +'<td class="fg-avg" style="color:var(--'+avgCls+')">'+t._avgFDR.toFixed(1)+'</td></tr>';
     }).join('');
-
-    const gwHeaders=gws.map(g=>`<th>GW${g}</th>`).join('');
-    return `<table class="fg-table">
-      <thead><tr>
-        <th>Team</th>${gwHeaders}<th>Avg</th>
-      </tr></thead>
-      <tbody>${rows}</tbody>
-    </table>`;
+    const gwHeaders=gws.map(g=>'<th>GW'+g+'</th>').join('');
+    return '<table class="fg-table"><thead><tr><th>Team</th>'+gwHeaders+'<th>Avg</th></tr></thead><tbody>'+rows+'</tbody></table>';
   }
-
-  function rerenderTable(){
-    const list=fgMyTeamsOnly&&myTeamIds.size?sorted.filter(t=>myTeamIds.has(t.id)):sorted;
-    document.getElementById('fg-table-wrap').innerHTML=buildTable(list);
-    document.getElementById('fg-my-btn').className='pill'+(fgMyTeamsOnly?' active':'');
-    document.getElementById('fg-all-btn').className='pill'+(!fgMyTeamsOnly?' active':'');
-  }
-
-  el.innerHTML=`
-    <div class="fg-legend">
-      <span style="font-size:0.72rem;color:var(--text-muted);font-weight:700;margin-right:4px">Difficulty:</span>
-      <span class="fg-legend-item"><span class="fg-legend-dot" style="background:#00d4aa"></span>Easy (1–2)</span>
-      <span class="fg-legend-item"><span class="fg-legend-dot" style="background:#f0a500"></span>Medium (3)</span>
-      <span class="fg-legend-item"><span class="fg-legend-dot" style="background:#ff5555"></span>Hard (4–5)</span>
-      <span class="fg-legend-item"><span class="fg-legend-dot" style="background:rgba(255,255,255,0.1)"></span>BGW</span>
-      <span class="fg-legend-item"><span class="fg-legend-dot" style="background:rgba(0,212,170,0.18)"></span>DGW</span>
-    </div>
-    <div class="fg-controls">
-      <button class="pill active" id="fg-all-btn" onclick="fgMyTeamsOnly=false;renderFixtureGrid()">All Teams</button>
-      <button class="pill" id="fg-my-btn" onclick="fgMyTeamsOnly=true;renderFixtureGrid()">${myTeamIds.size?'My Teams ('+myTeamIds.size+')':'My Teams (load My Team tab first)'}</button>
-      <span class="fg-gw-label">GW${gws[0]}–GW${gws[gws.length-1]}</span>
-      <span style="font-size:0.73rem;color:var(--text-muted)">Click a row to highlight · Sorted easiest → hardest avg FDR</span>
-    </div>
-    <div class="fg-wrap" id="fg-table-wrap"></div>
-  `;
-
-  rerenderTable();
+  const list=(typeof fgMyTeamsOnly!=='undefined'&&fgMyTeamsOnly&&myTeamIds.size)?sorted.filter(t=>myTeamIds.has(t.id)):sorted;
+  const myBtn=myTeamIds.size?'My Teams ('+myTeamIds.size+')':'My Teams (load My Team tab first)';
+  el.innerHTML=
+    '<div class="fg-legend">'
+    +'<span style="font-size:0.72rem;color:var(--text-muted);font-weight:700;margin-right:4px">Difficulty:</span>'
+    +'<span class="fg-legend-item"><span class="fg-legend-dot" style="background:#00d4aa"></span>Easy (1–2)</span>'
+    +'<span class="fg-legend-item"><span class="fg-legend-dot" style="background:#f0a500"></span>Medium (3)</span>'
+    +'<span class="fg-legend-item"><span class="fg-legend-dot" style="background:#ff5555"></span>Hard (4–5)</span>'
+    +'<span class="fg-legend-item"><span class="fg-legend-dot" style="background:rgba(255,255,255,0.1)"></span>BGW</span>'
+    +'<span class="fg-legend-item"><span class="fg-legend-dot" style="background:rgba(0,212,170,0.18)"></span>DGW</span>'
+    +'</div>'
+    +'<div class="fg-controls">'
+    +'<button class="pill'+((typeof fgMyTeamsOnly!=='undefined'&&fgMyTeamsOnly)?'':' active')+'" onclick="fgMyTeamsOnly=false;renderFixtureGrid()">All Teams</button>'
+    +'<button class="pill'+((typeof fgMyTeamsOnly!=='undefined'&&fgMyTeamsOnly)?' active':'')+'" onclick="fgMyTeamsOnly=true;renderFixtureGrid()">'+myBtn+'</button>'
+    +'<span class="fg-gw-label">GW'+gws[0]+'–GW'+gws[gws.length-1]+'</span>'
+    +'<span style="font-size:0.73rem;color:var(--text-muted)">Click a row to highlight · Sorted easiest → hardest avg FDR</span>'
+    +'</div>'
+    +'<div class="fg-wrap">'+buildTable(list)+'</div>';
 }
 
 function fgToggleRow(teamId){
