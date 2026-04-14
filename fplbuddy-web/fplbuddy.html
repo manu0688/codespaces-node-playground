@@ -1037,7 +1037,7 @@ function rankBadge(i){const cls=i===0?'rank-1':i===1?'rank-2':i===2?'rank-3':'ra
 function switchTab(tab, e) {
   document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
   e.target.classList.add('active');
-  ['fixtures','players','power','value','transfers','injuries','xg','livegw','scout','scouthistory','myteam','ai-chat','differentials','history','minileague','fixturegrid','chipplanner','pricechange','seasonpts','h2h'].forEach(id=>{
+  ['fixtures','players','momentum','power','value','transfers','injuries','xg','livegw','scout','scouthistory','myteam','ai-chat','differentials','history','minileague','fixturegrid','chipplanner','pricechange','seasonpts','h2h'].forEach(id=>{
     const el=document.getElementById(id+'-section');if(el)el.style.display='none';
   });
   const labels={fixtures:'Best Fixture Runs — Next 5 Gameweeks',momentum:'Momentum — Club Short-Term Form & Performance',power:'Power Rankings — Composite FPL Score',value:'Value Picks — Best Points Per Million',transfers:'Transfer Trends — This Gameweek',injuries:'Injury Tracker — Availability & News',xg:'Underlying Stats — xG & xA',livegw:'Live Gameweek — Real-Time Points',scout:'Scout — Form vs Fixture Bubble Chart',scouthistory:'Scout History — Player vs Opponent Analysis',myteam:'My Team — Analyser & Captain Picker','ai-chat':'AI-Powered FPL Assistant','differentials':'Differentials — Hidden Gems Under 10% Ownership','history':'Player History — GW Points Chart & Stats','minileague':'Mini-League — Standings & Leaderboard','fixturegrid':'Full Fixture Grid — Season Difficulty Ticker','chipplanner':'Chip Planner — Best GWs to Play Your Chips','pricechange':'Price Change Predictor — Who\'s Rising & Falling','seasonpts':'Season Points — GW-by-GW Performance Chart','h2h':'Head-to-Head — Compare vs Another Manager'};
@@ -3684,7 +3684,7 @@ function renderMomentum() {
       <div style="flex:1;min-width:0">
         <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
           <span class="mom-rank-name">${item.team.name}</span>
-          <span class="mom-pill" style="background:${sc.color}22;color:${sc.color};border-color:${sc.color}44;cursor:pointer" onclick="momOpenModal(${item.team.id})" title="Click to see breakdown">${item.scale ? item.scale.label : ""}
+          <span class="mom-pill" style="background:${sc.color}22;color:${sc.color};border-color:${sc.color}44;cursor:pointer" onclick="momOpenModal(${item.team.id})" title="Click to see breakdown">${item.scale ? item.scale.label : ""}</button>
           
         </div>
         <div style="margin-top:6px;display:flex;align-items:center;gap:8px">
