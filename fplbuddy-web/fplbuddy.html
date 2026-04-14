@@ -1044,7 +1044,7 @@ function switchTab(tab, e) {
   const labels={fixtures:'Best Fixture Runs — Next 5 Gameweeks',momentum:'Momentum — Club Short-Term Form & Performance',power:'Power Rankings — Composite FPL Score',value:'Value Picks — Best Points Per Million',transfers:'Transfer Trends — This Gameweek',injuries:'Injury Tracker — Availability & News',xg:'Underlying Stats — xG & xA',livegw:'Live Gameweek — Real-Time Points',scout:'Scout — Form vs Fixture Bubble Chart',scouthistory:'Scout History — Player vs Opponent Analysis',myteam:'My Team — Analyser & Captain Picker','ai-chat':'AI-Powered FPL Assistant','differentials':'Differentials — Hidden Gems Under 10% Ownership','history':'Player History — GW Points Chart & Stats','minileague':'Mini-League — Standings & Leaderboard','fixturegrid':'Full Fixture Grid — Season Difficulty Ticker','chipplanner':'Chip Planner — Best GWs to Play Your Chips','pricechange':'Price Change Predictor — Who\'s Rising & Falling','seasonpts':'Season Points — GW-by-GW Performance Chart','h2h':'Head-to-Head — Compare vs Another Manager'};
   document.getElementById('section-label').textContent = labels[tab]||tab;
   const sec = document.getElementById(tab+'-section');if(sec)sec.style.display='block';
-  const _rA=['momentum','power','value','transfers','injuries','xg','differentials','pricechange','seasonpts'];
+  const _rA=['momentum','power','value','transfers','injuries','xg','differentials','pricechange','seasonpts','fixturegrid'];
   if(_rA.includes(tab)&&fplData&&renderedTabs.has(tab)){_rerenderTab(tab);return;}
   if(fplData && !renderedTabs.has(tab)){
     renderedTabs.add(tab);
@@ -2224,97 +2224,56 @@ function renderPCView(){
 
 function renderFixtureGrid(){
   const el=document.getElementById('fixturegrid-content');
-  if(!fplData||!fixtureData){el.innerHTML='<div class="info-msg">⚠️ FPL data not loaded yet. Visit another tab first.</div>';return;}
-
-  const GW_COUNT=8;
-  const gws=[];
-  for(let g=gwId;g<=Math.min(gwId+GW_COUNT-1,38);g++) gws.push(g);
-
-  // Build per-team fixture map
-  const teams=[...fplData.teams];
-  const teamFixMap={};
-  teams.forEach(t=>{teamFixMap[t.id]={}; gws.forEach(g=>{teamFixMap[t.id][g]=[];});});
+  if(!fplData||!fixtureData){el.innerHTML='<div class="info-msg">\u26a0\ufe0f Data not loaded yet.</div>';return;}
+  const GW_COUNT=8,gws=[];
+  for(let g=gwId;g<=Math.min(gwId+GW_COUNT-1,38);g++)gws.push(g);
+  const teams=[...fplData.teams],teamFixMap={};
+  teams.forEach(t=>{teamFixMap[t.id]={};gws.forEach(g=>{teamFixMap[t.id][g]=[];});});
   fixtureData.forEach(f=>{
-    if(!gws.includes(f.event))return;
-    if(teamFixMap[f.team_h]) teamFixMap[f.team_h][f.event].push({opp:f.team_a,diff:f.team_h_difficulty,home:true});
-    if(teamFixMap[f.team_a]) teamFixMap[f.team_a][f.event].push({opp:f.team_h,diff:f.team_a_difficulty,home:false});
+    if(!f.event||!gws.includes(f.event))return;
+    if(teamFixMap[f.team_h])teamFixMap[f.team_h][f.event].push({opp:f.team_a,diff:f.team_h_difficulty,home:true});
+    if(teamFixMap[f.team_a])teamFixMap[f.team_a][f.event].push({opp:f.team_h,diff:f.team_a_difficulty,home:false});
   });
-
-  // Avg FDR per team for sorting
-  teams.forEach(t=>{
-    const all=gws.flatMap(g=>teamFixMap[t.id][g]);
-    t._avgFDR=all.length?all.reduce((s,f)=>s+f.diff,0)/all.length:3;
-  });
+  teams.forEach(t=>{const all=gws.flatMap(g=>teamFixMap[t.id][g]);t._avgFDR=all.length?all.reduce((s,f)=>s+f.diff,0)/all.length:3;});
   const sorted=[...teams].sort((a,b)=>a._avgFDR-b._avgFDR);
-
-  // My-team filter: teams with picked players
   const myTeamIds=new Set();
-  if(typeof myTeamPicks!=='undefined'&&myTeamPicks.length){
-    myTeamPicks.forEach(p=>{const pl=fplData.elements.find(e=>e.id===p.element);if(pl)myTeamIds.add(pl.team);});
-  }
-
+  if(typeof myTeamPicks!=='undefined'&&myTeamPicks&&myTeamPicks.length){myTeamPicks.forEach(p=>{const pl=fplData.elements.find(e=>e.id===p.element);if(pl)myTeamIds.add(pl.team);});}
+  function imgErr(el){el.style.display='none';}
   function buildTable(teamList){
-    const rows=teamList.map((t,ri)=>{
+    const rows=teamList.map(t=>{
       const cells=gws.map(g=>{
         const fixes=teamFixMap[t.id][g]||[];
-        if(!fixes.length) return `<td class="fg-cell bgw">BGW</td>`;
-        if(fixes.length>=2){
-          const inner=fixes.map(f=>{
-            const opp=fplData.teams.find(x=>x.id===f.opp);
-            return `<span>${opp?opp.short_name:'?'}${f.home?'(H)':'(A)'}</span>`;
-          }).join('');
-          return `<td class="fg-cell dgw">${inner}</td>`;
-        }
-        const f=fixes[0];
-        const opp=fplData.teams.find(x=>x.id===f.opp);
+        if(!fixes.length)return `<td class="fg-cell bgw">BGW</td>`;
+        if(fixes.length>=2){const inner=fixes.map(f=>{const opp=fplData.teams.find(x=>x.id===f.opp);return `<span>${opp?opp.short_name:'?'}${f.home?' H':' A'}</span>`;}).join('');return `<td class="fg-cell dgw">${inner}</td>`;}
+        const f=fixes[0],opp=fplData.teams.find(x=>x.id===f.opp);
         return `<td class="fg-cell fdr${f.diff}">${opp?opp.short_name:'?'}<br><span style="font-size:0.62rem;opacity:0.7">${f.home?'H':'A'}</span></td>`;
       }).join('');
       const avgCls=t._avgFDR<=2.5?'green':t._avgFDR<=3.2?'orange':'red';
-      return `<tr class="fg-row${fgHighlighted===t.id?' highlighted':''}" id="fgr-${t.id}">
-        <td class="fg-team-cell" onclick="fgToggleRow(${t.id})">
-          <img src="https://resources.premierleague.com/premierleague/badges/50/t${t.code}.png" onerror="this.style.display='none'" loading="lazy">
-          ${t.name}
-        </td>
-        ${cells}
-        <td class="fg-avg" style="color:var(--${avgCls})">${t._avgFDR.toFixed(1)}</td>
-      </tr>`;
+      const hl=(typeof fgHighlighted!=='undefined'&&fgHighlighted===t.id)?' highlighted':'';
+      return `<tr class="fg-row${hl}" id="fgr-${t.id}"><td class="fg-team-cell" onclick="fgToggleRow(${t.id})"><img src="https://resources.premierleague.com/premierleague/badges/50/t${t.code}.png" onerror="imgErr(this)" loading="lazy" width="18" height="18" style="vertical-align:middle;margin-right:6px">${t.name}</td>${cells}<td class="fg-avg" style="color:var(--${avgCls})">${t._avgFDR.toFixed(1)}</td></tr>`;
     }).join('');
-
-    const gwHeaders=gws.map(g=>`<th>GW${g}</th>`).join('');
-    return `<table class="fg-table">
-      <thead><tr>
-        <th>Team</th>${gwHeaders}<th>Avg</th>
-      </tr></thead>
-      <tbody>${rows}</tbody>
-    </table>`;
+    return `<table class="fg-table"><thead><tr><th>Team</th>${gws.map(g=>`<th>GW${g}</th>`).join('')}<th>Avg</th></tr></thead><tbody>${rows}</tbody></table>`;
   }
-
-  function rerenderTable(){
-    const list=fgMyTeamsOnly&&myTeamIds.size?sorted.filter(t=>myTeamIds.has(t.id)):sorted;
-    document.getElementById('fg-table-wrap').innerHTML=buildTable(list);
-    document.getElementById('fg-my-btn').className='pill'+(fgMyTeamsOnly?' active':'');
-    document.getElementById('fg-all-btn').className='pill'+(!fgMyTeamsOnly?' active':'');
-  }
-
+  const list=(typeof fgMyTeamsOnly!=='undefined'&&fgMyTeamsOnly&&myTeamIds.size)?sorted.filter(t=>myTeamIds.has(t.id)):sorted;
+  const myBtn=myTeamIds.size?`My Teams (${myTeamIds.size})`:'My Teams (load My Team tab first)';
+  const allActive=(typeof fgMyTeamsOnly==='undefined'||!fgMyTeamsOnly)?' active':'';
+  const myActive=(typeof fgMyTeamsOnly!=='undefined'&&fgMyTeamsOnly)?' active':'';
   el.innerHTML=`
     <div class="fg-legend">
       <span style="font-size:0.72rem;color:var(--text-muted);font-weight:700;margin-right:4px">Difficulty:</span>
-      <span class="fg-legend-item"><span class="fg-legend-dot" style="background:#00d4aa"></span>Easy (1–2)</span>
+      <span class="fg-legend-item"><span class="fg-legend-dot" style="background:#00d4aa"></span>Easy (1\u20132)</span>
       <span class="fg-legend-item"><span class="fg-legend-dot" style="background:#f0a500"></span>Medium (3)</span>
-      <span class="fg-legend-item"><span class="fg-legend-dot" style="background:#ff5555"></span>Hard (4–5)</span>
+      <span class="fg-legend-item"><span class="fg-legend-dot" style="background:#ff5555"></span>Hard (4\u20135)</span>
       <span class="fg-legend-item"><span class="fg-legend-dot" style="background:rgba(255,255,255,0.1)"></span>BGW</span>
       <span class="fg-legend-item"><span class="fg-legend-dot" style="background:rgba(0,212,170,0.18)"></span>DGW</span>
     </div>
     <div class="fg-controls">
-      <button class="pill active" id="fg-all-btn" onclick="fgMyTeamsOnly=false;renderFixtureGrid()">All Teams</button>
-      <button class="pill" id="fg-my-btn" onclick="fgMyTeamsOnly=true;renderFixtureGrid()">${myTeamIds.size?'My Teams ('+myTeamIds.size+')':'My Teams (load My Team tab first)'}</button>
-      <span class="fg-gw-label">GW${gws[0]}–GW${gws[gws.length-1]}</span>
-      <span style="font-size:0.73rem;color:var(--text-muted)">Click a row to highlight · Sorted easiest → hardest avg FDR</span>
+      <button class="pill${allActive}" onclick="fgMyTeamsOnly=false;renderFixtureGrid()">All Teams</button>
+      <button class="pill${myActive}" onclick="fgMyTeamsOnly=true;renderFixtureGrid()">${myBtn}</button>
+      <span class="fg-gw-label">GW${gws[0]}\u2013GW${gws[gws.length-1]}</span>
+      <span style="font-size:0.73rem;color:var(--text-muted)">Click a row to highlight \u00b7 Sorted easiest \u2192 hardest avg FDR</span>
     </div>
-    <div class="fg-wrap" id="fg-table-wrap"></div>
-  `;
-
-  rerenderTable();
+    <div class="fg-wrap">${buildTable(list)}</div>`;
 }
 
 function fgToggleRow(teamId){
