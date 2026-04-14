@@ -785,6 +785,7 @@
 <header>
   <div class="logo"><div class="logo-icon">⚽</div><span class="logo-text">FPLBuddy</span></div>
   <div class="live-badge"><span class="live-dot"></span><span id="last-updated">Connecting...</span></div>
+  <span id="deadline-badge" style="font-size:.65rem;color:var(--text-muted);margin-left:8px;display:none"></span>
 </header>
 
 <div class="container">
@@ -815,7 +816,7 @@
   <div class="rt-bar">
     <span id="last-updated-badge">🔄&nbsp;<span id="last-updated-text">just now</span></span>
     <button class="rt-refresh-btn" onclick="forceRefreshData()">↺ Refresh Data</button>
-    <span class="rt-hint">Auto-refreshes every 90s during live GW</span>
+    
   </div>
   <p class="section-title" id="section-label">Fixture Runs — Next 5 Gameweeks</p>
 
@@ -1435,7 +1436,9 @@ async function init(){
     document.getElementById('last-updated').textContent='Live · GW'+gwId;
     const dlDate=nextGW.deadline_time?new Date(nextGW.deadline_time):null;
     const dlStr=dlDate?dlDate.toLocaleDateString('en-GB',{weekday:'short',day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'}):'See FPL app';
-    document.getElementById('gw-info').innerHTML=`<div class="gw-hero"><div style="display:flex;align-items:center;gap:14px"><div class="gw-circle">📅</div><div><div class="gw-label">Next Gameweek</div><div class="gw-name">${nextGW.name}</div></div></div><div class="gw-deadline">⏰ Deadline: ${dlStr}</div></div>`;
+    document.getElementById('gw-info').style.display='none';
+  const _dlBadge=document.getElementById('deadline-badge');
+  if(_dlBadge){_dlBadge.textContent=`⏰ ${nextGW.name} · Deadline: ${dlStr}`;_dlBadge.style.display='inline';}
     renderFixtures(allFixtures);
   }catch(err){
     grid.innerHTML=`<div class="error-msg">❌ Could not load FPL data.<br><small style="color:rgba(255,85,85,.7)">${err.message}</small><br><br>
