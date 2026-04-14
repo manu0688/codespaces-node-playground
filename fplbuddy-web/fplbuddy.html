@@ -34,8 +34,8 @@
     .gw-label { font-size:0.72rem; font-weight:600; text-transform:uppercase; letter-spacing:1.5px; color:var(--text-muted); margin-bottom:3px; }
     .gw-name { font-size:1.1rem; font-weight:700; }
     .gw-deadline { font-size:0.75rem; color:var(--text-muted); font-weight:500; }
-    .tabs-wrap { display:flex; gap:6px; margin-bottom:28px; flex-wrap:wrap; }
-    .tab { padding:8px 18px; border-radius:999px; font-size:0.82rem; font-weight:600; cursor:pointer; border:1px solid var(--border); background:var(--surface); color:var(--text-muted); transition:all var(--transition); font-family:'Outfit',sans-serif; backdrop-filter:blur(8px); }
+    .tabs-wrap { display:flex; gap:6px; margin-bottom:28px; flex-wrap:wrap; overflow:visible; }
+    .tab { padding:8px 18px; border-radius:999px; font-size:0.82rem; font-weight:600; cursor:pointer; border:1px solid var(--border); background:var(--surface); color:var(--text-muted); overflow:visible; transition:all var(--transition); font-family:'Outfit',sans-serif; backdrop-filter:blur(8px); }
     .tab:hover { color:var(--text); border-color:rgba(255,255,255,0.15); }
     .tab.active { background:var(--green); color:#0b0f1a; border-color:var(--green); box-shadow:0 2px 14px var(--green-glow); }
     .section-title { font-size:0.72rem; font-weight:700; text-transform:uppercase; letter-spacing:2px; color:var(--text-muted); margin-bottom:18px; display:flex; align-items:center; gap:10px; }
@@ -470,12 +470,12 @@
     .tooltip-box::after{content:'';position:absolute;top:100%;left:50%;transform:translateX(-50%);border:5px solid transparent;border-top-color:rgba(0,212,170,0.35)}
     .tooltip-wrap:hover .tooltip-box,.tooltip-wrap.tip-open .tooltip-box{opacity:1;pointer-events:none}
     .tip-icon{font-size:0.66rem;color:rgba(0,212,170,0.55);cursor:help;line-height:1;user-select:none;flex-shrink:0;font-style:normal}
-    .tab-tip-wrap{display:inline-flex;align-items:center;position:relative;vertical-align:middle}
+    .tab-tip-wrap{display:inline-flex;align-items:center;position:relative;vertical-align:middle;overflow:visible}
     .tab-tip-icon{font-size:0.62rem;color:rgba(255,255,255,0.3);cursor:help;padding:2px 3px;line-height:1;user-select:none;transition:color 0.15s;font-style:normal}
     .tab-tip-icon:hover{color:rgba(0,212,170,0.7)}
-    .tab-tip-box{position:absolute;bottom:calc(100% + 10px);left:50%;transform:translateX(-50%);background:rgba(11,15,26,0.97);border:1px solid rgba(0,212,170,0.35);border-radius:9px;padding:9px 13px;font-size:0.72rem;line-height:1.55;color:#e8eaf0;white-space:normal;width:max-content;max-width:230px;pointer-events:none;opacity:0;transition:opacity 0.15s ease;z-index:1000;text-align:left;box-shadow:0 6px 24px rgba(0,0,0,0.6);font-weight:400}
-    .tab-tip-box::after{content:'';position:absolute;top:100%;left:50%;transform:translateX(-50%);border:5px solid transparent;border-top-color:rgba(0,212,170,0.35)}
-    .tab-tip-wrap:hover .tab-tip-box,.tab-tip-wrap.tip-open .tab-tip-box{opacity:1}
+    .tab-tip-box{position:fixed;top:0;left:0;background:rgba(11,15,26,0.97);border:1px solid rgba(0,212,170,0.35);border-radius:9px;padding:9px 13px;font-size:0.72rem;line-height:1.55;color:#e8eaf0;white-space:normal;width:max-content;max-width:260px;pointer-events:none;opacity:0;transition:opacity 0.15s ease;z-index:999999;text-align:left;box-shadow:0 6px 24px rgba(0,0,0,0.6);font-weight:400}
+    .tab-tip-box::after{display:none}
+    .tab-tip-wrap.tip-open .tab-tip-box{opacity:1}
     .how-calc{background:rgba(0,212,170,0.04);border:1px solid rgba(0,212,170,0.15);border-radius:10px;margin-bottom:18px;overflow:hidden}
     .how-calc-hdr{display:flex;align-items:center;justify-content:space-between;padding:11px 15px;cursor:pointer;transition:background 0.15s;user-select:none;font-size:0.82rem;font-weight:700;color:rgba(0,212,170,0.8)}
     .how-calc-hdr:hover{background:rgba(0,212,170,0.07)}
@@ -3814,5 +3814,54 @@ document.addEventListener('keydown', e => { if(e.key==='Escape') momCloseModal()
     <div id="mom-modal-footer">Based on current season stats vs all 20 PL clubs · Last 5 GW form</div>
   </div>
 </div>
+
+<script>
+(function(){
+  // Single floating tooltip for all tab-tip icons
+  var _ttActive = null;
+  document.addEventListener('mouseover', function(e){
+    var icon = e.target.closest('.tab-tip-icon');
+    if(!icon) return;
+    var wrap = icon.closest('.tab-tip-wrap');
+    var box = wrap && wrap.querySelector('.tab-tip-box');
+    if(!box) return;
+    if(_ttActive && _ttActive !== box){ _ttActive.style.opacity='0'; if(_ttActive._wrap) _ttActive._wrap.classList.remove('tip-open'); }
+    var r = icon.getBoundingClientRect();
+    // Position above the icon, centred
+    box.style.left = '0';
+    box.style.top = '0';
+    box.style.opacity = '0';
+    // Temporarily make visible to measure width
+    box.style.display = 'block';
+    var bw = box.offsetWidth;
+    var bh = box.offsetHeight;
+    var cx = r.left + r.width/2;
+    var tipLeft = cx - bw/2;
+    // Clamp horizontally to viewport
+    tipLeft = Math.max(8, Math.min(tipLeft, window.innerWidth - bw - 8));
+    // Always show BELOW the icon to avoid sticky header clipping
+    var tipTop = r.bottom + 8;
+    box.style.left = tipLeft + 'px';
+    box.style.top = tipTop + 'px';
+    box.style.opacity = '1';
+    box._wrap = wrap;
+    wrap.classList.add('tip-open');
+    _ttActive = box;
+  });
+  document.addEventListener('mouseout', function(e){
+    var icon = e.target.closest('.tab-tip-icon');
+    if(!icon) return;
+    var wrap = icon.closest('.tab-tip-wrap');
+    var box = wrap && wrap.querySelector('.tab-tip-box');
+    if(!box) return;
+    // Only hide if not moving to the box itself
+    var to = e.relatedTarget;
+    if(to && (box.contains(to) || box === to)) return;
+    box.style.opacity = '0';
+    wrap.classList.remove('tip-open');
+    if(_ttActive === box) _ttActive = null;
+  });
+})();
+</script>
 </body>
 </html>
