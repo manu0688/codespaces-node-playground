@@ -720,6 +720,28 @@
 
     /* ── Momentum ─────────────────────────────────────────────── */
     .mom-pill{display:inline-flex;align-items:center;gap:3px;padding:2px 7px;border-radius:999px;font-size:.62rem;font-weight:700;letter-spacing:.3px;white-space:nowrap;border:1px solid rgba(255,255,255,.12);opacity:.92;cursor:pointer;user-select:none;line-height:1.5}
+    .press-pill{display:inline-flex;align-items:center;padding:2px 7px;border-radius:999px;font-size:.58rem;font-weight:700;letter-spacing:.3px;white-space:nowrap;border:1px solid;opacity:.85;user-select:none;line-height:1.5;cursor:default}
+    .press-high{background:rgba(0,212,170,.12);color:#00d4aa;border-color:rgba(0,212,170,.3)}
+    .press-aggro{background:rgba(80,200,120,.1);color:#50c878;border-color:rgba(80,200,120,.28)}
+    .press-balanced{background:rgba(240,165,0,.1);color:#f0a500;border-color:rgba(240,165,0,.28)}
+    .press-mid{background:rgba(255,130,50,.1);color:#ff8232;border-color:rgba(255,130,50,.28)}
+    .press-passive{background:rgba(255,85,85,.1);color:#ff5555;border-color:rgba(255,85,85,.28)}
+    /* Press Index pill — clickable */
+    .press-pill{cursor:pointer;transition:opacity .15s,box-shadow .15s}
+    .press-pill:hover{opacity:1;box-shadow:0 0 0 2px currentColor}
+    .press-pill:focus-visible{outline:2px solid currentColor;outline-offset:2px}
+    /* Press Index popover */
+    .pi-popover{position:fixed;z-index:999999;min-width:220px;max-width:280px;background:#0e1120;border:1px solid rgba(0,212,170,.35);border-radius:12px;padding:14px 16px 12px;box-shadow:0 8px 32px rgba(0,0,0,.7);font-size:.75rem;color:#e8eaf0;display:none;line-height:1.5}
+    .pi-popover.open{display:block}
+    .pi-popover-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;gap:8px}
+    .pi-popover-title{font-size:.8rem;font-weight:800;color:#fff;letter-spacing:.2px}
+    .pi-popover-close{background:none;border:none;color:rgba(255,255,255,.4);font-size:1rem;cursor:pointer;padding:0 2px;line-height:1;transition:color .15s}
+    .pi-popover-close:hover{color:#fff}
+    .pi-score-row{display:flex;align-items:center;justify-content:space-between;padding:5px 0;border-bottom:1px solid rgba(255,255,255,.06)}
+    .pi-score-row:last-of-type{border-bottom:none}
+    .pi-score-lbl{color:rgba(255,255,255,.55);font-size:.7rem}
+    .pi-score-val{font-weight:700;font-size:.78rem;color:#e8eaf0}
+    .pi-note{margin-top:9px;font-size:.65rem;color:rgba(255,255,255,.35);line-height:1.4;font-style:italic}
     .mom-arrow{font-size:.6rem;opacity:.75}
     .mom-section-title{font-size:.65rem;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--text-muted);margin-bottom:14px;padding-bottom:6px;border-bottom:1px solid var(--border)}
     .mom-rank-list{display:flex;flex-direction:column;gap:8px}
@@ -3610,6 +3632,93 @@ function momPillHTML(teamId) {
 
 // ── renderMomentum ───────────────────────────────────────────
 let momSortDir = 'desc';
+function calcPressIndex(teamId) {
+  /*
+   * PPDA PROXY — pressProxy = 0.75 * defensiveActionScore + 0.25 * possessionPressureScore
+   *
+   * defensiveActionScore (75%)
+   *   Primary signal: BPS of DEF+MID players per 90 mins.
+   *   FPL BPS explicitly credits tackles (+2), blocks (+2), clearances (+1),
+   *   interceptions and recoveries — the closest available PPDA defensive-action proxy.
+   *
+   * possessionPressureScore (25%)
+   *   Proxy: ratio of DEF/MID BPS vs total squad BPS.
+   *   Teams that press heavily have defenders/midfielders winning more
+   *   defensive duels relative to total team output — a possession-pressure signal.
+   *   If indeterminate, defaults to neutral 50.
+   *
+   * Yellow cards: intentionally excluded from the formula.
+   * Goals conceded, clean sheets, team strength: intentionally excluded.
+   *
+   * Higher proxy score = stronger pressing (mirrors lower real PPDA).
+   * Mapping: 80-100 High Press, 65-79 Aggressive, 45-64 Balanced, 25-44 Mid Block, 0-24 Passive.
+   */
+  if (!fplData) return { label:'Balanced', cls:'press-balanced', score:50 };
+
+  const allPlayers = fplData.elements.filter(p => p.minutes > 0);
+  const allTeams   = fplData.teams;
+
+  function teamRaw(tid) {
+    const squad = allPlayers.filter(p => p.team === tid);
+    if (!squad.length) return null;
+
+    // Pressing actors: defenders + midfielders
+    const actors  = squad.filter(p => p.element_type <= 3);
+    if (!actors.length) return null;
+
+    // Games played — anchor on most-played outfield player
+    const anchor  = actors.slice().sort((a,b) => b.minutes - a.minutes)[0];
+    const gws     = Math.max(1, Math.round((anchor.minutes || 0) / 90));
+
+    // ── defensiveActionScore signal ──────────────────────────────────────
+    // Total BPS per game for DEF+MID players, normalised later across all clubs
+    const actorBPS     = actors.reduce((s,p) => s + (p.bps || 0), 0);
+    const defActionRate = actorBPS / Math.max(actors.length, 1) / gws;  // avg BPS/game/player
+
+    // ── possessionPressureScore signal ──────────────────────────────────
+    // Share of team BPS earned by pressing actors vs full squad.
+    // High-press teams: DEF/MID dominate BPS because they win more duels.
+    // Possession-heavy passive teams: attackers dominate BPS.
+    const totalBPS  = squad.reduce((s,p) => s + (p.bps || 0), 0);
+    const pressFrac = totalBPS > 0 ? actorBPS / totalBPS : 0.5; // 0–1, higher = more pressing
+
+    return { defActionRate, pressFrac };
+  }
+
+  // League-wide ranges for min-max normalisation
+  const allRaw = allTeams
+    .map(t => ({ id: t.id, raw: teamRaw(t.id) }))
+    .filter(r => r.raw);
+
+  if (!allRaw.length) return { label:'Balanced', cls:'press-balanced', score:50 };
+
+  const allDef  = allRaw.map(r => r.raw.defActionRate);
+  const allFrac = allRaw.map(r => r.raw.pressFrac);
+
+  function norm(val, arr) {
+    const mn = Math.min(...arr), mx = Math.max(...arr);
+    if (mx === mn) return 50;
+    return (val - mn) / (mx - mn) * 100;
+  }
+
+  const me = teamRaw(teamId);
+  if (!me) return { label:'Balanced', cls:'press-balanced', score:50 };
+
+  const defensiveActionScore   = norm(me.defActionRate, allDef);   // 0-100, higher = more pressing
+  const possessionPressureScore = norm(me.pressFrac,    allFrac);  // 0-100, higher = more pressing
+
+  const score = defensiveActionScore * 0.75 + possessionPressureScore * 0.25;
+
+  let label, cls;
+  if      (score >= 80) { label = 'High Press'; cls = 'press-high'; }
+  else if (score >= 65) { label = 'Aggressive'; cls = 'press-aggro'; }
+  else if (score >= 45) { label = 'Balanced';   cls = 'press-balanced'; }
+  else if (score >= 25) { label = 'Mid Block';  cls = 'press-mid'; }
+  else                  { label = 'Passive';    cls = 'press-passive'; }
+
+  return { label, cls, score, defScore: defensiveActionScore, possScore: possessionPressureScore };
+}
+
 function renderMomentum() {
   const container = document.getElementById('momentum-content');
   if (!container || !fplData) return;
@@ -3639,6 +3748,7 @@ function renderMomentum() {
     const sc = item.scale;
     const arrow = momTrendArrow(item.score);
     const { R,X,G,S,D,C } = item.components;
+    const pi = calcPressIndex(item.team.id);
     html += `
     <div class="mom-rank-item" data-score="${item.score}">
       <span class="mom-rank-pos">${idx+1}</span>
@@ -3646,8 +3756,10 @@ function renderMomentum() {
       <div style="flex:1;min-width:0">
         <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
           <span class="mom-rank-name">${item.team.name}</span>
-          <span class="mom-pill" style="background:${sc.color}22;color:${sc.color};border-color:${sc.color}44;cursor:pointer" onclick="momOpenModal(${item.team.id})" title="Click to see breakdown">${item.scale ? item.scale.label : ""}</button>
-          
+          <span style="display:inline-flex;align-items:center;gap:8px;margin-left:auto;flex-shrink:0;flex-wrap:wrap;justify-content:flex-end">
+            <span class="press-pill ${pi.cls}" tabindex="0" role="button" title="Click for Press Index breakdown" onclick="window._piTeamName='${item.team.name}';piOpenPopover(this,${item.team.id},'${pi.label}',${pi.score},${pi.defScore},${pi.possScore})" onkeydown="if(event.key==='Enter'||event.key===' '){window._piTeamName='${item.team.name}';piOpenPopover(this,${item.team.id},'${pi.label}',${pi.score},${pi.defScore},${pi.possScore})}">${pi.label}</span>
+            <span class="mom-pill" style="background:${sc.color}22;color:${sc.color};border-color:${sc.color}44;cursor:pointer" onclick="momOpenModal(${item.team.id})" title="Click to see breakdown">${item.scale ? item.scale.label : ""}</span>
+          </span>
         </div>
         <div style="margin-top:6px;display:flex;align-items:center;gap:8px">
           <div class="mom-rank-bar-wrap"><div class="mom-rank-bar" style="width:${item.score}%;background:${sc.color}"></div></div>
@@ -3860,6 +3972,77 @@ document.addEventListener('keydown', e => { if(e.key==='Escape') momCloseModal()
     box.style.opacity = '0';
     wrap.classList.remove('tip-open');
     if(_ttActive === box) _ttActive = null;
+  });
+})();
+</script>
+
+<div id="pi-popover" class="pi-popover" role="dialog" aria-modal="true" aria-label="Press Index breakdown">
+  <div class="pi-popover-hdr">
+    <span class="pi-popover-title" id="pi-pop-title">Press Index</span>
+    <button class="pi-popover-close" onclick="piClosePopover()" aria-label="Close">✕</button>
+  </div>
+  <div class="pi-score-row">
+    <span class="pi-score-lbl">Label</span>
+    <span class="pi-score-val" id="pi-pop-label">—</span>
+  </div>
+  <div class="pi-score-row">
+    <span class="pi-score-lbl">Proxy Score</span>
+    <span class="pi-score-val" id="pi-pop-score">—</span>
+  </div>
+  <div class="pi-score-row">
+    <span class="pi-score-lbl">Defensive Actions <span style="font-size:.6rem;opacity:.5">(75%)</span></span>
+    <span class="pi-score-val" id="pi-pop-def">—</span>
+  </div>
+  <div class="pi-score-row">
+    <span class="pi-score-lbl">Possession Pressure <span style="font-size:.6rem;opacity:.5">(25%)</span></span>
+    <span class="pi-score-val" id="pi-pop-poss">—</span>
+  </div>
+  <p class="pi-note">Proxy score based on FPL defensive contribution data (BPS). Not exact PPDA.</p>
+</div>
+
+<script>
+(function(){
+  var _piData = {};
+
+  window.piOpenPopover = function(pill, teamId, label, score, defScore, possScore) {
+    var pop = document.getElementById('pi-popover');
+    document.getElementById('pi-pop-title').textContent = 'Press Index — ' + (window._piTeamName||'');
+    document.getElementById('pi-pop-label').textContent = label;
+    document.getElementById('pi-pop-label').style.color = pill.style.color || '#e8eaf0';
+    document.getElementById('pi-pop-score').textContent = Math.round(score) + ' / 100';
+    document.getElementById('pi-pop-def').textContent   = Math.round(defScore);
+    document.getElementById('pi-pop-poss').textContent  = Math.round(possScore);
+
+    // Position near pill
+    pop.classList.add('open');
+    var r = pill.getBoundingClientRect();
+    var pw = pop.offsetWidth || 260;
+    var ph = pop.offsetHeight || 160;
+    var left = r.left + r.width/2 - pw/2;
+    var top  = r.bottom + 8;
+    // Clamp
+    left = Math.max(8, Math.min(left, window.innerWidth - pw - 8));
+    if (top + ph > window.innerHeight - 8) top = r.top - ph - 8;
+    if (top < 8) top = 8;
+    pop.style.left = left + 'px';
+    pop.style.top  = top  + 'px';
+    pop._anchorPill = pill;
+  };
+
+  window.piClosePopover = function() {
+    var pop = document.getElementById('pi-popover');
+    pop.classList.remove('open');
+  };
+
+  // Close on outside click
+  document.addEventListener('mousedown', function(e){
+    var pop = document.getElementById('pi-popover');
+    if (!pop.classList.contains('open')) return;
+    if (!pop.contains(e.target) && e.target !== pop._anchorPill) piClosePopover();
+  });
+  // Close on Escape
+  document.addEventListener('keydown', function(e){
+    if (e.key === 'Escape') piClosePopover();
   });
 })();
 </script>
