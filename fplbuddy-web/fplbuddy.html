@@ -853,6 +853,48 @@
     .bench-risk-lbl{font-size:.65rem;color:var(--text-muted);margin-top:1px}
     .bench-risk-msg{font-size:.68rem;color:var(--text-muted);flex:1}
 
+    
+    /* ── SET PIECES TAB ── */
+    .sp-section-title{font-size:.65rem;font-weight:800;text-transform:uppercase;letter-spacing:1.2px;color:var(--text-muted);margin:16px 0 8px;display:flex;align-items:center;gap:6px}
+    .sp-type-tabs{display:flex;gap:6px;margin-bottom:14px;flex-wrap:wrap}
+    .sp-type-btn{padding:5px 14px;border-radius:999px;font-size:.68rem;font-weight:700;border:1px solid var(--border);background:var(--surface);color:var(--text-muted);cursor:pointer;transition:all .15s}
+    .sp-type-btn.active{background:var(--primary);color:#fff;border-color:var(--primary)}
+    .sp-summary-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:16px}
+    @media(max-width:480px){.sp-summary-grid{grid-template-columns:repeat(2,1fr)}}
+    .sp-sum-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:10px 12px;text-align:center}
+    .sp-sum-val{font-size:1.15rem;font-weight:900;color:var(--primary)}
+    .sp-sum-lbl{font-size:.58rem;color:var(--text-muted);margin-top:3px;text-transform:uppercase;letter-spacing:.7px}
+    /* Team rows */
+    .sp-table{width:100%;border-collapse:collapse;font-size:.72rem}
+    .sp-table th{font-size:.58rem;text-transform:uppercase;letter-spacing:.8px;color:var(--text-muted);padding:6px 8px;border-bottom:1px solid var(--border);font-weight:700;white-space:nowrap}
+    .sp-table td{padding:7px 8px;border-bottom:1px solid rgba(255,255,255,.04);vertical-align:middle}
+    .sp-table tr:hover td{background:rgba(255,255,255,.03)}
+    .sp-rank{font-weight:800;color:var(--text-muted);font-size:.65rem;text-align:center;width:24px}
+    .sp-badge-img{width:20px;height:20px;object-fit:contain;vertical-align:middle}
+    .sp-team-name{font-weight:700}
+    .sp-bar-wrap{width:60px;height:4px;background:var(--border);border-radius:2px;display:inline-block;vertical-align:middle}
+    .sp-bar{height:100%;border-radius:2px}
+    /* Label pills */
+    .sp-pill{display:inline-flex;align-items:center;padding:2px 7px;border-radius:999px;font-size:.56rem;font-weight:700;letter-spacing:.2px;white-space:nowrap;border:1px solid}
+    .sp-elite-atk{background:rgba(0,212,170,.12);color:#00d4aa;border-color:rgba(0,212,170,.3)}
+    .sp-strong-atk{background:rgba(80,200,120,.1);color:#50c878;border-color:rgba(80,200,120,.28)}
+    .sp-avg{background:rgba(240,165,0,.1);color:#f0a500;border-color:rgba(240,165,0,.28)}
+    .sp-weak{background:rgba(255,130,50,.1);color:#ff8232;border-color:rgba(255,130,50,.28)}
+    .sp-poor{background:rgba(255,85,85,.1);color:#ff5555;border-color:rgba(255,85,85,.28)}
+    .sp-elite-def{background:rgba(0,212,170,.12);color:#00d4aa;border-color:rgba(0,212,170,.3)}
+    .sp-solid{background:rgba(80,200,120,.1);color:#50c878;border-color:rgba(80,200,120,.28)}
+    .sp-vuln{background:rgba(255,130,50,.1);color:#ff8232;border-color:rgba(255,130,50,.28)}
+    .sp-leaky{background:rgba(255,85,85,.1);color:#ff5555;border-color:rgba(255,85,85,.28)}
+    /* Specialists block */
+    .sp-spec-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:4px}
+    @media(max-width:480px){.sp-spec-grid{grid-template-columns:1fr}}
+    .sp-spec-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:10px 12px}
+    .sp-spec-title{font-size:.6rem;font-weight:800;text-transform:uppercase;letter-spacing:.8px;color:var(--text-muted);margin-bottom:8px}
+    .sp-spec-row{display:flex;align-items:center;gap:8px;padding:4px 0;border-bottom:1px solid rgba(255,255,255,.04);font-size:.7rem}
+    .sp-spec-row:last-child{border-bottom:none}
+    .sp-spec-rank{font-size:.6rem;color:var(--text-muted);width:16px;flex-shrink:0}
+    .sp-note{font-size:.6rem;color:var(--text-muted);font-style:italic;margin-top:6px;padding:6px 8px;background:var(--surface);border-radius:6px;border:1px solid var(--border)}
+
     </style>
 </head>
 <body>
@@ -885,7 +927,8 @@
     <span class="tab-tip-wrap"><button class="tab" data-tab="chipplanner" onclick="switchTab('chipplanner',event)">🃏 Chip Planner</button><i class="tab-tip-icon" onclick="toggleTip(this)" onmouseenter="this.parentElement.classList.add('tip-open')" onmouseleave="this.parentElement.classList.remove('tip-open')">ⓘ<span class="tab-tip-box">Recommends the best remaining GW to play each of your 4 chips based on fixture data</span></i></span>
     <span class="tab-tip-wrap"><button class="tab" data-tab="pricechange" onclick="switchTab('pricechange',event)">💰 Price Changes</button><i class="tab-tip-icon" onclick="toggleTip(this)" onmouseenter="this.parentElement.classList.add('tip-open')" onmouseleave="this.parentElement.classList.remove('tip-open')">ⓘ<span class="tab-tip-box">Players most likely to rise or fall based on transfer velocity this GW</span></i></span>
     <span class="tab-tip-wrap"><button class="tab" data-tab="seasonpts" onclick="switchTab('seasonpts',event)">📊 Season Points</button><i class="tab-tip-icon" onclick="toggleTip(this)" onmouseenter="this.parentElement.classList.add('tip-open')" onmouseleave="this.parentElement.classList.remove('tip-open')">ⓘ<span class="tab-tip-box">Your GW-by-GW points chart with cumulative total, rank trend and chips played</span></i></span>
-    <span class="tab-tip-wrap"><button class="tab" data-tab="h2h" onclick="switchTab('h2h',event)">⚔️ Head-to-Head</button><i class="tab-tip-icon" onclick="toggleTip(this)" onmouseenter="this.parentElement.classList.add('tip-open')" onmouseleave="this.parentElement.classList.remove('tip-open')">ⓘ<span class="tab-tip-box">Compare your FPL season vs a rival — W/D/L record, pts diff and GW battle table</span></i></span>
+    <span class="tab-tip-wrap"><button class="tab" data-tab="h2h" onclick="switchTab('h2h',event)">⚔️ Head-to-Head</button><i class="tab-tip-icon" onclick="toggleTip(this)" onmouseenter="this.parentElement.classList.add('tip-open')" onmouseleave="this.parentElement.classList.remove('tip-open')">ⓘ<span class="tab-tip-box">Compare your FPL season vs a rival — W/D/L record, pts diff and GW battle table</span></i>
+  <span class="tab-tip-wrap"><button class="tab" data-tab="setpieces" onclick="switchTab('setpieces',event)">🎯 Set Pieces</button><i class="tab-tip-icon" onclick="toggleTip(this)" onmouseenter="this.parentElement.classList.add('tip-open')" onmouseleave="this.parentElement.classList.remove('tip-open')">ⓘ<span class="tab-tip-box">Team set-piece attack &amp; defence rankings — corners, free kicks and throw-ins</span></i></span>
   </div>
   <div class="rt-bar">
     <span id="last-updated-badge">🔄&nbsp;<span id="last-updated-text">just now</span></span>
@@ -997,6 +1040,10 @@
     <div id="h2h-content"></div>
   </div>
 </div>
+
+  <div id="setpieces-section" style="display:none">
+    <div id="setpieces-content"><div class="loading"><div class="loading-spinner"></div>Loading set piece data...</div></div>
+  </div>
 
 <script>
 // ── PROXY WITH AUTO-FALLBACK ──────────────────────────────────────────────
@@ -1113,7 +1160,7 @@ function rankBadge(i){const cls=i===0?'rank-1':i===1?'rank-2':i===2?'rank-3':'ra
 function switchTab(tab, e) {
   document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
   e.target.classList.add('active');
-  ['fixtures','players','momentum','power','value','transfers','injuries','xg','livegw','scout','scouthistory','myteam','ai-chat','differentials','history','minileague','fixturegrid','chipplanner','pricechange','seasonpts','h2h'].forEach(id=>{
+  ['fixtures','players','momentum','power','value','transfers','injuries','xg','livegw','scout','scouthistory','myteam','ai-chat','differentials','history','minileague','fixturegrid','chipplanner','pricechange','seasonpts','h2h','setpieces'].forEach(id=>{
     const el=document.getElementById(id+'-section');if(el)el.style.display='none';
   });
   const labels={fixtures:'Best Fixture Runs — Next 5 Gameweeks',momentum:'Momentum — Club Short-Term Form & Performance',power:'Power Rankings — Composite FPL Score',value:'Value Picks — Best Points Per Million',transfers:'Transfer Trends — This Gameweek',injuries:'Injury Tracker — Availability & News',xg:'Underlying Stats — xG & xA',livegw:'Live Gameweek — Real-Time Points',scout:'Scout — Form vs Fixture Bubble Chart',scouthistory:'Scout History — Player vs Opponent Analysis',myteam:'My Team — Analyser & Captain Picker','ai-chat':'AI-Powered FPL Assistant','differentials':'Differentials — Hidden Gems Under 10% Ownership','history':'Player History — GW Points Chart & Stats','minileague':'Mini-League — Standings & Leaderboard','fixturegrid':'Full Fixture Grid — Season Difficulty Ticker','chipplanner':'Chip Planner — Best GWs to Play Your Chips','pricechange':'Price Change Predictor — Who\'s Rising & Falling','seasonpts':'Season Points — GW-by-GW Performance Chart','h2h':'Head-to-Head — Compare vs Another Manager'};
@@ -1138,6 +1185,7 @@ function switchTab(tab, e) {
     else if(tab==='seasonpts')renderSeasonPts();
     else if(tab==='h2h')renderH2H();
     else if(tab==='scouthistory')initScoutHistory();
+    else if(tab==='setpieces'){_spData=null;renderSetPieces();}
   }
 }
 
@@ -1843,7 +1891,7 @@ async function init(){
       fetchWithFallback(FPL_BOOTSTRAP),
       fetchWithFallback(FPL_FIXTURES)
     ]);
-    fplData=bootstrap;fixtureData=allFixtures;
+    fplData=bootstrap;fixtureData=allFixtures;_spData=null;
     buildImminenceMap(fplData.elements);
     const events=bootstrap.events;
     const nextGW=events.find(e=>e.is_next)||events.find(e=>e.is_current)||events[0];
@@ -4440,6 +4488,313 @@ document.addEventListener('keydown', e => { if(e.key==='Escape') momCloseModal()
     if (e.key === 'Escape') piClosePopover();
   });
 })();
+
+
+// ══════════════════════════════════════════════════════════════════
+// SET PIECES ENGINE
+// Proxy model using best available FPL + fixture data signals.
+// Real PPDA set-piece event data is not in the FPL API, so we build
+// a well-labelled proxy from team-level attacking & defensive stats.
+// ══════════════════════════════════════════════════════════════════
+
+function buildSetPieceData() {
+  if (!fplData) return null;
+
+  const teams   = fplData.teams;
+  const players = fplData.elements.filter(p => p.minutes > 180);
+
+  // ── Per-team aggregations ──────────────────────────────────────
+  const teamStats = {};
+  teams.forEach(t => {
+    const tp = players.filter(p => p.team === t.id);
+    const defs = tp.filter(p => p.element_type <= 2);
+    const mids = tp.filter(p => p.element_type === 3);
+    const fwds = tp.filter(p => p.element_type === 4);
+    const gws = Math.max(1, Math.round(
+      Math.max(...tp.map(p => p.minutes), 90) / 90
+    ));
+
+    // ATTACK signals
+    // Goals from set pieces proxy: headers/aerial goals correlation
+    // We use: goals_scored of DEF (many come from set pieces), assists from MID/DEF
+    const defGoals     = defs.reduce((s,p) => s+(p.goals_scored||0), 0);
+    const midDefAssist = [...defs,...mids].reduce((s,p) => s+(p.assists||0), 0);
+    const totalGoals   = tp.reduce((s,p) => s+(p.goals_scored||0), 0);
+    // Threat from set pieces: ICT threat of whole squad, BPS of defs (rewards aerial duels)
+    const defBPS       = defs.length ? defs.reduce((s,p)=>s+(p.bps||0),0)/defs.length : 0;
+    const squadThreat  = tp.reduce((s,p)=>s+(parseFloat(p.threat)||0),0);
+    const ict          = tp.reduce((s,p)=>s+(parseFloat(p.ict_index)||0),0);
+
+    // DEFENCE signals
+    // Goals conceded of defensive players — high concession vs weak teams = poor set-piece def
+    const conceded     = defs.length ? Math.max(...defs.map(p=>p.goals_conceded||0)) : 0;
+    const concPerGW    = conceded / gws;
+    const yellowsDef   = defs.reduce((s,p)=>s+(p.yellow_cards||0),0); // high yellows near box = poor structure
+    const defCS        = defs.length ? Math.max(...defs.map(p=>p.clean_sheets||0)) : 0;
+    const csRate       = defCS / gws;
+
+    // Corner proxy: teams with tall, physical CBs score more corners
+    // MID BPS correlates with corner winning & delivery
+    const midBPS       = mids.length ? mids.reduce((s,p)=>s+(p.bps||0),0)/mids.length : 0;
+
+    // Free kick proxy: team's direct goal threat from long range
+    // Use threat of FWDs+MIDs at distance — approximated by raw threat score
+    const fwdMidThreat = [...fwds,...mids].reduce((s,p)=>s+(parseFloat(p.threat)||0),0);
+
+    // Throw-in proxy: teams in wide areas, high MID assists (lay-offs from throw-ins)
+    const midAssist    = mids.reduce((s,p)=>s+(p.assists||0),0);
+
+    teamStats[t.id] = {
+      team: t, gws,
+      // raw attack components
+      defGoals, midDefAssist, totalGoals,
+      defBPS, squadThreat, ict, midBPS, fwdMidThreat, midAssist,
+      // raw defence components
+      concPerGW, yellowsDef, csRate,
+      // type-specific
+      cornerAtkRaw:  defGoals * 2 + midBPS + defBPS * 0.5,
+      cornerDefRaw:  csRate * 30 - concPerGW * 8 - yellowsDef * 0.3,
+      fkAtkRaw:      fwdMidThreat / 20 + midDefAssist * 1.5 + totalGoals * 0.5,
+      fkDefRaw:      csRate * 25 - concPerGW * 6,
+      throwAtkRaw:   midAssist * 3 + squadThreat / 30 + ict / 40,
+      throwDefRaw:   csRate * 20 - concPerGW * 5
+    };
+  });
+
+  // ── Normalise 0-100 ────────────────────────────────────────────
+  function normArr(arr) {
+    const vals = arr.filter(v => isFinite(v));
+    const mn = Math.min(...vals), mx = Math.max(...vals);
+    return v => mx > mn ? Math.round((v - mn) / (mx - mn) * 100) : 50;
+  }
+
+  const ids = Object.keys(teamStats);
+  const nCA = normArr(ids.map(id => teamStats[id].cornerAtkRaw));
+  const nCD = normArr(ids.map(id => teamStats[id].cornerDefRaw));
+  const nFA = normArr(ids.map(id => teamStats[id].fkAtkRaw));
+  const nFD = normArr(ids.map(id => teamStats[id].fkDefRaw));
+  const nTA = normArr(ids.map(id => teamStats[id].throwAtkRaw));
+  const nTD = normArr(ids.map(id => teamStats[id].throwDefRaw));
+
+  const results = ids.map(id => {
+    const s = teamStats[id];
+    const cornerAtk = nCA(s.cornerAtkRaw);
+    const cornerDef = nCD(s.cornerDefRaw);
+    const fkAtk     = nFA(s.fkAtkRaw);
+    const fkDef     = nFD(s.fkDefRaw);
+    const throwAtk  = nTA(s.throwAtkRaw);
+    const throwDef  = nTD(s.throwDefRaw);
+
+    // Overall = weighted average of all 3 types
+    const atkScore  = Math.round(cornerAtk * 0.45 + fkAtk * 0.35 + throwAtk * 0.20);
+    const defScore  = Math.round(cornerDef * 0.45 + fkDef * 0.35 + throwDef * 0.20);
+    const netScore  = atkScore - (100 - defScore); // higher = better overall
+
+    return {
+      team: s.team, gws: s.gws,
+      atkScore, defScore, netScore,
+      cornerAtk, cornerDef,
+      fkAtk, fkDef,
+      throwAtk, throwDef
+    };
+  });
+
+  return results.sort((a,b) => b.atkScore - a.atkScore);
+}
+
+function spAtkLabel(score) {
+  if (score >= 80) return {lbl:'Elite Threat',  cls:'sp-elite-atk'};
+  if (score >= 65) return {lbl:'Strong',         cls:'sp-strong-atk'};
+  if (score >= 45) return {lbl:'Average',        cls:'sp-avg'};
+  if (score >= 25) return {lbl:'Weak',           cls:'sp-weak'};
+  return                  {lbl:'Poor',           cls:'sp-poor'};
+}
+function spDefLabel(score) {
+  if (score >= 80) return {lbl:'Elite Defence',  cls:'sp-elite-def'};
+  if (score >= 65) return {lbl:'Solid',          cls:'sp-solid'};
+  if (score >= 45) return {lbl:'Average',        cls:'sp-avg'};
+  if (score >= 25) return {lbl:'Vulnerable',     cls:'sp-vuln'};
+  return                  {lbl:'Leaky',          cls:'sp-leaky'};
+}
+function scoreColor(s){return s>=80?'#00d4aa':s>=65?'#50c878':s>=50?'#f0a500':s>=25?'#ff8232':'#ff5555';}
+
+let _spData = null;
+let _spType = 'overall';
+
+function renderSetPieces() {
+  const el = document.getElementById('setpieces-content');
+  if (!el) return;
+  if (!fplData) {
+    el.innerHTML = '<div class="error-msg">⚠️ Load FPL data first — click Refresh Data at the top.</div>';
+    return;
+  }
+  _spData = _spData || buildSetPieceData();
+  if (!_spData) { el.innerHTML = '<div class="error-msg">Could not build set piece data.</div>'; return; }
+  renderSPView(el, _spType);
+}
+
+function renderSPView(el, type) {
+  _spType = type;
+  const data = _spData;
+
+  // Sort by selected type
+  let sorted;
+  if (type === 'corners')  sorted = [...data].sort((a,b) => b.cornerAtk - a.cornerAtk);
+  else if (type === 'fk')  sorted = [...data].sort((a,b) => b.fkAtk - a.fkAtk);
+  else if (type === 'throw') sorted = [...data].sort((a,b) => b.throwAtk - a.throwAtk);
+  else                       sorted = [...data].sort((a,b) => b.atkScore - a.atkScore);
+
+  // Summary stats
+  const topAtk  = data.reduce((a,b) => b.atkScore>a.atkScore?b:a);
+  const topDef  = data.reduce((a,b) => b.defScore>a.defScore?b:a);
+  const topNet  = data.reduce((a,b) => b.netScore>a.netScore?b:a);
+
+  function atkVal(d) {
+    if (type==='corners') return d.cornerAtk;
+    if (type==='fk')      return d.fkAtk;
+    if (type==='throw')   return d.throwAtk;
+    return d.atkScore;
+  }
+  function defVal(d) {
+    if (type==='corners') return d.cornerDef;
+    if (type==='fk')      return d.fkDef;
+    if (type==='throw')   return d.throwDef;
+    return d.defScore;
+  }
+
+  const typeLabel = type==='corners'?'Corners':type==='fk'?'Free Kicks':type==='throw'?'Throw-ins':'Overall';
+
+  // Specialists
+  const topCornerAtk  = [...data].sort((a,b)=>b.cornerAtk-a.cornerAtk).slice(0,5);
+  const topCornerDef  = [...data].sort((a,b)=>b.cornerDef-a.cornerDef).slice(0,5);
+  const topFKAtk      = [...data].sort((a,b)=>b.fkAtk-a.fkAtk).slice(0,5);
+  const topThrowAtk   = [...data].sort((a,b)=>b.throwAtk-a.throwAtk).slice(0,5);
+
+  el.innerHTML = `
+<div style="padding:4px 0 16px">
+
+  <!-- Summary Row -->
+  <div class="sp-summary-grid">
+    <div class="sp-sum-card">
+      <div class="sp-sum-val" style="color:${scoreColor(topAtk.atkScore)}">${topAtk.team.short_name}</div>
+      <div class="sp-sum-lbl">Best SP Attack</div>
+    </div>
+    <div class="sp-sum-card">
+      <div class="sp-sum-val" style="color:${scoreColor(topDef.defScore)}">${topDef.team.short_name}</div>
+      <div class="sp-sum-lbl">Best SP Defence</div>
+    </div>
+    <div class="sp-sum-card">
+      <div class="sp-sum-val" style="color:${scoreColor(Math.max(0,topNet.netScore+50))}">${topNet.team.short_name}</div>
+      <div class="sp-sum-lbl">Best Net SP</div>
+    </div>
+  </div>
+
+  <!-- Type filter tabs -->
+  <div class="sp-type-tabs">
+    ${[['overall','🎯 Overall'],['corners','🔵 Corners'],['fk','🟡 Free Kicks'],['throw','⚪ Throw-ins']].map(([v,lbl])=>
+      `<button class="sp-type-btn${_spType===v?' active':''}" onclick="renderSPView(document.getElementById('setpieces-content'),'${v}')">${lbl}</button>`
+    ).join('')}
+  </div>
+
+  <!-- Main ranked table -->
+  <div class="sp-section-title">📊 ${typeLabel} Rankings — All Teams</div>
+  <div style="overflow-x:auto">
+  <table class="sp-table">
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>Team</th>
+        <th>ATK</th>
+        <th>DEF</th>
+        <th>Net</th>
+        <th>Attack</th>
+        <th>Defence</th>
+      </tr>
+    </thead>
+    <tbody>
+      ${sorted.map((d,i) => {
+        const av = atkVal(d), dv = defVal(d);
+        const al = spAtkLabel(av), dl = spDefLabel(dv);
+        const net = av - (100 - dv);
+        const netStr = net >= 0 ? `+${net}` : `${net}`;
+        const netCol = net >= 10 ? '#00d4aa' : net >= 0 ? '#50c878' : net >= -10 ? '#f0a500' : '#ff5555';
+        return `<tr>
+          <td class="sp-rank">${i+1}</td>
+          <td>
+            <div style="display:flex;align-items:center;gap:7px">
+              <img class="sp-badge-img" src="https://resources.premierleague.com/premierleague/badges/50/t${d.team.code}.png" onerror="this.style.display='none'" alt="${d.team.short_name}" loading="lazy">
+              <span class="sp-team-name">${d.team.name}</span>
+            </div>
+          </td>
+          <td>
+            <div style="display:flex;align-items:center;gap:6px">
+              <span style="font-weight:800;color:${scoreColor(av)}">${av}</span>
+              <div class="sp-bar-wrap"><div class="sp-bar" style="width:${av}%;background:${scoreColor(av)}"></div></div>
+            </div>
+          </td>
+          <td>
+            <div style="display:flex;align-items:center;gap:6px">
+              <span style="font-weight:800;color:${scoreColor(dv)}">${dv}</span>
+              <div class="sp-bar-wrap"><div class="sp-bar" style="width:${dv}%;background:${scoreColor(dv)}"></div></div>
+            </div>
+          </td>
+          <td style="font-weight:800;color:${netCol}">${netStr}</td>
+          <td><span class="sp-pill ${al.cls}">${al.lbl}</span></td>
+          <td><span class="sp-pill ${dl.cls}">${dl.lbl}</span></td>
+        </tr>`;
+      }).join('')}
+    </tbody>
+  </table>
+  </div>
+
+  <!-- Specialists block -->
+  <div class="sp-section-title">⭐ Set-Piece Specialists</div>
+  <div class="sp-spec-grid">
+    <div class="sp-spec-card">
+      <div class="sp-spec-title">🔵 Corner Attack</div>
+      ${topCornerAtk.map((d,i)=>`<div class="sp-spec-row">
+        <span class="sp-spec-rank">${i+1}</span>
+        <img class="sp-badge-img" src="https://resources.premierleague.com/premierleague/badges/50/t${d.team.code}.png" onerror="this.style.display='none'" alt="${d.team.short_name}" loading="lazy" style="width:16px;height:16px">
+        <span style="flex:1;font-weight:600">${d.team.short_name}</span>
+        <span style="color:${scoreColor(d.cornerAtk)};font-weight:800">${d.cornerAtk}</span>
+      </div>`).join('')}
+    </div>
+    <div class="sp-spec-card">
+      <div class="sp-spec-title">🔵 Corner Defence</div>
+      ${topCornerDef.map((d,i)=>`<div class="sp-spec-row">
+        <span class="sp-spec-rank">${i+1}</span>
+        <img class="sp-badge-img" src="https://resources.premierleague.com/premierleague/badges/50/t${d.team.code}.png" onerror="this.style.display='none'" alt="${d.team.short_name}" loading="lazy" style="width:16px;height:16px">
+        <span style="flex:1;font-weight:600">${d.team.short_name}</span>
+        <span style="color:${scoreColor(d.cornerDef)};font-weight:800">${d.cornerDef}</span>
+      </div>`).join('')}
+    </div>
+    <div class="sp-spec-card">
+      <div class="sp-spec-title">🟡 Free Kick Threat</div>
+      ${topFKAtk.map((d,i)=>`<div class="sp-spec-row">
+        <span class="sp-spec-rank">${i+1}</span>
+        <img class="sp-badge-img" src="https://resources.premierleague.com/premierleague/badges/50/t${d.team.code}.png" onerror="this.style.display='none'" alt="${d.team.short_name}" loading="lazy" style="width:16px;height:16px">
+        <span style="flex:1;font-weight:600">${d.team.short_name}</span>
+        <span style="color:${scoreColor(d.fkAtk)};font-weight:800">${d.fkAtk}</span>
+      </div>`).join('')}
+    </div>
+    <div class="sp-spec-card">
+      <div class="sp-spec-title">⚪ Throw-in Threat</div>
+      ${topThrowAtk.map((d,i)=>`<div class="sp-spec-row">
+        <span class="sp-spec-rank">${i+1}</span>
+        <img class="sp-badge-img" src="https://resources.premierleague.com/premierleague/badges/50/t${d.team.code}.png" onerror="this.style.display='none'" alt="${d.team.short_name}" loading="lazy" style="width:16px;height:16px">
+        <span style="flex:1;font-weight:600">${d.team.short_name}</span>
+        <span style="color:${scoreColor(d.throwAtk)};font-weight:800">${d.throwAtk}</span>
+      </div>`).join('')}
+    </div>
+  </div>
+
+  <div class="sp-note">
+    ⓘ Set Pieces scores are a proxy model built from FPL player data (defensive player goals, BPS, assists, threat &amp; ICT indices, clean sheets). Real event-level corner/free-kick data is not available in the FPL API. Scores are relative rankings across Premier League teams — not absolute xG figures.
+  </div>
+
+</div>`;
+}
+
 </script>
 </body>
 </html>
