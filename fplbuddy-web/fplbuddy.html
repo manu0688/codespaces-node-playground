@@ -1044,7 +1044,7 @@ let scoutChart=null, scoutPos='ALL';
 // ── HELPERS ───────────────────────────────────────────────────────────────
 function diffClass(d){return d<=2?'fix-1':d===3?'fix-3':d===4?'fix-4':'fix-5';}
 function badgeClass(avg){return avg<=2.0?'very-easy':avg<=2.7?'easy':avg<=3.2?'medium':avg<=3.6?'tough':avg<=4.0?'difficult':'nightmare';}
-function badgeLabel(avg){return avg<=2.0?'🟢 Blank Fix':avg<=2.7?'🟢 Easy Run':avg<=3.2?'🟡 Moderate':avg<=3.6?'🟠 Tough Run':avg<=4.0?'🔴 Difficult':'🔴 Nightmare';}
+function badgeLabel(avg){return avg<=2.0?'🟢 Very Easy':avg<=2.7?'🟢 Easy Run':avg<=3.2?'🟡 Moderate':avg<=3.6?'🟠 Tough Run':avg<=4.0?'🔴 Difficult':'🔴 Nightmare';}
 function posName(t){return {1:'GKP',2:'DEF',3:'MID',4:'FWD'}[t]||'?';}
 function price(p){return '£'+(p.now_cost/10).toFixed(1)+'m';}
 function teamOf(p){return fplData.teams.find(t=>t.id===p.team);}
@@ -1377,12 +1377,20 @@ async function analyseTeam(){
   btn.disabled=true;btn.textContent='Analysing...';
   content.innerHTML='<div class="loading"><div class="loading-spinner"></div>Fetching your team...</div>';
   try{
+    // Fetch entry info; for picks try current gwId, fall back to gwId-1 if next GW not started yet
     const [picksData,entryData]=await Promise.all([
       fetchWithFallback(`https://fantasy.premierleague.com/api/entry/${teamId}/event/${gwId}/picks/`),
       fetchWithFallback(`https://fantasy.premierleague.com/api/entry/${teamId}/`)
     ]);
-    const picks=picksData.picks||[];
-    if(!picks.length) throw new Error('No picks returned for GW'+gwId+'. The FPL API may be temporarily unavailable — click Refresh Data at the top and try again.');
+    let picks=picksData.picks||[];
+    let usedGw=gwId;
+    if(!picks.length && gwId>1){
+      const fallbackGw=gwId-1;
+      const fallbackData=await fetchWithFallback(`https://fantasy.premierleague.com/api/entry/${teamId}/event/${fallbackGw}/picks/`);
+      picks=fallbackData.picks||[];
+      usedGw=fallbackGw;
+    }
+    if(!picks.length) throw new Error('No picks found for GW'+gwId+' or GW'+(gwId-1)+'. Try clicking Refresh Data first, then Analyse My Team again.');
     const activeChip=picksData.active_chip;
     const enriched=picks.map(pick=>{
       const p=fplData.elements.find(e=>e.id===pick.element);
@@ -1394,7 +1402,7 @@ async function analyseTeam(){
     const captainCandidates=starters.filter(p=>p.element_type===3||p.element_type===4).sort((a,b)=>b.power-a.power).slice(0,3);
     const totalValue=(enriched.reduce((s,p)=>s+p.now_cost,0)/10).toFixed(1);
     const totalPts=starters.reduce((s,p)=>s+(p.total_points*(p.multiplier||1)),0);
-    if(!entryData || entryData.detail) throw new Error('Team not found. Check your Team ID is correct (it is the number in your FPL URL).');
+    if(!entryData || entryData.detail || !entryData.id) throw new Error('Team not found — check your Team ID is correct. It is the number shown in your FPL URL: /entry/XXXXXXX/event/');
     const teamName=entryData.name||'Your Team';
     const managerName=`${entryData.player_first_name||''} ${entryData.player_last_name||''}`.trim();
     const overallRank=entryData.summary_overall_rank?entryData.summary_overall_rank.toLocaleString():'–';
