@@ -801,7 +801,59 @@
     .mom-tbl-bar-wrap{height:5px;background:rgba(255,255,255,.07);border-radius:999px;overflow:hidden}
     .mom-tbl-bar-fill{height:100%;border-radius:999px}
     #mom-modal-footer{padding:10px 18px 14px;border-top:1px solid rgba(255,255,255,.06);font-size:.62rem;color:#555;text-align:center}
-</style>
+
+    /* ── MY TEAM ENHANCED ── */
+    .mt-section{margin-bottom:18px}
+    .mt-section-title{font-size:.65rem;font-weight:800;text-transform:uppercase;letter-spacing:1.2px;color:var(--text-muted);margin-bottom:10px;display:flex;align-items:center;gap:6px}
+    /* Team Health */
+    .health-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+    @media(max-width:480px){.health-grid{grid-template-columns:repeat(2,1fr)}}
+    .health-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:10px 12px;text-align:center}
+    .health-score{font-size:1.25rem;font-weight:900;line-height:1}
+    .health-lbl{font-size:.6rem;color:var(--text-muted);margin-top:3px;text-transform:uppercase;letter-spacing:.8px}
+    .health-bar{height:3px;border-radius:2px;margin-top:6px;background:var(--border)}
+    .health-bar-fill{height:100%;border-radius:2px;transition:width .4s}
+    /* Decision score pills */
+    .ds-pill{display:inline-flex;align-items:center;padding:2px 8px;border-radius:999px;font-size:.58rem;font-weight:700;letter-spacing:.3px;white-space:nowrap;border:1px solid}
+    .ds-strong{background:rgba(0,212,170,.12);color:#00d4aa;border-color:rgba(0,212,170,.3)}
+    .ds-hold{background:rgba(80,200,120,.1);color:#50c878;border-color:rgba(80,200,120,.28)}
+    .ds-monitor{background:rgba(240,165,0,.1);color:#f0a500;border-color:rgba(240,165,0,.28)}
+    .ds-upgrade{background:rgba(255,130,50,.1);color:#ff8232;border-color:rgba(255,130,50,.28)}
+    .ds-sell{background:rgba(255,85,85,.1);color:#ff5555;border-color:rgba(255,85,85,.28)}
+    /* Best XI */
+    .bestxi-row{display:flex;align-items:center;gap:8px;padding:7px 10px;border-radius:8px;background:var(--surface);border:1px solid var(--border);margin-bottom:5px;font-size:.75rem}
+    .bestxi-pos{width:32px;font-size:.6rem;font-weight:700;color:var(--text-muted);text-align:center;flex-shrink:0}
+    .bestxi-name{flex:1;font-weight:600}
+    .bestxi-pts{font-weight:800;color:var(--primary);font-size:.78rem;flex-shrink:0}
+    .bestxi-change{font-size:.6rem;color:#50c878;flex-shrink:0}
+    .bestxi-bench{opacity:.55;border-style:dashed}
+    /* Weak links */
+    .wl-card{background:var(--surface);border:1px solid rgba(255,85,85,.25);border-radius:10px;padding:10px 12px;margin-bottom:8px}
+    .wl-header{display:flex;align-items:center;gap:8px;margin-bottom:6px}
+    .wl-name{font-weight:700;font-size:.82rem;flex:1}
+    .wl-score{font-size:.68rem;color:var(--text-muted)}
+    .wl-reason{font-size:.65rem;color:var(--text-muted);margin-bottom:8px}
+    .wl-replacements{display:flex;flex-direction:column;gap:5px}
+    .repl-row{display:flex;align-items:center;gap:6px;padding:6px 8px;background:rgba(0,212,170,.06);border:1px solid rgba(0,212,170,.15);border-radius:7px;font-size:.7rem}
+    .repl-name{font-weight:700;flex:1}
+    .repl-price{color:var(--text-muted);flex-shrink:0}
+    .repl-pts{color:#00d4aa;font-weight:800;flex-shrink:0}
+    .repl-why{font-size:.62rem;color:var(--text-muted);width:100%;margin-top:2px}
+    /* Captain section upgrade */
+    .cap-row{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:8px;background:var(--surface);border:1px solid var(--border);margin-bottom:6px}
+    .cap-medal{font-size:1rem;flex-shrink:0}
+    .cap-info{flex:1}
+    .cap-name{font-weight:800;font-size:.82rem}
+    .cap-why{font-size:.63rem;color:var(--text-muted);margin-top:1px}
+    .cap-score{font-size:.75rem;font-weight:800;color:var(--primary);flex-shrink:0;text-align:right}
+    .cap-pts{font-size:.6rem;color:var(--text-muted)}
+    /* Bench risk */
+    .bench-risk-bar{display:flex;align-items:center;gap:12px;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:12px 14px}
+    .bench-risk-num{font-size:1.4rem;font-weight:900;color:#f0a500}
+    .bench-risk-lbl{font-size:.65rem;color:var(--text-muted);margin-top:1px}
+    .bench-risk-msg{font-size:.68rem;color:var(--text-muted);flex:1}
+
+    </style>
 </head>
 <body>
 <header>
@@ -1362,6 +1414,184 @@ function drawScoutChart(){
 }
 
 // ── MY TEAM ───────────────────────────────────────────────────────────────
+// ═══════════════════════════════════════════════════════════
+// MY TEAM ENGINE — Decision Score, Captain Score, Best XI
+// ═══════════════════════════════════════════════════════════
+
+function projPoints(p, gws=3) {
+  // Projected points over next N GWs using form, PPG, fixture ease, ep_next
+  const form   = parseFloat(p.form) || 0;
+  const ppg    = parseFloat(p.points_per_game) || 0;
+  const ep     = parseFloat(p.ep_next) || 0;
+  const fixAvg = fixtureScore(p.team);
+  const fixEase = Math.max(0, (6 - fixAvg) / 4); // 0-1, higher=easier
+  const base   = (form * 0.45 + ppg * 0.35 + ep * 0.20);
+  return Math.round((base * fixEase * 1.4 + base * 0.3) * gws * 10) / 10;
+}
+
+function minutesSecurity(p) {
+  // 0-100: likelihood player starts and plays full game
+  const minPct = Math.min((p.minutes || 0) / (38 * 90) * 100, 100);
+  const news   = (p.news || '').toLowerCase();
+  const chancePct = p.chance_of_playing_next_round != null
+    ? p.chance_of_playing_next_round : 100;
+  const injPenalty = news.includes('doubt') || news.includes('injur') ? 20
+    : news.includes('knock') ? 10 : 0;
+  return Math.max(0, Math.min(100, minPct * 0.6 + chancePct * 0.4 - injPenalty));
+}
+
+function valuePM(p) {
+  // Value per million: total_points / price, normalised 0-100 across all players
+  if (!fplData) return 50;
+  const allVals = fplData.elements
+    .filter(e => e.now_cost > 0 && e.minutes > 0)
+    .map(e => e.total_points / (e.now_cost / 10));
+  const v = p.total_points / Math.max(p.now_cost / 10, 0.1);
+  const mn = Math.min(...allVals), mx = Math.max(...allVals);
+  return mx > mn ? Math.round((v - mn) / (mx - mn) * 100) : 50;
+}
+
+function recentThreat(p) {
+  // 0-10: attacking or defensive threat score
+  const threat  = parseFloat(p.threat) || 0;
+  const ict     = parseFloat(p.ict_index) || 0;
+  const form    = parseFloat(p.form) || 0;
+  const gScored = p.goals_scored || 0;
+  const assists = p.assists || 0;
+  // Normalise threat (max ~300), ict (max ~500)
+  return Math.min(10, threat / 30 * 0.4 + ict / 50 * 0.3 + form * 0.2 + (gScored + assists) * 0.1);
+}
+
+function decisionScore(p) {
+  // DS = 0.35P + 0.20F + 0.15M + 0.15V + 0.15R  (all normalised 0-100)
+  const P = Math.min(projPoints(p, 3) / 25 * 100, 100);          // proj pts 3GW norm
+  const F = Math.max(0, (6 - fixtureScore(p.team)) / 4 * 100);   // fixture ease 0-100
+  const M = minutesSecurity(p);
+  const V = valuePM(p);
+  const R = recentThreat(p) * 10;  // 0-10 -> 0-100
+  return Math.round(0.35*P + 0.20*F + 0.15*M + 0.15*V + 0.15*R);
+}
+
+function dsLabel(score) {
+  if (score >= 80) return {lbl:'Strong Hold', cls:'ds-strong'};
+  if (score >= 65) return {lbl:'Hold',        cls:'ds-hold'};
+  if (score >= 50) return {lbl:'Monitor',     cls:'ds-monitor'};
+  if (score >= 35) return {lbl:'Upgrade Soon',cls:'ds-upgrade'};
+  return               {lbl:'Sell',           cls:'ds-sell'};
+}
+
+function captainScore(p) {
+  // CS = 0.40X + 0.20T + 0.15F + 0.15M + 0.10E
+  const X = Math.min((parseFloat(p.ep_next)||0) / 15 * 100, 100);
+  const T = recentThreat(p) * 10;
+  const F = Math.max(0,(6-fixtureScore(p.team))/4*100);
+  const M = minutesSecurity(p);
+  const E = Math.min((parseFloat(p.threat)||0) / 200 * 100, 100);
+  return Math.round(0.40*X + 0.20*T + 0.15*F + 0.15*M + 0.10*E);
+}
+
+function captainReason(p) {
+  const ep   = parseFloat(p.ep_next) || 0;
+  const fix  = fixtureScore(p.team);
+  const form = parseFloat(p.form) || 0;
+  const team = fplData ? fplData.teams.find(t=>t.id===p.team) : null;
+  const tname= team ? team.short_name : '?';
+  if (fix <= 2)   return `vs easy opponent (${tname}) + strong form (${form})`;
+  if (ep >= 8)    return `high ep_next (${ep.toFixed(1)}) + form ${form}`;
+  if (form >= 7)  return `in-form (${form}) + involved threat`;
+  return `ep_next ${ep.toFixed(1)}, fix ${fix.toFixed(1)}, form ${form}`;
+}
+
+function bestXI(enriched) {
+  // Build best 11 under FPL formation rules: 1 GKP, 3-5 DEF, 2-5 MID, 1-3 FWD
+  const starters = enriched.filter(p => p.multiplier > 0);
+  const bench    = enriched.filter(p => p.multiplier === 0);
+  const all15    = [...starters, ...bench];
+
+  const byPos = pos => all15.filter(p => p.element_type === pos)
+    .sort((a,b) => projPoints(b,3) - projPoints(a,3));
+
+  const gkps = byPos(1), defs = byPos(2), mids = byPos(3), fwds = byPos(4);
+
+  // Greedy optimiser — try all valid formation configs
+  const configs = [
+    [1,3,4,3],[1,3,5,2],[1,4,3,3],[1,4,4,2],[1,4,5,1],[1,5,3,2],[1,5,4,1]
+  ];
+
+  let bestTeam = null, bestPts = -1;
+  configs.forEach(([g,d,m,f]) => {
+    if (gkps.length<g||defs.length<d||mids.length<m||fwds.length<f) return;
+    const xi = [
+      ...gkps.slice(0,g),
+      ...defs.slice(0,d),
+      ...mids.slice(0,m),
+      ...fwds.slice(0,f)
+    ];
+    const pts = xi.reduce((s,p) => s + projPoints(p,3), 0);
+    if (pts > bestPts) { bestPts = pts; bestTeam = xi; }
+  });
+
+  if (!bestTeam) bestTeam = starters;
+
+  const bestXIIds = new Set(bestTeam.map(p => p.id));
+  const currentXIIds = new Set(starters.map(p => p.id));
+  const currentPts = starters.reduce((s,p) => s + projPoints(p,3), 0);
+  const ptsGain = Math.round((bestPts - currentPts) * 10) / 10;
+  const bestBench = all15.filter(p => !bestXIIds.has(p.id));
+
+  return { bestXI: bestTeam, bestBench, ptsGain, currentPts, bestPts };
+}
+
+function teamHealthScore(enriched) {
+  const starters = enriched.filter(p => p.multiplier > 0);
+  const bench    = enriched.filter(p => p.multiplier === 0);
+  const atk  = starters.filter(p => p.element_type >= 3);
+  const def  = starters.filter(p => p.element_type <= 2);
+
+  const avgDS       = enriched.reduce((s,p) => s + decisionScore(p), 0) / enriched.length;
+  const atkQuality  = atk.length  ? atk.reduce((s,p) => s + recentThreat(p)*10, 0)/atk.length   : 50;
+  const defQuality  = def.length  ? def.reduce((s,p) => s + minutesSecurity(p), 0)/def.length    : 50;
+  const minsSafety  = starters.reduce((s,p) => s + minutesSecurity(p), 0) / starters.length;
+  const fixOutlook  = starters.reduce((s,p) => s + Math.max(0,(6-fixtureScore(p.team))/4*100), 0) / starters.length;
+  const benchStr    = bench.length ? bench.reduce((s,p) => s + decisionScore(p), 0) / bench.length : 40;
+  const overall     = Math.round(avgDS*0.35 + atkQuality*0.20 + defQuality*0.15 + minsSafety*0.15 + fixOutlook*0.15);
+
+  return {
+    overall,
+    atkQuality: Math.round(atkQuality),
+    defQuality: Math.round(defQuality),
+    minsSafety: Math.round(minsSafety),
+    fixOutlook: Math.round(fixOutlook),
+    benchStr:   Math.round(benchStr)
+  };
+}
+
+function getReplacements(weakPlayer, enriched) {
+  if (!fplData) return [];
+  const pos     = weakPlayer.element_type;
+  const budget  = weakPlayer.now_cost + 5; // allow £0.5m above selling price
+  const squadIds= new Set(enriched.map(p => p.id));
+
+  return fplData.elements
+    .filter(p =>
+      p.element_type === pos &&
+      p.id !== weakPlayer.id &&
+      !squadIds.has(p.id) &&
+      p.now_cost <= budget &&
+      p.minutes > 90 &&
+      p.status === 'a'
+    )
+    .map(p => ({
+      ...p,
+      ds:  decisionScore(p),
+      pp3: projPoints(p, 3),
+      pp5: projPoints(p, 5),
+      fix: fixtureScore(p.team)
+    }))
+    .sort((a,b) => b.pp3 - a.pp3)
+    .slice(0, 3);
+}
+
 async function analyseTeam(){
   const idInput=document.getElementById('team-id-input');
   const btn=document.getElementById('analyse-btn');
@@ -1377,20 +1607,23 @@ async function analyseTeam(){
   btn.disabled=true;btn.textContent='Analysing...';
   content.innerHTML='<div class="loading"><div class="loading-spinner"></div>Fetching your team...</div>';
   try{
-    // Fetch entry info; for picks try current gwId, fall back to gwId-1 if next GW not started yet
+    // Use current GW for picks (not next GW which has no picks yet)
+    const pickGw = (window.currentGwId && window.currentGwId !== gwId)
+      ? window.currentGwId : gwId;
     const [picksData,entryData]=await Promise.all([
-      fetchWithFallback(`https://fantasy.premierleague.com/api/entry/${teamId}/event/${gwId}/picks/`),
+      fetchWithFallback(`https://fantasy.premierleague.com/api/entry/${teamId}/event/${pickGw}/picks/`),
       fetchWithFallback(`https://fantasy.premierleague.com/api/entry/${teamId}/`)
     ]);
     let picks=picksData.picks||[];
-    let usedGw=gwId;
-    if(!picks.length && gwId>1){
-      const fallbackGw=gwId-1;
-      const fallbackData=await fetchWithFallback(`https://fantasy.premierleague.com/api/entry/${teamId}/event/${fallbackGw}/picks/`);
-      picks=fallbackData.picks||[];
-      usedGw=fallbackGw;
+    let resolvedGw = pickGw;
+    // If still empty, walk back up to 3 GWs to find the most recent played GW
+    if(!picks.length) {
+      for(let fallback = pickGw - 1; fallback >= Math.max(1, pickGw - 3); fallback--) {
+        const fd = await fetchWithFallback(`https://fantasy.premierleague.com/api/entry/${teamId}/event/${fallback}/picks/`);
+        if(fd.picks && fd.picks.length) { picks = fd.picks; resolvedGw = fallback; break; }
+      }
     }
-    if(!picks.length) throw new Error('No picks found for GW'+gwId+' or GW'+(gwId-1)+'. Try clicking Refresh Data first, then Analyse My Team again.');
+    if(!picks.length) throw new Error('No picks found. Your team may not have set up yet, or the FPL API is temporarily unavailable. Try Refresh Data first.');
     const activeChip=picksData.active_chip;
     const enriched=picks.map(pick=>{
       const p=fplData.elements.find(e=>e.id===pick.element);
@@ -1402,7 +1635,7 @@ async function analyseTeam(){
     const captainCandidates=starters.filter(p=>p.element_type===3||p.element_type===4).sort((a,b)=>b.power-a.power).slice(0,3);
     const totalValue=(enriched.reduce((s,p)=>s+p.now_cost,0)/10).toFixed(1);
     const totalPts=starters.reduce((s,p)=>s+(p.total_points*(p.multiplier||1)),0);
-    if(!entryData || entryData.detail || !entryData.id) throw new Error('Team not found — check your Team ID is correct. It is the number shown in your FPL URL: /entry/XXXXXXX/event/');
+    if(!entryData || (!entryData.name && entryData.detail)) throw new Error('Team not found — check your Team ID (the number in your FPL URL).');
     const teamName=entryData.name||'Your Team';
     const managerName=`${entryData.player_first_name||''} ${entryData.player_last_name||''}`.trim();
     const overallRank=entryData.summary_overall_rank?entryData.summary_overall_rank.toLocaleString():'–';
@@ -1415,11 +1648,8 @@ async function analyseTeam(){
       return `<div class="${cls}">${mark}<div class="pitch-pos">${posName(p.element_type)}</div><div class="pitch-name">${p.web_name}</div><div class="pitch-team">${p.team_obj?p.team_obj.short_name:'?'}</div><div class="pitch-pts">${p.total_points} pts</div><div class="pitch-price">${price(p)} · Fix: ${p.fixAvg} · ep: ${p.epNext}</div>${recLbl?`<div class="rec-badge ${recCls}">${recLbl}</div>`:''}</div>`;
     }
     let html=`<div style="margin-bottom:20px"><div style="font-size:1.3rem;font-weight:800">${teamName}</div><div style="font-size:0.8rem;color:var(--text-muted);margin-top:2px">${managerName} · Rank: ${overallRank}${activeChip?` · 🃏 ${activeChip}`:''}</div></div><div class="team-stats-bar"><div class="gw-summary-card"><div class="gw-summary-val">£${totalValue}m</div><div class="gw-summary-lbl">Team Value</div></div><div class="gw-summary-card"><div class="gw-summary-val">${totalPts}</div><div class="gw-summary-lbl">Season Pts</div></div><div class="gw-summary-card"><div class="gw-summary-val">${overallRank}</div><div class="gw-summary-lbl">Overall Rank</div></div><div class="gw-summary-card"><div class="gw-summary-val">${activeChip||'–'}</div><div class="gw-summary-lbl">Chip</div></div></div>`;
-    if(captainCandidates.length){
-      html+=`<div class="captain-section"><div class="captain-section-title">🏆 Captain Recommendations</div><div class="captain-picks">`;
-      ['🥇','🥈','🥉'].forEach((medal,i)=>{if(!captainCandidates[i])return;const p=captainCandidates[i];html+=`<div class="captain-pick"><span class="captain-pick-rank">${medal}</span><div class="captain-pick-info"><div class="captain-pick-name">${p.web_name}</div><div class="captain-pick-why">${p.team_obj?p.team_obj.short_name:'?'} · Ease: ${((6-p.fixAvg)/4*10).toFixed(1)}/10 · Form: ${p.form}</div></div><div class="captain-pick-pts">⚡ ${p.power}</div></div>`;});
-      html+=`</div></div>`;
-    }
+    // Captain section now rendered by new engine below
+
     // Store picks for fixture grid My Teams filter
     myTeamPicks=picks;
     // View toggle
@@ -1442,6 +1672,154 @@ async function analyseTeam(){
       <button class="pv-toggle-btn ${pitchViewMode==='list'?'active':''}" onclick="pitchViewMode='list';document.querySelectorAll('.pv-toggle-btn').forEach(b=>b.classList.remove('active'));this.classList.add('active');document.getElementById('pitch-render-area').innerHTML=buildListViewCached()">📋 List View</button>
     </div>
     <div id="pitch-render-area">${pitchViewMode==='pitch'?pitchHtml:buildListView()}</div>`;
+
+    // ── COMPUTE ALL INTELLIGENCE ───────────────────────────
+    const allEnriched = enriched; // all 15 players
+    const health      = teamHealthScore(allEnriched);
+    const xi          = bestXI(allEnriched);
+
+    // Compute DS for every player
+    allEnriched.forEach(p => { p._ds = decisionScore(p); p._pp3 = projPoints(p,3); });
+
+    // Weak links: bottom 3 starters by DS (exclude bench)
+    const startersSorted = starters.slice().sort((a,b) => a._ds - b._ds);
+    const weakLinks = startersSorted.slice(0, 3);
+
+    // Captain candidates (all starters, sort by captainScore)
+    const capCands = starters
+      .map(p => ({ ...p, _cs: captainScore(p) }))
+      .sort((a,b) => b._cs - a._cs)
+      .slice(0, 3);
+
+    // Bench risk
+    const currentXIIds = new Set(starters.map(p => p.id));
+    const benchPts     = bench.reduce((s,p) => s + p._pp3, 0);
+    const xiDelta      = Math.round((xi.bestPts - xi.currentPts)*10)/10;
+
+    function scoreColor(s){ return s>=80?'#00d4aa':s>=65?'#50c878':s>=50?'#f0a500':s>=35?'#ff8232':'#ff5555'; }
+    function barColor(s)   { return s>=70?'#00d4aa':s>=50?'#f0a500':'#ff8232'; }
+
+    // ── TEAM HEALTH HTML ────────────────────────────────────
+    const healthHtml = `
+<div class="mt-section">
+  <div class="mt-section-title">💪 Team Health <span style="color:${scoreColor(health.overall)};font-size:.85rem;font-weight:900;margin-left:auto">${health.overall}/100</span></div>
+  <div class="health-grid">
+    ${[
+      ['Attack Quality', health.atkQuality],
+      ['Defence Quality', health.defQuality],
+      ['Minutes Safety', health.minsSafety],
+      ['Fixture Outlook', health.fixOutlook],
+      ['Bench Strength', health.benchStr],
+      ['Overall', health.overall]
+    ].map(([lbl,val]) => `
+    <div class="health-card">
+      <div class="health-score" style="color:${scoreColor(val)}">${val}</div>
+      <div class="health-lbl">${lbl}</div>
+      <div class="health-bar"><div class="health-bar-fill" style="width:${val}%;background:${barColor(val)}"></div></div>
+    </div>`).join('')}
+  </div>
+</div>`;
+
+    // ── BEST XI HTML ─────────────────────────────────────────
+    const bestXIHtml = `
+<div class="mt-section">
+  <div class="mt-section-title">⭐ Best XI Optimizer
+    ${xiDelta > 0.5 ? `<span style="color:#ff8232;font-size:.7rem;margin-left:auto">⚠️ +${xiDelta} pts available</span>` : `<span style="color:#50c878;font-size:.7rem;margin-left:auto">✅ Lineup optimal</span>`}
+  </div>
+  ${xi.bestXI.map(p => {
+    const inCurrent = currentXIIds.has(p.id);
+    return `<div class="bestxi-row">
+      <div class="bestxi-pos">${posName(p.element_type)}</div>
+      <div class="bestxi-name">${p.web_name} <span style="font-size:.62rem;color:var(--text-muted)">${teamOf(p)?teamOf(p).short_name:'?'}</span></div>
+      <div class="bestxi-pts">${p._pp3}pts</div>
+      ${!inCurrent ? `<div class="bestxi-change">↑ swap in</div>` : ''}
+    </div>`;
+  }).join('')}
+  ${xi.bestBench.length ? `<div style="margin-top:8px;font-size:.62rem;color:var(--text-muted);padding:0 2px">Bench: ${xi.bestBench.map(p=>p.web_name).join(', ')}</div>` : ''}
+  <div style="margin-top:8px;font-size:.65rem;color:var(--text-muted);padding:4px 10px;background:var(--surface);border-radius:7px;border:1px solid var(--border)">
+    📊 Projected 3GW pts — Best XI: <strong style="color:var(--text)">${Math.round(xi.bestPts*10)/10}</strong> vs current: <strong style="color:var(--text)">${Math.round(xi.currentPts*10)/10}</strong>
+  </div>
+</div>`;
+
+    // ── CAPTAIN SECTION HTML (upgraded) ─────────────────────
+    const newCaptainHtml = `
+<div class="mt-section">
+  <div class="mt-section-title">🏆 Captain Pick</div>
+  ${['🥇','🥈','🥉'].map((medal,i) => {
+    const p = capCands[i]; if(!p) return '';
+    return `<div class="cap-row">
+      <div class="cap-medal">${medal}</div>
+      <div class="cap-info">
+        <div class="cap-name">${p.web_name} <span style="font-size:.62rem;color:var(--text-muted)">${teamOf(p)?teamOf(p).short_name:'?'} · ${price(p)}</span></div>
+        <div class="cap-why">${captainReason(p)}</div>
+      </div>
+      <div class="cap-score">
+        <div style="color:${scoreColor(p._cs)}">${p._cs}</div>
+        <div class="cap-pts">ep ${(parseFloat(p.ep_next)||0).toFixed(1)}</div>
+      </div>
+    </div>`;
+  }).join('')}
+</div>`;
+
+    // ── BENCH RISK HTML ───────────────────────────────────────
+    const riskMsg = benchPts > 12 ? '⚠️ You may be benching too much value this GW.'
+      : benchPts > 8 ? 'Reasonable bench — watch for injuries.'
+      : '✅ Lean bench — starters hold the value.';
+    const benchRiskHtml = `
+<div class="mt-section">
+  <div class="mt-section-title">🪑 Bench Risk</div>
+  <div class="bench-risk-bar">
+    <div>
+      <div class="bench-risk-num">${benchPts}</div>
+      <div class="bench-risk-lbl">Proj. pts on bench (3GW)</div>
+    </div>
+    <div class="bench-risk-msg">${riskMsg}</div>
+  </div>
+</div>`;
+
+    // ── WEAK LINKS HTML ──────────────────────────────────────
+    const weakLinksHtml = `
+<div class="mt-section">
+  <div class="mt-section-title">⚠️ Weak Links</div>
+  ${weakLinks.map(p => {
+    const ds   = p._ds;
+    const info = dsLabel(ds);
+    const fix  = fixtureScore(p.team);
+    const mins = minutesSecurity(p);
+    const reason = ds < 35 ? `Low decision score (${ds}) — poor fixtures + limited minutes`
+      : fix > 3.5 ? `Tough upcoming fixtures (avg ${fix.toFixed(1)})`
+      : mins < 50 ? `Minutes risk (${Math.round(mins)}% security)`
+      : `Below-average projection vs price`;
+    const repls = getReplacements(p, allEnriched);
+    return `<div class="wl-card">
+      <div class="wl-header">
+        <div class="wl-name">${p.web_name} <span style="font-size:.62rem;color:var(--text-muted)">${teamOf(p)?teamOf(p).short_name:'?'} · ${price(p)}</span></div>
+        <div class="wl-score">DS: ${ds}</div>
+        <span class="ds-pill ${info.cls}">${info.lbl}</span>
+      </div>
+      <div class="wl-reason">📌 ${reason}</div>
+      ${repls.length ? `<div style="font-size:.6rem;color:var(--text-muted);margin-bottom:5px;text-transform:uppercase;letter-spacing:.8px">Top replacements</div>
+      <div class="wl-replacements">
+        ${repls.map(r => {
+          const rt = fplData.teams.find(t=>t.id===r.team);
+          const rfix = fixtureScore(r.team);
+          return `<div class="repl-row" style="flex-wrap:wrap">
+            <div class="repl-name">${r.web_name}</div>
+            <div style="font-size:.62rem;color:var(--text-muted)">${rt?rt.short_name:'?'}</div>
+            <div class="repl-price">${price(r)}</div>
+            <div class="repl-pts">▲${r.pp3}pts/3GW · ${r.pp5}pts/5GW</div>
+            <div class="repl-why" style="width:100%">Fix: ${rfix.toFixed(1)} · DS: ${r.ds} · ${r.pp3 > p._pp3 ? `+${Math.round((r.pp3-p._pp3)*10)/10}pts projected` : 'better fixture run'}</div>
+          </div>`;
+        }).join('')}
+      </div>` : `<div style="font-size:.65rem;color:var(--text-muted)">No affordable replacements found in same position.</div>`}
+    </div>`;
+  }).join('')}
+</div>`;
+
+    // ── INJECT INTO MAIN HTML ────────────────────────────────
+    // Insert health + bestXI before pitch view, captain + bench risk + weak links after
+    html = healthHtml + bestXIHtml + html + newCaptainHtml + benchRiskHtml + weakLinksHtml;
+
     // Store cached builders on window for toggle buttons
     window.buildPitchViewCached=()=>buildPitchView(starters,bench);
     window.buildListViewCached=()=>buildListView();
@@ -1471,6 +1849,7 @@ async function init(){
     const nextGW=events.find(e=>e.is_next)||events.find(e=>e.is_current)||events[0];
     const currentGW=events.find(e=>e.is_current)||nextGW;
     gwId=nextGW.id;
+    window.currentGwId = currentGW.id;
     document.getElementById('last-updated').textContent='Live · GW'+gwId;
     const dlDate=nextGW.deadline_time?new Date(nextGW.deadline_time):null;
     const dlStr=dlDate?dlDate.toLocaleDateString('en-GB',{weekday:'short',day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'}):'See FPL app';
