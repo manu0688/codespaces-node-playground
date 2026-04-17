@@ -866,6 +866,7 @@
         <input type="number" id="team-id-input" class="myteam-input" placeholder="e.g. 1234567" min="1" />
         <button class="btn-analyse" id="analyse-btn" onclick="analyseTeam()">Analyse My Team</button>
       </div>
+      <p class="myteam-hint" style="margin-bottom:6px">💡 If results appear blank, click <strong>Refresh Data</strong> at the top first, then try again.</p>
       <p class="myteam-hint">Find at <a href="https://fantasy.premierleague.com" target="_blank" rel="noopener">fantasy.premierleague.com</a> → Points → URL shows /entry/<strong>XXXXXXX</strong>/event/</p>
     </div>
     <div id="myteam-content"></div>
@@ -1367,6 +1368,11 @@ async function analyseTeam(){
   const content=document.getElementById('myteam-content');
   const teamId=idInput.value.trim();
   if(!teamId){idInput.style.borderColor='#ff5555';return;}
+  if(!fplData || !gwId){
+    content.innerHTML='<div class="error-msg">⚠️ FPL data still loading — please wait a moment and try again, or click <strong>Refresh Data</strong> at the top first.</div>';
+    btn.disabled=false; btn.textContent='Analyse My Team';
+    return;
+  }
   idInput.style.borderColor='';
   btn.disabled=true;btn.textContent='Analysing...';
   content.innerHTML='<div class="loading"><div class="loading-spinner"></div>Fetching your team...</div>';
@@ -1376,6 +1382,7 @@ async function analyseTeam(){
       fetchWithFallback(`https://fantasy.premierleague.com/api/entry/${teamId}/`)
     ]);
     const picks=picksData.picks||[];
+    if(!picks.length) throw new Error('No picks returned for GW'+gwId+'. The FPL API may be temporarily unavailable — click Refresh Data at the top and try again.');
     const activeChip=picksData.active_chip;
     const enriched=picks.map(pick=>{
       const p=fplData.elements.find(e=>e.id===pick.element);
@@ -1387,6 +1394,7 @@ async function analyseTeam(){
     const captainCandidates=starters.filter(p=>p.element_type===3||p.element_type===4).sort((a,b)=>b.power-a.power).slice(0,3);
     const totalValue=(enriched.reduce((s,p)=>s+p.now_cost,0)/10).toFixed(1);
     const totalPts=starters.reduce((s,p)=>s+(p.total_points*(p.multiplier||1)),0);
+    if(!entryData || entryData.detail) throw new Error('Team not found. Check your Team ID is correct (it is the number in your FPL URL).');
     const teamName=entryData.name||'Your Team';
     const managerName=`${entryData.player_first_name||''} ${entryData.player_last_name||''}`.trim();
     const overallRank=entryData.summary_overall_rank?entryData.summary_overall_rank.toLocaleString():'–';
