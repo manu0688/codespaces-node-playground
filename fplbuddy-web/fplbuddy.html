@@ -1046,22 +1046,16 @@
   </div>
 
   <div id="predictorleague-section" style="display:none">
-    <div id="predictorleague-content">
-      <div class="how-calc">
-        <div class="how-calc-hdr" onclick="toggleHowCalc(this)"><span>How will scoring predictions work?</span><i class="how-calc-arrow">▾</i></div>
-        <div class="how-calc-body"><ul>
-          <li>Share your group's prediction rules and I'll calculate candidate scorelines and rank them per fixture.</li>
-          <li>This tab will show suggested scores, confidence, and rationale once rules are set.</li>
-        </ul></div>
-      </div>
-      <div class="loading"><div class="loading-spinner" style="display:none"></div>
-        <div class="info-msg">🔮 Predictor League is set up and ready. Share your friend group's scoring rules next and we'll build out the prediction engine here.</div>
-      </div>
-    </div>
+    <div id="predictorleague-content"><div class="info-msg">🔮 Predictor League is ready. Share your group’s scoring rules to build the ranking engine.</div></div>
   </div>
 
 <script>
 // ── PROXY WITH AUTO-FALLBACK ──────────────────────────────────────────────
+// Primary FPL transport: your own Cloudflare Worker (reliable on iPhone Safari).
+const FPL_WORKER_ORIGIN = 'https://fplbuddy-proxy.mayank88tyagi.workers.dev';
+let useWorkerProxy = true;
+
+// Public fallbacks are retained only for a manual emergency retry.
 const PROXIES = [
   url => `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(url)}`,
   url => `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`,
@@ -1072,14 +1066,28 @@ const PROXIES = [
   url => `https://thingproxy.freeboard.io/fetch/${url}`
 ];
 let activeProxy = 0;
-// Mobile Safari (ITP / private relay) can silently fail some proxies — try a direct
-// no-proxy fetch first since it's fastest and most reliable when it works.
-async function _tryDirect(url){
-  try{
-    const r = await fetch(url, {signal: AbortSignal.timeout(6000)});
-    if(!r.ok) throw new Error('HTTP '+r.status);
-    return r;
-  }catch(e){ return null; }
+
+function workerUrlFor(url){
+  const target = new URL(url);
+  if(target.origin !== 'https://fantasy.premierleague.com') return null;
+  return FPL_WORKER_ORIGIN + target.pathname + target.search;
+}
+function setProxyStatus(message, isError=false){
+  const bar=document.getElementById('proxy-status-bar');
+  if(!bar)return;
+  bar.innerHTML=message?`<div class="proxy-status" style="${isError?'color:#ff7070':''}">${message}</div>`:'';
+}
+function cacheBustReload(){
+  const url=new URL(window.location.href);
+  url.searchParams.set('_fplbust',Date.now().toString());
+  window.location.replace(url.toString());
+}
+async function switchTransportAndRetry(){
+  useWorkerProxy=!useWorkerProxy;
+  activeProxy=(activeProxy+1)%PROXIES.length;
+  _cBust();
+  setProxyStatus(useWorkerProxy?'⏳ Retrying via FPLBuddy Cloudflare proxy…':'⏳ Retrying via emergency public proxy…');
+  await forceRefreshData();
 }
 
 // ── Smart cache: 5min bootstrap, 60s live ──────────────────
@@ -1107,38 +1115,42 @@ async function fetchWithFallback(url, asText=false, bust=false) {
   if(!asText&&!bust){const c=_cGet(url);if(c)return c;}
   let lastErr;
 
-  // Attempt 1: direct fetch, no proxy (fast path — works if CORS allows, and
-  // avoids proxy flakiness seen on mobile Safari with ITP / iCloud Private Relay).
-  const direct = await _tryDirect(url);
-  if(direct){
-    try{
-      const bar=document.getElementById('proxy-status-bar');
-      if(bar)bar.innerHTML='';
-      if(asText)return direct.text();
-      const text=await direct.text();
-      const d=JSON.parse(text);
-      if(!bust)_cSet(url,d);
-      _stampNow();
-      return d;
-    }catch(e){ /* fall through to proxies */ }
+  // Primary route: dedicated FPLBuddy Worker. It is FPL-only, CORS-enabled and
+  // avoids Safari/iCloud Private Relay issues with shared public proxy services.
+  if(useWorkerProxy){
+    const workerUrl=workerUrlFor(url);
+    if(workerUrl){
+      try{
+        const r=await fetch(workerUrl,{signal:AbortSignal.timeout(15000),cache:'no-store'});
+        if(!r.ok)throw new Error('Worker HTTP '+r.status);
+        if(asText)return r.text();
+        const text=await r.text();
+        const d=JSON.parse(text);
+        if(!bust)_cSet(url,d);
+        _stampNow();
+        return d;
+      }catch(e){lastErr=e;}
+    }
   }
 
+  // Emergency route: shared public proxies, used only if Worker mode is disabled
+  // or if a non-FPL endpoint requires the old fallback behaviour.
   const names=['codetabs','allorigins.win','corsproxy.io','corsproxy.io','cors.sh','yacdn','thingproxy'];
   for(let i=0;i<PROXIES.length;i++){
     const idx=(activeProxy+i)%PROXIES.length;
     try{
-      const r=await fetch(PROXIES[idx](url),{signal:AbortSignal.timeout(15000)});
+      const r=await fetch(PROXIES[idx](url),{signal:AbortSignal.timeout(15000),cache:'no-store'});
       if(!r.ok)throw new Error('HTTP '+r.status);
       activeProxy=idx;
-      const bar=document.getElementById('proxy-status-bar');
-      if(bar)bar.innerHTML=`<div class="proxy-status">✅ Via ${names[idx]||'proxy'}</div>`;
       if(asText)return r.text();
       const text=await r.text();
-      try{const d=JSON.parse(text);if(!bust)_cSet(url,d);_stampNow();return d;}
-      catch(pe){throw new Error('JSON: '+text.slice(0,60));}
+      const d=JSON.parse(text);
+      if(!bust)_cSet(url,d);
+      _stampNow();
+      return d;
     }catch(e){lastErr=e;}
   }
-  throw new Error('All proxies failed — try the Refresh button or check your connection. Last error: '+(lastErr?.message||'unknown'));
+  throw new Error((useWorkerProxy?'FPLBuddy Worker and all public proxies failed':'All public proxies failed')+' — '+(lastErr?.message||'unknown error'));
 }
 function _rerenderTab(t){
   try{
@@ -1927,6 +1939,7 @@ async function sendMessage(){if(!openaiKey){alert('Please connect your OpenAI AP
 // ── INIT ──────────────────────────────────────────────────────────────────
 async function init(){
   const grid=document.getElementById('fixture-cards');
+  setProxyStatus(useWorkerProxy?'⏳ Loading via FPLBuddy Cloudflare proxy…':'⏳ Loading via emergency public proxy…');
   try{
     const [bootstrap,allFixtures]=await Promise.all([
       fetchWithFallback(FPL_BOOTSTRAP),
@@ -1946,12 +1959,13 @@ async function init(){
   const _dlBadge=document.getElementById('deadline-badge');
   if(_dlBadge){_dlBadge.textContent=`⏰ ${nextGW.name} · Deadline: ${dlStr}`;_dlBadge.style.display='inline';}
     renderFixtures(allFixtures);
+    setProxyStatus(useWorkerProxy?'✅ Via FPLBuddy Cloudflare proxy':'✅ Via emergency public proxy');
   }catch(err){
     grid.innerHTML=`<div class="error-msg">❌ Could not load FPL data.<br><small style="color:rgba(255,85,85,.7)">${err.message}</small><br><br>
       <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:8px">
         <button class="refresh-btn" style="margin:0" onclick="forceRefreshData()">↺ Try Again</button>
-        <button class="refresh-btn" style="margin:0;background:rgba(255,255,255,.06)" onclick="activeProxy=(activeProxy+1)%PROXIES.length;forceRefreshData()">🔀 Switch Proxy & Retry</button>
-        <button class="refresh-btn" style="margin:0;background:rgba(255,255,255,.04)" onclick="location.reload()">🔄 Reload Page</button>
+        <button class="refresh-btn" style="margin:0;background:rgba(255,255,255,.06)" onclick="switchTransportAndRetry()">🔀 Switch Proxy & Retry</button>
+        <button class="refresh-btn" style="margin:0;background:rgba(255,255,255,.04)" onclick="cacheBustReload()">🔄 Reload Page</button>
       </div>
     </div>`;
     document.getElementById('last-updated').textContent='Error — tap retry';
