@@ -895,7 +895,11 @@
     .sp-spec-rank{font-size:.6rem;color:var(--text-muted);width:16px;flex-shrink:0}
     .sp-note{font-size:.6rem;color:var(--text-muted);font-style:italic;margin-top:6px;padding:6px 8px;background:var(--surface);border-radius:6px;border:1px solid var(--border)}
 
-    </style>
+    
+/* ── Predictor League ─────────────────────────────────────────────────── */
+.predictor-shell{max-width:1050px;margin:0 auto}.pred-hero{background:linear-gradient(135deg,rgba(143,123,250,.16),rgba(0,212,170,.08));border:1px solid rgba(143,123,250,.32);border-radius:18px;padding:18px;margin-bottom:16px}.pred-hero h2{margin:0 0 5px;font-size:1.2rem}.pred-hero p{margin:0;color:var(--text-muted);font-size:.84rem;line-height:1.5}.pred-toolbar{display:flex;gap:10px;align-items:center;justify-content:space-between;flex-wrap:wrap;margin-bottom:16px}.pred-select{background:var(--surface);color:var(--text);border:1px solid var(--border);border-radius:10px;padding:10px 12px;font:inherit;font-weight:700}.pred-status{font-size:.78rem;padding:8px 11px;border:1px solid rgba(0,212,170,.28);border-radius:999px;color:var(--green);background:rgba(0,212,170,.08)}.pred-player-bar{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:16px}.pred-player{border:1px solid var(--border);background:var(--surface);color:var(--text);border-radius:12px;padding:10px 8px;font:inherit;font-weight:800;cursor:pointer;transition:.2s}.pred-player.active{border-color:var(--purple);background:rgba(143,123,250,.16);box-shadow:0 0 0 1px rgba(143,123,250,.2)}.pred-player small{display:block;font-size:.66rem;margin-top:3px;color:var(--text-muted);font-weight:600}.pred-fixture{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:13px;margin:9px 0}.pred-kickoff{text-align:center;color:var(--text-muted);font-size:.7rem;margin-bottom:10px}.pred-match{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:9px}.pred-team{display:flex;align-items:center;gap:8px;font-size:.82rem;font-weight:800;min-width:0}.pred-team.away{justify-content:flex-end;text-align:right}.pred-team img{width:27px;height:27px;object-fit:contain}.pred-score{display:flex;gap:5px;align-items:center}.pred-score input{width:42px;height:38px;text-align:center;border-radius:9px;border:1px solid var(--border-hover);background:#0b0f1a;color:var(--text);font-size:1rem;font-weight:900}.pred-score span{color:var(--text-muted);font-weight:900}.pred-lockbar{position:sticky;bottom:10px;z-index:15;display:flex;justify-content:space-between;align-items:center;gap:10px;padding:12px;background:rgba(13,18,31,.96);border:1px solid var(--border-hover);border-radius:14px;backdrop-filter:blur(14px);margin-top:14px}.pred-progress{font-size:.78rem;color:var(--text-muted)}.pred-submit{background:linear-gradient(135deg,var(--green),#00a884);border:0;border-radius:10px;padding:11px 14px;color:#07110f;font:inherit;font-weight:900;cursor:pointer}.pred-submit:disabled{opacity:.45;cursor:not-allowed}.pred-board{margin-top:18px}.pred-board-title{font-size:.76rem;text-transform:uppercase;letter-spacing:1.4px;color:var(--text-muted);font-weight:900;margin-bottom:8px}.pred-board-row{display:flex;justify-content:space-between;align-items:center;border:1px solid var(--border);border-radius:10px;padding:10px 12px;margin-bottom:6px;background:var(--surface);font-size:.84rem}.pred-pill{font-size:.68rem;font-weight:800;border-radius:999px;padding:4px 8px}.pred-pill.done{color:var(--green);background:rgba(0,212,170,.1)}.pred-pill.wait{color:var(--text-muted);background:rgba(255,255,255,.06)}.pred-error{padding:14px;border:1px solid rgba(255,85,85,.35);background:rgba(255,85,85,.08);border-radius:12px;color:#ff9191}.pred-modal{position:fixed;inset:0;z-index:1000;background:rgba(0,0,0,.62);display:flex;align-items:center;justify-content:center;padding:18px}.pred-modal-card{width:min(420px,100%);background:#111827;border:1px solid var(--border-hover);border-radius:16px;padding:20px;box-shadow:0 18px 50px rgba(0,0,0,.45)}.pred-modal-card h3{margin:0 0 9px}.pred-modal-card p{color:var(--text-muted);font-size:.85rem;line-height:1.55}.pred-modal-actions{display:flex;justify-content:flex-end;gap:9px;margin-top:18px}.pred-cancel{background:transparent;color:var(--text);border:1px solid var(--border);border-radius:9px;padding:10px 12px;font:inherit;cursor:pointer}.pred-confirm{background:var(--green);color:#06110e;border:0;border-radius:9px;padding:10px 12px;font:inherit;font-weight:900;cursor:pointer}@media(max-width:560px){.pred-player-bar{grid-template-columns:repeat(2,1fr)}.pred-team{font-size:.74rem}.pred-team img{width:23px;height:23px}.pred-match{gap:6px}.pred-score input{width:38px;height:36px}}
+
+</style>
 </head>
 <body>
 <header>
@@ -1046,7 +1050,7 @@
   </div>
 
   <div id="predictorleague-section" style="display:none">
-    <div id="predictorleague-content"><div class="info-msg">🔮 Predictor League is ready. Share your group’s scoring rules to build the ranking engine.</div></div>
+    <div id="predictorleague-content"><div class="loading"><div class="loading-spinner"></div>Loading Predictor League...</div></div>
   </div>
 
 <script>
@@ -1239,6 +1243,7 @@ function switchTab(tab, e) {
     else if(tab==='h2h')renderH2H();
     else if(tab==='scouthistory')initScoutHistory();
     else if(tab==='setpieces'){_spData=null;renderSetPieces();}
+    else if(tab==='predictorleague'){loadPredictorLeague();}
   }
 }
 
@@ -1937,6 +1942,55 @@ function addMessage(role,text){const empty=document.getElementById('chat-empty')
 async function sendMessage(){if(!openaiKey){alert('Please connect your OpenAI API key first!');return;}const input=document.getElementById('chat-input');const sendBtn=document.getElementById('send-btn');const userMsg=input.value.trim();if(!userMsg)return;input.value='';sendBtn.disabled=true;sendBtn.textContent='...';addMessage('user',userMsg);const thinkingRow=addMessage('assistant','⏳ Thinking...');try{const res=await fetch('https://api.openai.com/v1/chat/completions',{method:'POST',headers:{'Content-Type':'application/json','Authorization':`Bearer ${openaiKey}`},body:JSON.stringify({model:'gpt-4o-mini',messages:[{role:'system',content:'You are an expert Fantasy Premier League (FPL) assistant. Give concise, tactical, data-driven advice on transfers, captaincy, team selection and fixture analysis. Keep responses under 180 words. Use bullet points where helpful.'},{role:'user',content:userMsg}],max_tokens:250})});const data=await res.json();thinkingRow.remove();if(data.error)addMessage('assistant','❌ '+data.error.message);else addMessage('assistant',data.choices[0].message.content.replace(/\n/g,'<br>'));}catch(err){thinkingRow.remove();addMessage('assistant','❌ Network error.');}finally{sendBtn.disabled=false;sendBtn.textContent='Send ➤';}}
 
 // ── INIT ──────────────────────────────────────────────────────────────────
+
+// ── PREDICTOR LEAGUE: PHASE 1 ───────────────────────────────────────────
+const PRED_API = FPL_WORKER_ORIGIN + '/predictions';
+let predPlayers=[], predGw=null, predFixtures=[], predSelectedPlayer=null, predLoaded=false;
+function predTeam(id){return fplData?.teams?.find(t=>t.id===id)}
+function predBadge(team){return team?`https://resources.premierleague.com/premierleague/badges/50/t${team.code}.png`:''}
+function predDate(iso){if(!iso)return 'Kick-off TBC';const d=new Date(iso);return d.toLocaleString('en-GB',{weekday:'short',day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'})}
+async function loadPredictorLeague(force=false){
+  const el=document.getElementById('predictorleague-content');
+  if(!el)return;
+  if(!fplData){el.innerHTML='<div class="info-msg">FPL data is still loading. Tap Refresh Data, then return here.</div>';return}
+  try{
+    el.innerHTML='<div class="loading"><div class="loading-spinner"></div>Loading shared predictions...</div>';
+    const current=fplData.events?.find(e=>e.is_current), next=fplData.events?.find(e=>e.is_next);
+    predGw=next?.id||current?.id||fplData.events?.[0]?.id;
+    const [playersRes,fixturesRes,boardRes]=await Promise.all([
+      fetch(PRED_API+'/players',{cache:'no-store'}),
+      fetch(PRED_API+'/fixtures?gw='+predGw,{cache:'no-store'}),
+      fetch(PRED_API+'/board?gw='+predGw,{cache:'no-store'})
+    ]);
+    if(!playersRes.ok||!fixturesRes.ok||!boardRes.ok)throw new Error('Could not connect to the shared Prediction League');
+    predPlayers=(await playersRes.json()).players||[];
+    predFixtures=(await fixturesRes.json()).fixtures||[];
+    window.predBoard=await boardRes.json();
+    predSelectedPlayer=predSelectedPlayer||predPlayers[0]?.id;
+    predLoaded=true;renderPredictorLeague();
+  }catch(err){el.innerHTML=`<div class="pred-error">⚠️ ${err.message}<br><br><button class="refresh-btn" onclick="loadPredictorLeague(true)">Try Again</button></div>`}
+}
+function renderPredictorLeague(){
+ const el=document.getElementById('predictorleague-content');if(!el)return;
+ const selected=predPlayers.find(p=>p.id===predSelectedPlayer);const boardPreds=window.predBoard?.predictions||[];
+ const mine=boardPreds.filter(p=>p.player_id===predSelectedPlayer);const locked=mine.length>0;
+ const entered=predFixtures.filter(f=>document.getElementById('pred-h-'+f.id)?.value!==''&&document.getElementById('pred-a-'+f.id)?.value!=='').length;
+ const playerButtons=predPlayers.map(p=>{const done=boardPreds.some(x=>x.player_id===p.id);return `<button class="pred-player ${p.id===predSelectedPlayer?'active':''}" onclick="selectPredPlayer(${p.id})">${p.name}<small>${done?'🔒 Submitted':'○ Not submitted'}</small></button>`}).join('');
+ const fixtures=predFixtures.map(f=>{const h=predTeam(f.team_h),a=predTeam(f.team_a),saved=mine.find(p=>p.fixture_id===f.id);return `<div class="pred-fixture"><div class="pred-kickoff">${predDate(f.kickoff_time)}</div><div class="pred-match"><div class="pred-team"><img src="${predBadge(h)}" alt="">${h?.name||'Home'}</div><div class="pred-score"><input id="pred-h-${f.id}" type="number" inputmode="numeric" min="0" max="20" value="${saved?.home_goals??''}" ${locked?'disabled':''} oninput="updatePredProgress()"><span>–</span><input id="pred-a-${f.id}" type="number" inputmode="numeric" min="0" max="20" value="${saved?.away_goals??''}" ${locked?'disabled':''} oninput="updatePredProgress()"></div><div class="pred-team away">${a?.name||'Away'}<img src="${predBadge(a)}" alt=""></div></div></div>`}).join('');
+ const rows=predPlayers.map(p=>{const done=boardPreds.some(x=>x.player_id===p.id);return `<div class="pred-board-row"><span>${p.name}</span><span class="pred-pill ${done?'done':'wait'}">${done?'🔒 Locked in':'Waiting'}</span></div>`}).join('');
+ el.innerHTML=`<div class="predictor-shell"><div class="pred-hero"><h2>🔮 Predictor League</h2><p>Exact score: <b>3 points</b> · Correct match result: <b>1 point</b> · Predictions permanently lock when submitted.</p></div><div class="pred-toolbar"><select class="pred-select" disabled><option>Gameweek ${predGw} · ${predFixtures.length} fixtures</option></select><span class="pred-status">☁️ Shared live board</span></div><div class="pred-player-bar">${playerButtons}</div><div id="pred-fixtures">${fixtures||'<div class="info-msg">No fixtures are available for this Gameweek yet.</div>'}</div><div class="pred-lockbar"><span class="pred-progress" id="pred-progress">${locked?'🔒 Predictions locked':`${entered} of ${predFixtures.length} scores entered`}</span><button class="pred-submit" ${locked?'disabled':''} onclick="confirmPredictionSubmit()">${locked?'🔒 Already locked':'Submit & Lock'}</button></div><div class="pred-board"><div class="pred-board-title">Gameweek ${predGw} submission status</div>${rows}</div></div>`;
+}
+function selectPredPlayer(id){predSelectedPlayer=id;renderPredictorLeague()}
+function updatePredProgress(){const n=predFixtures.filter(f=>document.getElementById('pred-h-'+f.id)?.value!==''&&document.getElementById('pred-a-'+f.id)?.value!=='').length;const e=document.getElementById('pred-progress');if(e)e.textContent=`${n} of ${predFixtures.length} scores entered`}
+function confirmPredictionSubmit(){
+ const scores=[];for(const f of predFixtures){const h=document.getElementById('pred-h-'+f.id)?.value,a=document.getElementById('pred-a-'+f.id)?.value;if(h===''||a===''){alert('Please enter a score for every fixture before submitting.');return}scores.push({fixtureId:f.id,homeGoals:h,awayGoals:a})}
+ const p=predPlayers.find(x=>x.id===predSelectedPlayer);const modal=document.createElement('div');modal.className='pred-modal';modal.innerHTML=`<div class="pred-modal-card"><h3>Lock ${p.name}'s predictions?</h3><p>You are submitting all ${scores.length} scores for Gameweek ${predGw}. Once submitted, they cannot be edited.</p><div class="pred-modal-actions"><button class="pred-cancel" onclick="this.closest('.pred-modal').remove()">Cancel</button><button class="pred-confirm" onclick='submitPredictions(${JSON.stringify(scores)})'>Submit & Lock</button></div></div>`;document.body.appendChild(modal)
+}
+async function submitPredictions(scores){
+ document.querySelector('.pred-modal')?.remove();const p=predPlayers.find(x=>x.id===predSelectedPlayer);
+ try{const r=await fetch(PRED_API+'/submit',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({gw:predGw,playerId:predSelectedPlayer,predictions:scores})});const data=await r.json();if(!r.ok)throw new Error(data.error||'Submission failed');alert('✅ '+data.message);await loadPredictorLeague(true)}catch(e){alert('⚠️ '+e.message)}
+}
+
 async function init(){
   const grid=document.getElementById('fixture-cards');
   setProxyStatus(useWorkerProxy?'⏳ Loading via FPLBuddy Cloudflare proxy…':'⏳ Loading via emergency public proxy…');
