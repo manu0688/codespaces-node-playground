@@ -928,7 +928,7 @@
     <span class="tab-tip-wrap"><button class="tab" data-tab="pricechange" onclick="switchTab('pricechange',event)">💰 Price Changes</button><i class="tab-tip-icon" onclick="toggleTip(this)" onmouseenter="this.parentElement.classList.add('tip-open')" onmouseleave="this.parentElement.classList.remove('tip-open')">ⓘ<span class="tab-tip-box">Players most likely to rise or fall based on transfer velocity this GW</span></i></span>
     <span class="tab-tip-wrap"><button class="tab" data-tab="seasonpts" onclick="switchTab('seasonpts',event)">📊 Season Points</button><i class="tab-tip-icon" onclick="toggleTip(this)" onmouseenter="this.parentElement.classList.add('tip-open')" onmouseleave="this.parentElement.classList.remove('tip-open')">ⓘ<span class="tab-tip-box">Your GW-by-GW points chart with cumulative total, rank trend and chips played</span></i></span>
     <span class="tab-tip-wrap"><button class="tab" data-tab="h2h" onclick="switchTab('h2h',event)">⚔️ Head-to-Head</button><i class="tab-tip-icon" onclick="toggleTip(this)" onmouseenter="this.parentElement.classList.add('tip-open')" onmouseleave="this.parentElement.classList.remove('tip-open')">ⓘ<span class="tab-tip-box">Compare your FPL season vs a rival — W/D/L record, pts diff and GW battle table</span></i>
-  <span class="tab-tip-wrap"><button class="tab" data-tab="setpieces" onclick="switchTab('setpieces',event)">🎯 Set Pieces</button><i class="tab-tip-icon" onclick="toggleTip(this)" onmouseenter="this.parentElement.classList.add('tip-open')" onmouseleave="this.parentElement.classList.remove('tip-open')">ⓘ<span class="tab-tip-box">Team set-piece attack &amp; defence rankings — corners, free kicks and throw-ins</span></i></span>
+  <span class="tab-tip-wrap"><button class="tab" data-tab="setpieces" onclick="switchTab('setpieces',event)">🎯 Set Pieces</button><i class="tab-tip-icon" onclick="toggleTip(this)" onmouseenter="this.parentElement.classList.add('tip-open')" onmouseleave="this.parentElement.classList.remove('tip-open')">ⓘ<span class="tab-tip-box">Team set-piece attack &amp; defence rankings — corners, free kicks and throw-ins</span></i></span><span class="tab-tip-wrap"><button class="tab" data-tab="predictorleague" onclick="switchTab('predictorleague',event)">🔮 Predictor League</button><i class="tab-tip-icon" onclick="toggleTip(this)" onmouseenter="this.parentElement.classList.add('tip-open')" onmouseleave="this.parentElement.classList.remove('tip-open')">ⓘ<span class="tab-tip-box">Score predictions game with friends — candidate scorelines ranked by your group's rules</span></i></span>
   </div>
   <div class="rt-bar">
     <span id="last-updated-badge">🔄&nbsp;<span id="last-updated-text">just now</span></span>
@@ -1045,18 +1045,42 @@
     <div id="setpieces-content"><div class="loading"><div class="loading-spinner"></div>Loading set piece data...</div></div>
   </div>
 
+  <div id="predictorleague-section" style="display:none">
+    <div id="predictorleague-content">
+      <div class="how-calc">
+        <div class="how-calc-hdr" onclick="toggleHowCalc(this)"><span>How will scoring predictions work?</span><i class="how-calc-arrow">▾</i></div>
+        <div class="how-calc-body"><ul>
+          <li>Share your group's prediction rules and I'll calculate candidate scorelines and rank them per fixture.</li>
+          <li>This tab will show suggested scores, confidence, and rationale once rules are set.</li>
+        </ul></div>
+      </div>
+      <div class="loading"><div class="loading-spinner" style="display:none"></div>
+        <div class="info-msg">🔮 Predictor League is set up and ready. Share your friend group's scoring rules next and we'll build out the prediction engine here.</div>
+      </div>
+    </div>
+  </div>
+
 <script>
 // ── PROXY WITH AUTO-FALLBACK ──────────────────────────────────────────────
 const PROXIES = [
-  url => `https://corsproxy.io/?url=${encodeURIComponent(url)}`,
-  url => `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`,
-  url => `https://corsproxy.io/?${encodeURIComponent(url)}`,
   url => `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(url)}`,
+  url => `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`,
+  url => `https://corsproxy.io/?url=${encodeURIComponent(url)}`,
+  url => `https://corsproxy.io/?${encodeURIComponent(url)}`,
   url => `https://proxy.cors.sh/${url}`,
   url => `https://yacdn.org/proxy/${url}`,
   url => `https://thingproxy.freeboard.io/fetch/${url}`
 ];
 let activeProxy = 0;
+// Mobile Safari (ITP / private relay) can silently fail some proxies — try a direct
+// no-proxy fetch first since it's fastest and most reliable when it works.
+async function _tryDirect(url){
+  try{
+    const r = await fetch(url, {signal: AbortSignal.timeout(6000)});
+    if(!r.ok) throw new Error('HTTP '+r.status);
+    return r;
+  }catch(e){ return null; }
+}
 
 // ── Smart cache: 5min bootstrap, 60s live ──────────────────
 const _dc={};
@@ -1082,15 +1106,32 @@ function _stampNow(){
 async function fetchWithFallback(url, asText=false, bust=false) {
   if(!asText&&!bust){const c=_cGet(url);if(c)return c;}
   let lastErr;
+
+  // Attempt 1: direct fetch, no proxy (fast path — works if CORS allows, and
+  // avoids proxy flakiness seen on mobile Safari with ITP / iCloud Private Relay).
+  const direct = await _tryDirect(url);
+  if(direct){
+    try{
+      const bar=document.getElementById('proxy-status-bar');
+      if(bar)bar.innerHTML='';
+      if(asText)return direct.text();
+      const text=await direct.text();
+      const d=JSON.parse(text);
+      if(!bust)_cSet(url,d);
+      _stampNow();
+      return d;
+    }catch(e){ /* fall through to proxies */ }
+  }
+
+  const names=['codetabs','allorigins.win','corsproxy.io','corsproxy.io','cors.sh','yacdn','thingproxy'];
   for(let i=0;i<PROXIES.length;i++){
     const idx=(activeProxy+i)%PROXIES.length;
     try{
-      const r=await fetch(PROXIES[idx](url),{signal:AbortSignal.timeout(10000)});
+      const r=await fetch(PROXIES[idx](url),{signal:AbortSignal.timeout(15000)});
       if(!r.ok)throw new Error('HTTP '+r.status);
       activeProxy=idx;
       const bar=document.getElementById('proxy-status-bar');
-      const names=['corsproxy.io','allorigins.win','codetabs','thingproxy'];
-      if(bar)bar.innerHTML=i>0?`<div class="proxy-status">✅ Via ${names[idx]||'proxy'}</div>`:'';
+      if(bar)bar.innerHTML=`<div class="proxy-status">✅ Via ${names[idx]||'proxy'}</div>`;
       if(asText)return r.text();
       const text=await r.text();
       try{const d=JSON.parse(text);if(!bust)_cSet(url,d);_stampNow();return d;}
@@ -1160,10 +1201,10 @@ function rankBadge(i){const cls=i===0?'rank-1':i===1?'rank-2':i===2?'rank-3':'ra
 function switchTab(tab, e) {
   document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
   e.target.classList.add('active');
-  ['fixtures','players','momentum','power','value','transfers','injuries','xg','livegw','scout','scouthistory','myteam','ai-chat','differentials','history','minileague','fixturegrid','chipplanner','pricechange','seasonpts','h2h','setpieces'].forEach(id=>{
+  ['fixtures','players','momentum','power','value','transfers','injuries','xg','livegw','scout','scouthistory','myteam','ai-chat','differentials','history','minileague','fixturegrid','chipplanner','pricechange','seasonpts','h2h','setpieces','predictorleague'].forEach(id=>{
     const el=document.getElementById(id+'-section');if(el)el.style.display='none';
   });
-  const labels={fixtures:'Best Fixture Runs — Next 5 Gameweeks',momentum:'Momentum — Club Short-Term Form & Performance',power:'Power Rankings — Composite FPL Score',value:'Value Picks — Best Points Per Million',transfers:'Transfer Trends — This Gameweek',injuries:'Injury Tracker — Availability & News',xg:'Underlying Stats — xG & xA',livegw:'Live Gameweek — Real-Time Points',scout:'Scout — Form vs Fixture Bubble Chart',scouthistory:'Scout History — Player vs Opponent Analysis',myteam:'My Team — Analyser & Captain Picker','ai-chat':'AI-Powered FPL Assistant','differentials':'Differentials — Hidden Gems Under 10% Ownership','history':'Player History — GW Points Chart & Stats','minileague':'Mini-League — Standings & Leaderboard','fixturegrid':'Full Fixture Grid — Season Difficulty Ticker','chipplanner':'Chip Planner — Best GWs to Play Your Chips','pricechange':'Price Change Predictor — Who\'s Rising & Falling','seasonpts':'Season Points — GW-by-GW Performance Chart','h2h':'Head-to-Head — Compare vs Another Manager'};
+  const labels={fixtures:'Best Fixture Runs — Next 5 Gameweeks',momentum:'Momentum — Club Short-Term Form & Performance',power:'Power Rankings — Composite FPL Score',value:'Value Picks — Best Points Per Million',transfers:'Transfer Trends — This Gameweek',injuries:'Injury Tracker — Availability & News',xg:'Underlying Stats — xG & xA',livegw:'Live Gameweek — Real-Time Points',scout:'Scout — Form vs Fixture Bubble Chart',scouthistory:'Scout History — Player vs Opponent Analysis',myteam:'My Team — Analyser & Captain Picker','ai-chat':'AI-Powered FPL Assistant','differentials':'Differentials — Hidden Gems Under 10% Ownership','history':'Player History — GW Points Chart & Stats','minileague':'Mini-League — Standings & Leaderboard','fixturegrid':'Full Fixture Grid — Season Difficulty Ticker','chipplanner':'Chip Planner — Best GWs to Play Your Chips','pricechange':'Price Change Predictor — Who\'s Rising & Falling','seasonpts':'Season Points — GW-by-GW Performance Chart','h2h':'Head-to-Head — Compare vs Another Manager','predictorleague':'Predictor League — Score Predictions With Friends'};
   document.getElementById('section-label').textContent = labels[tab]||tab;
   const sec = document.getElementById(tab+'-section');if(sec)sec.style.display='block';
   const _rA=['momentum','power','value','transfers','injuries','xg','differentials','pricechange','seasonpts','fixturegrid'];
