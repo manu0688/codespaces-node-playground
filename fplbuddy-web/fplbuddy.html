@@ -934,6 +934,28 @@
   color: var(--green);
 }
 
+.pred-bonus-field label[for^="pred-yellow-"]::before,
+.pred-bonus-field label[for^="pred-red-"]::before {
+  content: '';
+  display: inline-block;
+  width: 8px;
+  height: 12px;
+  margin-right: 5px;
+  vertical-align: -2px;
+  border-radius: 2px;
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,.28), 0 1px 3px rgba(0,0,0,.34);
+}
+
+.pred-bonus-field label[for^="pred-yellow-"]::before {
+  background: linear-gradient(135deg, #fff36a 0%, #f3bd16 100%);
+  border: 1px solid #f8d13a;
+}
+
+.pred-bonus-field label[for^="pred-red-"]::before {
+  background: linear-gradient(135deg, #ff7171 0%, #d82332 100%);
+  border: 1px solid #ef5360;
+}
+
 .pred-bonus-field select {
   width: 100%;
   min-width: 0;
@@ -2296,7 +2318,7 @@ function predBonusControls(fixture, savedPrediction, disabled) {
       </div>
 
       <div class="pred-bonus-field">
-        <label for="pred-yellow-${fixture.id}">🟨 <span class="pred-card-label" aria-label="Yellow cards"></span><b>+1</b></label>
+        <label for="pred-yellow-${fixture.id}">🟨 Yellow cards <b>+1</b></label>
         <select id="pred-yellow-${fixture.id}" ${disabled ? 'disabled' : ''}>
           <option value="">No pick</option>
           <option value="0-1" ${yellow === '0-1' ? 'selected' : ''}>0–1</option>
@@ -2307,7 +2329,7 @@ function predBonusControls(fixture, savedPrediction, disabled) {
       </div>
 
       <div class="pred-bonus-field">
-        <label for="pred-red-${fixture.id}">🟥 <span class="pred-card-label" aria-label="Red card"></span><b>+1</b></label>
+        <label for="pred-red-${fixture.id}">🟥 Red card <b>+1</b></label>
         <select id="pred-red-${fixture.id}" ${disabled ? 'disabled' : ''}>
           <option value="">No pick</option>
           <option value="no" ${red === 'no' ? 'selected' : ''}>No</option>
