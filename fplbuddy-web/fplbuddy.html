@@ -967,6 +967,10 @@
     font-size: .8rem;
   }
 }
+
+/* Premium searchable first-scorer picker */
+.pred-scorer-picker{width:100%;min-width:0;height:38px;display:flex;align-items:center;gap:8px;padding:4px 9px;background:linear-gradient(135deg,rgba(18,27,45,.98),rgba(9,14,25,.98));border:1px solid var(--border);border-radius:9px;color:var(--text);font:700 .74rem Outfit,sans-serif;text-align:left;cursor:pointer;transition:.18s ease}.pred-scorer-picker:hover:not(:disabled),.pred-scorer-picker:focus-visible{border-color:rgba(0,212,170,.72);box-shadow:0 0 0 3px rgba(0,212,170,.09);outline:none}.pred-scorer-picker:disabled{opacity:.66;cursor:not-allowed}.pred-scorer-ball{font-size:1rem}.pred-scorer-placeholder{color:#b5bfd2;flex:1}.pred-scorer-choose,.pred-scorer-change{margin-left:auto;color:var(--green);font-size:.64rem;white-space:nowrap}.pred-scorer-photo{width:28px;height:30px;object-fit:cover;object-position:top;border-radius:7px;background:#151c2c}.pred-scorer-picked-copy{min-width:0;flex:1;display:flex;flex-direction:column;line-height:1.05}.pred-scorer-picked-copy strong{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.pred-scorer-picked-copy small{margin-top:3px;color:var(--text-muted);font-size:.61rem}.pred-scorer-picked-copy em,.pred-scorer-row em{font-style:normal;color:var(--green);border:1px solid rgba(0,212,170,.28);border-radius:999px;padding:1px 5px;margin-left:4px}.pred-scorer-modal{position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;padding:20px;background:rgba(2,5,12,.7);backdrop-filter:blur(8px)}.pred-scorer-sheet{width:min(520px,100%);max-height:min(680px,88vh);display:flex;flex-direction:column;padding:17px;background:linear-gradient(145deg,rgba(19,28,46,.98),rgba(7,11,20,.99));border:1px solid rgba(255,255,255,.12);border-radius:17px;box-shadow:0 24px 65px rgba(0,0,0,.5);animation:predScorerIn .2s ease}.pred-scorer-sheet-head{display:flex;justify-content:space-between;gap:12px;align-items:flex-start}.pred-scorer-sheet h3{margin:0;font-size:1.05rem}.pred-scorer-sheet p{margin:4px 0 14px;color:var(--text-muted);font-size:.74rem}.pred-scorer-close{width:30px;height:30px;border:0;border-radius:50%;background:rgba(255,255,255,.08);color:var(--text);font-size:1.35rem;cursor:pointer}.pred-scorer-search{width:100%;height:42px;box-sizing:border-box;padding:0 12px;border:1px solid rgba(255,255,255,.13);border-radius:10px;background:#090e19;color:var(--text);font:700 .82rem Outfit,sans-serif}.pred-scorer-search:focus{outline:none;border-color:var(--green)}.pred-scorer-list{overflow:auto;min-height:90px;margin:11px -4px 10px;padding:0 4px}.pred-scorer-row{width:100%;display:flex;align-items:center;gap:10px;padding:8px;border:0;border-radius:10px;background:transparent;color:var(--text);text-align:left;cursor:pointer}.pred-scorer-row:hover,.pred-scorer-row.active{background:rgba(0,212,170,.09)}.pred-scorer-row img{width:35px;height:40px;object-fit:cover;object-position:top;border-radius:8px;background:#151c2c}.pred-scorer-row span{min-width:0;flex:1;display:flex;flex-direction:column}.pred-scorer-row strong{font-size:.8rem}.pred-scorer-row small{margin-top:3px;color:var(--text-muted);font-size:.65rem}.pred-scorer-row em{font-size:.62rem;white-space:nowrap}.pred-scorer-empty{padding:25px 8px;text-align:center;color:var(--text-muted);font-size:.78rem}.pred-scorer-clear{height:38px;border:1px solid rgba(255,255,255,.14);border-radius:9px;background:rgba(255,255,255,.045);color:#d9e0ee;font:800 .74rem Outfit,sans-serif;cursor:pointer}.pred-scorer-clear:hover{border-color:#ff7777;color:#ff9b9b}@keyframes predScorerIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}@media(max-width:560px){.pred-scorer-modal{align-items:flex-end;padding:0}.pred-scorer-sheet{width:100%;max-height:82vh;border-radius:20px 20px 0 0;padding:18px 16px 16px;animation:predScorerUp .24s ease}@keyframes predScorerUp{from{transform:translateY(100%)}to{transform:translateY(0)}}.pred-scorer-picker{height:40px}}
+
 </style>
 </head>
 <body>
@@ -2260,41 +2264,32 @@ function renderPredResult(fixture) {
     ${pills ? `<div class="pred-points-wrap">${pills}</div>` : ''}`;
 }
 
+function predScorerPhoto(player) {
+  return `https://resources.premierleague.com/premierleague/photos/players/110x140/p${player.code}.png`;
+}
+
+function predScorerPickerButton(fixture, scorerId, disabled) {
+  const player = predFixturePlayers(fixture).find(item => String(item.id) === String(scorerId));
+  const team = player ? predTeam(player.team) : null;
+  const disabledAttr = disabled ? 'disabled' : '';
+  const selected = player ? `
+    <img class="pred-scorer-photo" src="${predScorerPhoto(player)}" alt="${predEscape(player.web_name)}" onerror="this.style.display='none'">
+    <span class="pred-scorer-picked-copy"><strong>${predEscape(player.web_name)}</strong><small>${predEscape(team?.short_name || team?.shortname || team?.name || '')} <em>${predPosition(player)}</em></small></span>
+    <span class="pred-scorer-change">Change</span>` : `
+    <span class="pred-scorer-ball">⚽</span><span class="pred-scorer-placeholder">Pick first scorer</span><span class="pred-scorer-choose">Choose⌄</span>`;
+  return `<button type="button" id="pred-scorer-${fixture.id}" class="pred-scorer-picker ${player ? 'has-pick' : ''}" data-player-id="${player ? player.id : ''}" data-player-name="${player ? predEscape(player.web_name) : ''}" data-player-pos="${player ? predPosition(player) : ''}" ${disabledAttr} onclick="openPredScorerPicker(${fixture.id})">${selected}</button>`;
+}
+
 function predBonusControls(fixture, savedPrediction, disabled) {
-  const scorerId = String(
-    savedPrediction?.first_scorer_id ??
-    savedPrediction?.firstScorerId ??
-    ''
-  );
-
-  const yellow = savedPrediction?.yellow_card_band ??
-    savedPrediction?.yellowCardBand ??
-    '';
-
-  const red = savedPrediction?.red_card_call ??
-    savedPrediction?.redCardCall ??
-    '';
-
-  const scorerOptions = predFixturePlayers(fixture).map(player => `
-    <option
-      value="${player.id}"
-      data-name="${predEscape(player.web_name)}"
-      data-pos="${predPosition(player)}"
-      ${String(player.id) === scorerId ? 'selected' : ''}>
-      ${predEscape(player.web_name)} · ${predPosition(player)}
-    </option>
-  `).join('');
-
+  const scorerId = String(savedPrediction?.first_scorer_id ?? savedPrediction?.firstScorerId ?? '');
+  const yellow = savedPrediction?.yellow_card_band ?? savedPrediction?.yellowCardBand ?? '';
+  const red = savedPrediction?.red_card_call ?? savedPrediction?.redCardCall ?? '';
   return `
     <div class="pred-bonus-grid">
       <div class="pred-bonus-field">
         <label for="pred-scorer-${fixture.id}">⚽ First scorer <b>+2</b></label>
-        <select id="pred-scorer-${fixture.id}" ${disabled ? 'disabled' : ''}>
-          <option value="">No pick</option>
-          ${scorerOptions}
-        </select>
+        ${predScorerPickerButton(fixture, scorerId, disabled)}
       </div>
-
       <div class="pred-bonus-field">
         <label for="pred-yellow-${fixture.id}">🟨 Yellow cards <b>+1</b></label>
         <select id="pred-yellow-${fixture.id}" ${disabled ? 'disabled' : ''}>
@@ -2305,7 +2300,6 @@ function predBonusControls(fixture, savedPrediction, disabled) {
           <option value="6+" ${yellow === '6+' ? 'selected' : ''}>6+</option>
         </select>
       </div>
-
       <div class="pred-bonus-field">
         <label for="pred-red-${fixture.id}">🟥 Red card <b>+1</b></label>
         <select id="pred-red-${fixture.id}" ${disabled ? 'disabled' : ''}>
@@ -2315,6 +2309,45 @@ function predBonusControls(fixture, savedPrediction, disabled) {
         </select>
       </div>
     </div>`;
+}
+
+function closePredScorerPicker() { document.getElementById('pred-scorer-modal')?.remove(); }
+
+function openPredScorerPicker(fixtureId) {
+  const fixture = predFixtures?.find(item => Number(item.id) === Number(fixtureId));
+  if (!fixture || document.getElementById('pred-scorer-modal')) return;
+  const home = predTeam(fixture.team_h), away = predTeam(fixture.team_a);
+  const trigger = document.getElementById('pred-scorer-' + fixture.id);
+  const selectedId = String(trigger?.dataset.playerId || '');
+  const players = predFixturePlayers(fixture);
+  const modal = document.createElement('div');
+  modal.id = 'pred-scorer-modal'; modal.className = 'pred-scorer-modal';
+  modal.innerHTML = `<div class="pred-scorer-sheet" role="dialog" aria-modal="true" aria-label="Pick first scorer"><div class="pred-scorer-sheet-head"><div><h3>Pick first scorer</h3><p>${predEscape(home?.name || 'Home')} vs ${predEscape(away?.name || 'Away')}</p></div><button type="button" class="pred-scorer-close" aria-label="Close">×</button></div><input class="pred-scorer-search" type="search" placeholder="Search eligible players" autocomplete="off"><div class="pred-scorer-list"></div><button type="button" class="pred-scorer-clear">Clear selection</button></div>`;
+  document.body.appendChild(modal);
+  const search = modal.querySelector('.pred-scorer-search'), list = modal.querySelector('.pred-scorer-list');
+  const render = () => {
+    const term = search.value.trim().toLowerCase();
+    const filtered = players.filter(player => player.web_name.toLowerCase().includes(term));
+    list.innerHTML = filtered.length ? filtered.map(player => { const team = predTeam(player.team); return `<button type="button" class="pred-scorer-row ${String(player.id) === selectedId ? 'active' : ''}" data-id="${player.id}"><img src="${predScorerPhoto(player)}" alt="" onerror="this.style.display='none'"><span><strong>${predEscape(player.web_name)}</strong><small>${predEscape(team?.short_name || team?.shortname || team?.name || '')}</small></span><em>${predPosition(player)}</em></button>`; }).join('') : '<div class="pred-scorer-empty">No eligible players found.</div>';
+    list.querySelectorAll('.pred-scorer-row').forEach(row => row.addEventListener('click', () => selectPredScorer(fixture.id, row.dataset.id)));
+  };
+  modal.querySelector('.pred-scorer-close').addEventListener('click', closePredScorerPicker);
+  modal.querySelector('.pred-scorer-clear').addEventListener('click', () => selectPredScorer(fixture.id, ''));
+  modal.addEventListener('click', event => { if (event.target === modal) closePredScorerPicker(); });
+  search.addEventListener('input', render); render(); setTimeout(() => search.focus(), 30);
+}
+
+function selectPredScorer(fixtureId, playerId) {
+  const fixture = predFixtures?.find(item => Number(item.id) === Number(fixtureId));
+  const trigger = document.getElementById('pred-scorer-' + fixtureId);
+  if (!fixture || !trigger) return;
+  const player = predFixturePlayers(fixture).find(item => String(item.id) === String(playerId));
+  trigger.dataset.playerId = player ? String(player.id) : '';
+  trigger.dataset.playerName = player ? player.web_name : '';
+  trigger.dataset.playerPos = player ? predPosition(player) : '';
+  trigger.className = 'pred-scorer-picker' + (player ? ' has-pick' : '');
+  trigger.innerHTML = predScorerPickerButton(fixture, player ? player.id : '', false).replace(/^<button[^>]*>|<\/button>$/g, '');
+  closePredScorerPicker();
 }
 
 function renderPredictorLeague() {
@@ -2551,7 +2584,7 @@ function collectPredictions() {
     }
 
     const scorer = document.getElementById('pred-scorer-' + fixture.id);
-    const selectedOption = scorer?.selectedOptions?.[0];
+    const scorerId = scorer?.dataset.playerId || null;
 
     const yellow = document.getElementById('pred-yellow-' + fixture.id)?.value || null;
     const red = document.getElementById('pred-red-' + fixture.id)?.value || null;
@@ -2560,9 +2593,9 @@ function collectPredictions() {
       fixtureId: fixture.id,
       homeGoals,
       awayGoals,
-      firstScorerId: scorer?.value || null,
-      firstScorerName: scorer?.value ? (selectedOption?.dataset.name || null) : null,
-      firstScorerPosition: scorer?.value ? (selectedOption?.dataset.pos || null) : null,
+      firstScorerId: scorerId,
+      firstScorerName: scorerId ? (scorer?.dataset.playerName || null) : null,
+      firstScorerPosition: scorerId ? (scorer?.dataset.playerPos || null) : null,
       yellowCardBand: yellow,
       redCardCall: red
     });
