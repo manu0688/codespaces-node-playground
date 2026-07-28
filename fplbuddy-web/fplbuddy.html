@@ -2296,7 +2296,7 @@ function predBonusControls(fixture, savedPrediction, disabled) {
       </div>
 
       <div class="pred-bonus-field">
-        <label for="pred-yellow-${fixture.id}">Yellow cards <b>+1</b></label>
+        <label for="pred-yellow-${fixture.id}">🟨 <span class="pred-card-label" aria-label="Yellow cards"></span><b>+1</b></label>
         <select id="pred-yellow-${fixture.id}" ${disabled ? 'disabled' : ''}>
           <option value="">No pick</option>
           <option value="0-1" ${yellow === '0-1' ? 'selected' : ''}>0–1</option>
@@ -2307,7 +2307,7 @@ function predBonusControls(fixture, savedPrediction, disabled) {
       </div>
 
       <div class="pred-bonus-field">
-        <label for="pred-red-${fixture.id}">Red card <b>+1</b></label>
+        <label for="pred-red-${fixture.id}">🟥 <span class="pred-card-label" aria-label="Red card"></span><b>+1</b></label>
         <select id="pred-red-${fixture.id}" ${disabled ? 'disabled' : ''}>
           <option value="">No pick</option>
           <option value="no" ${red === 'no' ? 'selected' : ''}>No</option>
