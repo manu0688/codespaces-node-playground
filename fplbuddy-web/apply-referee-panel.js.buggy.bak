@@ -51,7 +51,7 @@ const js = String.raw`
     return Object.values(stats).some(v => v !== null) ? stats : null;
   };
   const teamName = id => { try { const team = typeof predTeam === 'function' ? predTeam(id) : null; return team && (team.name || team.short_name || team.shortname); } catch(_) { return ''; } };
-  const contextFor = fixture => (teamName(fixture && fixture.teamh) || 'Home') + ' vs ' + (teamName(fixture && fixture.teama) || 'Away');
+  const contextFor = fixture => `${teamName(fixture && fixture.teamh) || 'Home'} vs ${teamName(fixture && fixture.teama) || 'Away'}`;
   const close = () => document.getElementById('pred-referee-modal')?.remove();
   const stat = (label, value, decimals, tone) => value === null || value === undefined ? '' : '<div class="pred-ref-stat"><span>'+esc(label)+'</span><b class="'+(tone || '')+'">'+esc(decimals == null ? String(value) : Number(value).toFixed(decimals))+'</b></div>';
   const open = id => {
