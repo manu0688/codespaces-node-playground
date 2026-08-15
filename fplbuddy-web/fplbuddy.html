@@ -981,6 +981,10 @@
 .pred-ref-sheet{position:relative;width:min(535px,100%);max-height:min(680px,88vh);overflow:auto;padding:18px;background:linear-gradient(145deg,rgba(20,29,48,.99),rgba(7,11,20,.995));border:1px solid rgba(161,179,255,.2);border-radius:18px;box-shadow:0 26px 75px rgba(0,0,0,.58);animation:predRefIn .22s ease}.pred-ref-sheet:before{content:'';position:absolute;inset:0 0 auto;height:2px;background:linear-gradient(90deg,transparent,var(--green),#6f7cff,transparent);opacity:.85}.pred-ref-head{display:flex;gap:12px;align-items:flex-start;padding-bottom:14px;border-bottom:1px solid rgba(255,255,255,.075)}.pred-ref-head-icon{width:42px;height:42px;display:grid;place-items:center;border-radius:12px;background:linear-gradient(135deg,rgba(0,212,170,.2),rgba(79,142,247,.19));font-size:1.35rem}.pred-ref-title{min-width:0;flex:1}.pred-ref-title small{display:block;color:var(--text-muted);font-size:.67rem;letter-spacing:.55px;text-transform:uppercase;margin-bottom:3px}.pred-ref-title h3{margin:0;font-size:1.08rem}.pred-ref-title p{margin:4px 0 0;color:#b3bfd4;font-size:.76rem}.pred-ref-close{width:31px;height:31px;border:1px solid rgba(255,255,255,.12);border-radius:50%;background:rgba(255,255,255,.06);color:var(--text);font:400 1.3rem/1 Outfit,sans-serif;cursor:pointer}.pred-ref-close:hover{background:rgba(255,255,255,.13)}.pred-ref-role{display:inline-flex;margin:14px 0 10px;padding:4px 9px;border-radius:999px;border:1px solid rgba(0,212,170,.25);background:rgba(0,212,170,.08);color:var(--green);font-size:.66rem;font-weight:800;letter-spacing:.45px;text-transform:uppercase}.pred-ref-stats{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.pred-ref-stat{padding:10px;border:1px solid rgba(255,255,255,.075);border-radius:10px;background:rgba(255,255,255,.035)}.pred-ref-stat span{display:block;color:var(--text-muted);font-size:.61rem;font-weight:700;letter-spacing:.5px;text-transform:uppercase;line-height:1.25}.pred-ref-stat b{display:block;margin-top:4px;color:var(--text);font-size:1rem}.pred-ref-stat b.green{color:var(--green)}.pred-ref-unavailable{margin-top:5px;padding:15px;border:1px dashed rgba(167,139,250,.36);border-radius:11px;background:rgba(167,139,250,.06);color:#c3c9da;font-size:.78rem;line-height:1.55}.pred-ref-foot{margin:12px 0 0;color:var(--text-muted);font-size:.65rem;line-height:1.4}@keyframes predRefIn{from{opacity:0;transform:translateY(14px) scale(.985)}to{opacity:1;transform:translateY(0) scale(1)}}
 @media(max-width:560px){.pred-ref-modal{align-items:flex-end;padding:0}.pred-ref-sheet{width:100%;max-height:82vh;border-radius:20px 20px 0 0;padding:18px 16px 19px;animation:predRefUp .25s ease}.pred-ref-stat{padding:9px}.pred-ref-view{display:none}@keyframes predRefUp{from{transform:translateY(100%)}to{transform:translateY(0)}}}
 
+
+/* FPLBuddy Predictor League rules v4 — red-card prediction removed, first scorer one point */
+.pred-bonus-grid{grid-template-columns:minmax(160px,2fr) minmax(105px,1fr)!important}
+@media(max-width:560px){.pred-bonus-grid{grid-template-columns:1fr!important}}
 </style>
 </head>
 <body>
@@ -2127,9 +2131,6 @@ function predBonusText(prediction) {
     parts.push(`Yellow cards +${prediction.yellow_card_points}`);
   }
 
-  if (Number(prediction.red_card_points || 0)) {
-    parts.push(`Red card +${prediction.red_card_points}`);
-  }
 
   return parts.join(' · ');
 }
@@ -2293,8 +2294,7 @@ function predScorerPickerButton(fixture, scorerId, disabled) {
 function predBonusControls(fixture, savedPrediction, disabled) {
   const scorerId = String(savedPrediction?.first_scorer_id ?? savedPrediction?.firstScorerId ?? '');
   const yellow = savedPrediction?.yellow_card_band ?? savedPrediction?.yellowCardBand ?? '';
-  const red = savedPrediction?.red_card_call ?? savedPrediction?.redCardCall ?? '';
-  return `
+    return `
     <div class="pred-bonus-grid">
       <div class="pred-bonus-field">
         <label for="pred-scorer-${fixture.id}">⚽ First scorer <b>+2</b></label>
@@ -2310,14 +2310,7 @@ function predBonusControls(fixture, savedPrediction, disabled) {
           <option value="6+" ${yellow === '6+' ? 'selected' : ''}>6+</option>
         </select>
       </div>
-      <div class="pred-bonus-field">
-        <label for="pred-red-${fixture.id}">🟥 Red card <b>+1</b></label>
-        <select id="pred-red-${fixture.id}" ${disabled ? 'disabled' : ''}>
-          <option value="">No pick</option>
-          <option value="no" ${red === 'no' ? 'selected' : ''}>No</option>
-          <option value="yes" ${red === 'yes' ? 'selected' : ''}>Yes</option>
-        </select>
-      </div>
+
     </div>`;
 }
 
@@ -2501,8 +2494,8 @@ function renderPredictorLeague() {
         <h2>🔮 Predictor League</h2>
         <p>
           Exact score: <b>3 points</b> · Correct result: <b>1 point</b> ·
-          First scorer: <b>2 points</b> · Yellow-card band: <b>1 point</b> ·
-          Red-card call: <b>1 point</b>.
+          First scorer: <b>1 point</b> · Yellow-card band: <b>1 point</b> ·
+          
         </p>
         ${leaderPill}
       </div>
@@ -2597,8 +2590,7 @@ function collectPredictions() {
     const scorerId = scorer?.dataset.playerId || null;
 
     const yellow = document.getElementById('pred-yellow-' + fixture.id)?.value || null;
-    const red = document.getElementById('pred-red-' + fixture.id)?.value || null;
-
+    
     predictions.push({
       fixtureId: fixture.id,
       homeGoals,
@@ -2607,7 +2599,6 @@ function collectPredictions() {
       firstScorerName: scorerId ? (scorer?.dataset.playerName || null) : null,
       firstScorerPosition: scorerId ? (scorer?.dataset.playerPos || null) : null,
       yellowCardBand: yellow,
-      redCardCall: red
     });
   }
 
