@@ -2559,6 +2559,7 @@ function renderPredictorLeague() {
         }).join('')}
       </div>
     </div>`;
+    updatePredProgress()
 }
 
 function selectPredPlayer(id) {
@@ -2567,7 +2568,13 @@ function selectPredPlayer(id) {
 }
 
 function updatePredProgress() {
-  const count = predEnteredCount();
+  const typedCount = predEnteredCount();
+  const savedCount = predDrafts().filter(draft =>
+    predFixtures.some(fixture => Number(fixture.id) === Number(draft.fixture_id)) &&
+    draft.home_goals !== null && draft.home_goals !== undefined && draft.home_goals !== '' &&
+    draft.away_goals !== null && draft.away_goals !== undefined && draft.away_goals !== ''
+  ).length;
+  const count = Math.max(typedCount, savedCount);
   const text = document.getElementById('pred-progress');
   const button = document.getElementById('pred-lock-btn');
 
