@@ -2407,17 +2407,21 @@ function renderPredictorLeague() {
     const homeTeam = predTeam(fixture.team_h);
     const awayTeam = predTeam(fixture.team_a);
 
-    const draft = drafts.find(item => item.fixture_id === fixture.id);
-    const lockedPrediction = (predBoard?.predictions || []).find(
-      item => item.fixture_id === fixture.id && item.player_id === predSelectedPlayer
-    );
+    const draft = drafts.find(item =>
+        Number(item.fixture_id ?? item.fixtureId) === Number(fixture.id)
+      );
+
+    const lockedPrediction = (predBoard?.predictions || []).find(item =>
+        Number(item.fixture_id ?? item.fixtureId) === Number(fixture.id) &&
+        Number(item.player_id ?? item.playerId) === Number(predSelectedPlayer)
+      );
 
     const saved = lockedPrediction && !lockedPrediction.hidden
-      ? lockedPrediction
-      : (draft || {});
+        ? lockedPrediction
+        : (draft || {});
 
-    const homeGoals = saved.home_goals ?? '';
-    const awayGoals = saved.away_goals ?? '';
+    const homeGoals = saved.home_goals ?? saved.homeGoals ?? '';
+    const awayGoals = saved.away_goals ?? saved.awayGoals ?? '';
     const isLive = fixture.started && !fixture.finished;
     const disabled = locked || closed;
 
